@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RallyRide – Ride Together</title>
+<title>FunRallyRide – Ride Together</title>
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" type="image/png" href="icons/favicon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="RallyRide">
+<meta name="apple-mobile-web-app-title" content="FunRallyRide">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -43,6 +43,8 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .logo{font-size:34px;font-weight:800;letter-spacing:-1px;display:flex;align-items:center;gap:10px}
 .logo .mark{width:42px;height:42px;border-radius:12px;background:var(--blue);display:flex;align-items:center;justify-content:center}
 .logo .mark svg{stroke:#fff;width:24px;height:24px}
+.logo .mark.frr{color:#fff;font-size:14px;font-weight:800;letter-spacing:-.3px;width:auto;min-width:42px;padding:0 7px}
+.logo{font-size:30px!important}
 .choice{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:12px}
 .choice .ci{width:44px;height:44px;border-radius:12px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .choice b{font-size:17px;display:block;margin-bottom:2px}
@@ -242,12 +244,12 @@ a{color:var(--blue-d)}
   <div id="toasts"></div>
 
   <!-- HOME -->
-  <section class="screen on" id="s-loading"><div class="hero" style="align-items:center"><div class="logo"><span class="mark"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>RallyRide</div><p class="muted" style="margin-top:14px">Loading…</p><div id="boot-err"></div></div></section>
+  <section class="screen on" id="s-loading"><div class="hero" style="align-items:center"><div class="logo"><span class="mark frr">FRR</span>FunRallyRide</div><p class="muted" style="margin-top:14px">Loading…</p><div id="boot-err"></div></div></section>
 
   <!-- LOG IN -->
   <section class="screen" id="s-auth">
     <div class="scroll"><div class="authhero">
-      <div class="logo"><span class="mark"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>RallyRide</div>
+      <div class="logo"><span class="mark frr">FRR</span>FunRallyRide</div>
       <p class="muted" style="margin-top:8px">Ride together. Talk live. Nobody gets left behind.</p>
       <h1 style="margin-top:28px">Log in</h1>
       <div class="label">Email</div><input class="field" id="a-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
@@ -255,7 +257,7 @@ a{color:var(--blue-d)}
       <div style="text-align:right"><button class="linkbtn" id="a-forgot">Forgot password?</button></div>
       <p class="small" id="a-err" style="color:var(--red);min-height:18px"></p>
       <button class="btn" id="a-go">Log in</button>
-      <p class="muted" style="text-align:center;margin-top:18px">New to RallyRide? <button class="linkbtn" id="a-tosignup">Create an account</button></p>
+      <p class="muted" style="text-align:center;margin-top:18px">New to FunRallyRide? <button class="linkbtn" id="a-tosignup">Create an account</button></p>
       <p class="muted small" style="text-align:center;margin-top:10px"><a href="privacy.html">Privacy</a></p>
     </div></div>
   </section>
@@ -332,7 +334,7 @@ a{color:var(--blue-d)}
     <div class="homehead"><div class="av" id="h-av" style="width:44px;height:44px">?</div><div class="hi"><span class="muted small">Welcome back</span><b id="h-name"></b></div>
       <button class="iconbtn" id="h-settings" title="Settings"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
     <div class="hero">
-      <div class="logo"><span class="mark"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>RallyRide</div>
+      <div class="logo"><span class="mark frr">FRR</span>FunRallyRide</div>
       <p class="muted" style="margin-top:8px">Ride together. Talk live. Nobody gets left behind.</p>
       <div id="resume"></div>
       <button class="choice" id="go-create"><span class="ci"><svg class="i" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span><b>Create a group trip</b><span class="muted small">Set the route, share a code, approve your group.</span></span></button>
@@ -501,7 +503,7 @@ const FIREBASE_CONFIG = {
 };
 /* Voice connection helpers (free). Add a TURN server later if some networks can't connect. */
 const ICE_SERVERS = [{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:stun.l.google.com:19302'}];
-const APK_URL = 'https://github.com/jaycee055/RallyRide/releases/latest/download/RallyRide.apk';
+const APK_URL = 'https://github.com/jaycee055/RallyRide/releases/latest/download/FunRallyRide.apk';
 /* ================================= */
 
 const $=s=>document.querySelector(s);
@@ -840,8 +842,8 @@ async function declineReq(u){await DB.set(P(`requests/${u}/status`),'declined')}
 $('#l-ready').onclick=()=>DB.update(P('state/'+T.me),{ready:!(T.state[T.me]||{}).ready});
 $('#l-start').onclick=async()=>{const st=T.meta.stops[0];await DB.update(P('meta'),{status:'live',started:DB.now(),...(T.meta.meetFirst?{meet:{name:st.name,lat:st.lat,lng:st.lng,ts:DB.now()}}:{})});sysMsg('▶ Trip started · destination: '+T.meta.stops[T.meta.stops.length-1].name)};
 $('#l-copy').onclick=()=>copyInvite();
-$('#l-share').onclick=async()=>{const t=inviteText();try{if(navigator.share)await navigator.share({title:'Join my RallyRide trip',text:t});else copyInvite()}catch(e){}};
-const inviteText=()=>`Join my group trip "${T.meta.name}" on RallyRide.\nCode: ${T.code}\n${location.origin+location.pathname}`;
+$('#l-share').onclick=async()=>{const t=inviteText();try{if(navigator.share)await navigator.share({title:'Join my FunRallyRide trip',text:t});else copyInvite()}catch(e){}};
+const inviteText=()=>`Join my group trip "${T.meta.name}" on FunRallyRide.\nCode: ${T.code}\n${location.origin+location.pathname}`;
 async function copyInvite(){try{await navigator.clipboard.writeText(inviteText());toast('Invite copied')}catch(e){toast('Code: '+T.code)}}
 $('#l-leave').onclick=()=>openSheet(`<h1>Leave trip?</h1><p class="muted" style="margin:8px 0 16px">${isLeader()?'As leader, leaving cancels the trip for everyone.':'You can rejoin later with the code (needs approval again).'}</p><button class="btn red" id="cf-leave">Leave</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`)||($('#cf-leave').onclick=async()=>{closeSheet();if(isLeader())await DB.update(P('meta'),{status:'ended',ended:DB.now()});else{await leaveTrip();return}exitTrip()});
 
@@ -1357,12 +1359,12 @@ $('#st-pw').onclick=()=>{openSheet(`<h1>Change password</h1><div class="label">C
   $('#cp-go').onclick=()=>busy($('#cp-go'),async()=>{const o=$('#cp-old').value,n=$('#cp-new').value,n2=$('#cp-new2').value;const er=t=>$('#cp-err').textContent=t;
     if(n.length<8)return er('New password must be at least 8 characters.');if(n!==n2)return er("New passwords don't match.");
     try{await DB.auth.changePassword(o,n);closeSheet();toast('Password updated')}catch(e){er(authErr(e))}})};
-$('#st-delete').onclick=()=>{openSheet(`<h1 style="color:var(--red)">Delete account?</h1><p class="muted" style="margin:8px 0 4px">This permanently deletes your RallyRide account and profile. It can't be undone. Trips you led stay visible to their members until they end.</p><div class="label">Enter your password to confirm</div><input class="field" id="da-pw" type="password" autocomplete="current-password"><p class="small" id="da-err" style="color:var(--red);min-height:18px;margin-top:6px"></p><button class="btn red" id="da-go">Delete my account</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+$('#st-delete').onclick=()=>{openSheet(`<h1 style="color:var(--red)">Delete account?</h1><p class="muted" style="margin:8px 0 4px">This permanently deletes your FunRallyRide account and profile. It can't be undone. Trips you led stay visible to their members until they end.</p><div class="label">Enter your password to confirm</div><input class="field" id="da-pw" type="password" autocomplete="current-password"><p class="small" id="da-err" style="color:var(--red);min-height:18px;margin-top:6px"></p><button class="btn red" id="da-go">Delete my account</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
   $('#da-go').onclick=()=>busy($('#da-go'),async()=>{const pw=$('#da-pw').value;if(!pw)return $('#da-err').textContent='Enter your password.';
     try{const uid=DB.uid;if(T){if(!isLeader())await DB.remove(P('members/'+T.me)).catch(()=>{});leaveSubs();T=null}store.del('session');store.del('history');
       await DB.remove('users/'+uid);await DB.auth.deleteAccount(pw);closeSheet();toast('Your account was deleted')}catch(e){$('#da-err').textContent=authErr(e)}})};
 
-DB.ready.then(()=>{DB.onAuth(u=>routeAuth(u));if(DB.mode==='firebase')routeAuth(DB.user)}).catch(e=>{$('#boot-err').innerHTML=`<div class="banner">Can't reach RallyRide's servers. Check your internet and reopen the app.</div>`});
+DB.ready.then(()=>{DB.onAuth(u=>routeAuth(u));if(DB.mode==='firebase')routeAuth(DB.user)}).catch(e=>{$('#boot-err').innerHTML=`<div class="banner">Can't reach FunRallyRide's servers. Check your internet and reopen the app.</div>`});
 </script>
 </body>
 </html>

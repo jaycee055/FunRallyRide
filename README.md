@@ -1,8 +1,8 @@
-# RallyRide
+# FunRallyRide
 
 Ride together. Talk live. Nobody gets left behind.
 
-RallyRide is a free group-ride app for motorcycle groups, road trips, cycling groups and friends travelling together:
+FunRallyRide is a free group-ride app for motorcycle groups, road trips, cycling groups and friends travelling together:
 
 - **Create or join a trip.** The leader shares a code like `RIDE-AB12`; members enter it and wait for the leader's approval.
 - **Live shared map** (OpenStreetMap, or satellite imagery from Esri) with a Google Maps–style tilted navigation view, vehicle icons (motorcycle, car, bicycle) that turn with each rider's direction, searchable places and a map pin picker, the route, stops, everyone's position, and the group order from front to back, including the gap between riders.
@@ -17,7 +17,7 @@ RallyRide is a free group-ride app for motorcycle groups, road trips, cycling gr
 ## Get the app
 
 - **Website:** https://jaycee055.github.io/RallyRide/ (works on any phone; use "Add to Home Screen")
-- **Android app:** [Download RallyRide.apk](https://github.com/jaycee055/RallyRide/releases/latest/download/RallyRide.apk)
+- **Android app:** [Download RallyRide.apk](https://github.com/jaycee055/RallyRide/releases/latest/download/FunRallyRide.apk)
 
 ## Costs
 

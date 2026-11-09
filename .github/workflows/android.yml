@@ -57,15 +57,18 @@ jobs:
           BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
           UNSIGNED=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
           $BT/zipalign -p -f 4 "$UNSIGNED" aligned.apk
-          $BT/apksigner sign --ks release.keystore --ks-key-alias rallyride --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEYSTORE_PASSWORD --out ../RallyRide.apk aligned.apk
-          $BT/apksigner verify ../RallyRide.apk
+          $BT/apksigner sign --ks release.keystore --ks-key-alias rallyride --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEYSTORE_PASSWORD --out ../FunRallyRide.apk aligned.apk
+          $BT/apksigner verify ../FunRallyRide.apk
+          cp ../FunRallyRide.apk ../RallyRide.apk
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: android-v1.0.${{ github.run_number }}
-          name: RallyRide for Android 1.0.${{ github.run_number }}
+          name: FunRallyRide for Android 1.0.${{ github.run_number }}
           make_latest: true
-          files: RallyRide.apk
+          files: |
+            FunRallyRide.apk
+            RallyRide.apk
           body: |
-            Download **RallyRide.apk** below and open it on your Android phone to install.
+            Download **FunRallyRide.apk** below and open it on your Android phone to install.
             (You may need to allow "Install unknown apps" for your browser the first time.)
