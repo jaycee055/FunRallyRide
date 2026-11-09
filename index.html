@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RallyRide">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-app-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-auth-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-database-compat.js"></script>
@@ -82,23 +82,40 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .panel{display:none;flex:1;min-height:0;flex-direction:column}.panel.on{display:flex}
 .mapwrap{flex:1;min-height:0;position:relative}
 #map{position:absolute;inset:0;background:#E8EEF4}
-.leaflet-tile-pane{filter:saturate(.55) brightness(1.03)}
-.leaflet-container{font-family:inherit}
-.leaflet-control-attribution{font-size:9px!important}
-.mk{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11.5px;color:#fff;border:3px solid #fff;position:relative;box-shadow:0 2px 6px rgba(15,27,45,.3)}
-.mk.me{outline:3px solid var(--blue);outline-offset:1px}.mk.stale{opacity:.5;filter:grayscale(1)}
-.mk .cr{position:absolute;top:-9px;right:-9px;width:16px;height:16px;border-radius:50%;background:#0F1B2D;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
-.mk .lbl{position:absolute;top:34px;font-size:9.5px;color:var(--text);white-space:nowrap;background:#fff;padding:1px 5px;border-radius:5px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.mk.speak{box-shadow:0 0 0 5px rgba(43,140,235,.35)}
-.stopmk{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--blue);box-shadow:0 1px 4px rgba(0,0,0,.25)}
-.stopmk.start{border-color:#0F1B2D}.stopmk.dest{background:var(--blue);border-color:#fff;width:26px;height:26px}
-.stopmk.meet{border-color:var(--amber);box-shadow:0 0 0 5px rgba(194,120,3,.25)}
-.chipfloat{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none;z-index:500}
-.pill{background:#fff;border-radius:12px;padding:7px 11px;font-size:11.5px;pointer-events:auto;max-width:48%;box-shadow:0 2px 10px rgba(15,27,45,.12)}
-.pill b{font-size:16px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mapbtns{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:8px;z-index:500}
-.mapbtns button{width:44px;height:44px;border-radius:12px;background:#fff;box-shadow:0 2px 10px rgba(15,27,45,.12);display:flex;align-items:center;justify-content:center;color:var(--text)}
+.maplibregl-ctrl-attrib{font-size:9px}
+#map .maplibregl-ctrl-bottom-right{bottom:56px}
+.maplibregl-ctrl-attrib.maplibregl-compact{margin:0 0 4px 4px!important}
+.veh{position:relative;width:54px;height:54px}
+.veh .vrot{width:54px;height:54px;transition:transform .6s linear}
+.veh .vrot svg{width:54px;height:54px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
+.veh .vlbl{position:absolute;top:49px;left:50%;transform:translateX(-50%);color:#fff;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:999px;border:2px solid #fff;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.veh .vlbl .ls{font-weight:500;opacity:.9}
+.veh .vcr{position:absolute;top:-6px;right:-4px;width:17px;height:17px;border-radius:50%;background:#0F1B2D;color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;z-index:2}
+.veh.me .vrot svg{filter:drop-shadow(0 0 0 #fff) drop-shadow(0 0 6px rgba(43,140,235,.9))}
+.veh.stale{opacity:.55;filter:grayscale(1)}
+.veh.speak::before{content:"";position:absolute;inset:-8px;border-radius:50%;background:rgba(43,140,235,.25);animation:pu2 1s infinite}
+@keyframes pu2{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.3);opacity:0}}
+.stopmk{width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid #2F6BFF;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.stopmk.start{border-color:#0F1B2D}.stopmk.dest{background:#2F6BFF;border-color:#fff;width:28px;height:28px}
+.stopmk.meet{border-color:var(--amber);box-shadow:0 0 0 6px rgba(194,120,3,.3)}
+.stoplbl{position:absolute;top:26px;left:50%;transform:translateX(-50%);background:#fff;color:#0F1B2D;font-size:10px;font-weight:600;padding:1px 6px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.navbanner{position:absolute;top:10px;left:10px;right:10px;z-index:5;background:#0E5E9E;color:#fff;border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 14px rgba(15,27,45,.25)}
+.navbanner .nb-ic{display:flex;flex-direction:column;align-items:center;min-width:52px}
+.navbanner .nb-ic svg{width:24px;height:24px;stroke:#fff}
+.navbanner .nb-ic b{font-size:19px;font-weight:800;line-height:1.1;margin-top:2px;white-space:nowrap}
+.navbanner .nb-ic b small{font-size:12px;font-weight:600}
+.navbanner .nb-txt{flex:1;min-width:0}
+.navbanner .nb-txt .k{font-size:11.5px;opacity:.85}
+.navbanner .nb-txt .n{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nb-go{background:rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:600;padding:8px 10px;border-radius:10px;white-space:nowrap}
+.mapbtns{position:absolute;right:10px;bottom:96px;display:flex;flex-direction:column;gap:10px;z-index:5}
+.mapbtns button{width:46px;height:46px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(15,27,45,.2);display:flex;align-items:center;justify-content:center;color:var(--text);font-size:12px;font-weight:800}
 .mapbtns button.on{color:#fff;background:var(--blue)}
+.recenter{position:absolute;left:10px;bottom:66px;z-index:5;background:#fff;border-radius:999px;padding:11px 16px;font-weight:700;color:#0E5E9E;box-shadow:0 2px 10px rgba(15,27,45,.2);display:none;align-items:center;gap:8px;font-size:15px}
+.recenter svg{width:18px;height:18px;fill:#0E5E9E;stroke:none}
+.etabar{position:absolute;left:10px;right:10px;bottom:10px;z-index:5;background:#fff;border-radius:14px;padding:8px 14px;display:flex;align-items:baseline;gap:10px;box-shadow:0 2px 10px rgba(15,27,45,.18)}
+.etabar b{font-size:20px;color:var(--green);font-weight:800}
+.etabar span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .convoy{margin:8px 10px 0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px 11px}
 .convoy .ttl{font-size:12px;font-weight:700}
 .seq{display:flex;align-items:center;overflow-x:auto;gap:2px;scrollbar-width:none}.seq::-webkit-scrollbar{display:none}
@@ -285,8 +302,10 @@ a{color:var(--blue-d)}
       <div class="panel on" id="p-map">
         <div class="mapwrap">
           <div id="map"></div>
-          <div class="chipfloat"><div class="pill"><span class="muted" id="m-destlbl">To destination</span><b id="m-km">–</b></div><div class="pill" style="text-align:right"><span class="muted" id="m-nextlbl">Next stop</span><b id="m-next">–</b></div></div>
-          <div class="mapbtns"><button id="mb-me" title="Center on me"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/></svg></button><button id="mb-lead" title="Follow leader"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button id="mb-all" title="Show everyone"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
+          <div class="navbanner" id="navb"><div class="nb-ic"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><b id="nb-dist">–</b></div><div class="nb-txt"><div class="k" id="nb-kind">Next stop</div><div class="n" id="nb-name">–</div></div><button class="nb-go" id="nb-go">Directions</button></div>
+          <div class="mapbtns"><button id="mb-layer" title="Map / Satellite"><svg class="i" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button><button id="mb-3d" title="3D / 2D">3D</button><button id="mb-lead" title="Follow leader"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button id="mb-all" title="Show everyone"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
+          <button class="recenter" id="mb-me"><svg viewBox="0 0 24 24"><polygon points="12 2 20 21 12 17 4 21 12 2"/></svg>Re-center</button>
+          <div class="etabar"><b id="eta-t">–</b><span id="eta-d">–</span></div>
         </div>
         <div class="convoy"><div class="row between" style="margin-bottom:5px"><span class="ttl">Group order</span><span class="small muted">front → back</span></div><div class="seq" id="seq"></div></div>
       </div>
@@ -321,7 +340,7 @@ a{color:var(--blue-d)}
       <div class="psearch"><input class="field" id="pk-q" placeholder="Search a place (optional)"><div id="pk-r"></div></div>
       <div class="pdot"></div>
       <div class="pcenter"><svg viewBox="0 0 24 24"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.6 8 12 8 12s8-6.4 8-12c0-4.4-3.6-8-8-8z"/><circle cx="12" cy="10" r="3" fill="#fff" stroke="none"/></svg></div>
-      <div class="pbtns"><button id="pk-plus">+</button><button id="pk-minus">−</button><button id="pk-me" title="My location"></button></div>
+      <div class="pbtns"><button id="pk-layer" title="Map / Satellite"><svg class="i" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button><button id="pk-plus">+</button><button id="pk-minus">−</button><button id="pk-me" title="My location"></button></div>
     </div>
     <div class="pfoot">
       <div class="muted small">Drag or zoom the map so the pin sits on the exact spot, or tap the map.</div>
@@ -417,7 +436,7 @@ const DB=EMU&&window.firebase?makeFirebaseDB({apiKey:'demo',projectId:'demo-conv
 /* ================= HELPERS ================= */
 function initials(nick,taken){const p=nick.trim().split(/\s+/).filter(Boolean);let b=(p.length>1?p[0][0]+p[1][0]:(p[0]||'?').slice(0,2)).toUpperCase();let i=b,n=2;while(taken.includes(i)){i=b+n;n++}return i}
 function hav(a,b){const R=6371,r=Math.PI/180;const dLat=(b[0]-a[0])*r,dLng=(b[1]-a[1])*r;const x=Math.sin(dLat/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
-function go(id){if(!document.getElementById(id).classList.contains('on'))$('#toasts').innerHTML='';document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));if(id==='s-live'&&map)setTimeout(()=>map.invalidateSize(),50)}
+function go(id){if(!document.getElementById(id).classList.contains('on'))$('#toasts').innerHTML='';document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));if(id==='s-live'&&map)setTimeout(()=>map.resize(),50)}
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 const noEmo=t=>String(t).replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u,'');
 function toast(t,k=''){if(t==null||/undefined/.test(t))return;t=noEmo(t);const T=$('#toasts');while(T.children.length>=2)T.lastChild.remove();const d=document.createElement('div');d.className='toast '+k;d.textContent=t;T.prepend(d);setTimeout(()=>d.remove(),3500)}
@@ -441,7 +460,7 @@ function placeSearch(input,resultsEl,onPick){
 }
 async function getRoute(points){
   try{const q=points.map(p=>p.lng+','+p.lat).join(';');const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${q}?overview=simplified&geometries=geojson`);const j=await r.json();
-    if(j.routes&&j.routes[0]){return {coords:j.routes[0].geometry.coordinates.map(c=>[+c[1].toFixed(5),+c[0].toFixed(5)]),km:+(j.routes[0].distance/1000).toFixed(1),road:true}}}catch(e){}
+    if(j.routes&&j.routes[0]){return {coords:j.routes[0].geometry.coordinates.map(c=>[+c[1].toFixed(5),+c[0].toFixed(5)]),km:+(j.routes[0].distance/1000).toFixed(1),dur:Math.round(j.routes[0].duration),road:true}}}catch(e){}
   const coords=points.map(p=>[p.lat,p.lng]);let km=0;for(let i=1;i<coords.length;i++)km+=hav(coords[i-1],coords[i]);return {coords,km:+km.toFixed(1),road:false};
 }
 function myPosOnce(){return new Promise((res,rej)=>{if(SIM){res({lat:14.5995,lng:120.9842});return}if(!navigator.geolocation)return rej(new Error('No GPS'));navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:15000})})}
@@ -467,14 +486,14 @@ const pkIcon=document.getElementById('pk-me');
 function pickOnMap(title,around,cb){
   $('#pk-title').textContent=title;$('#pk-name').value='';pkNameEdited=false;$('#pk-q').value='';$('#pk-r').innerHTML='';pkCb=cb;
   $('#picker').classList.add('on');
-  if(!pmap){pmap=L.map('pmap',{zoomControl:false}).setView([12.88,121.77],6);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(pmap);
+  if(!pmap){pmap=makeMap('pmap',{center:[121.77,12.88],zoom:5,dragRotate:false,pitchWithRotate:false});pmap.touchZoomRotate.disableRotation();
+    pmap.on('load',()=>setMapType(pmap,mapType));
     pmap.on('moveend',()=>reverseName());
-    pmap.on('click',e=>pmap.panTo(e.latlng));}
-  setTimeout(()=>{pmap.invalidateSize();
-    if(around)pmap.setView([around.lat,around.lng],Math.max(pmap.getZoom(),13));
-    else if(GPS.last)pmap.setView([GPS.last.lat,GPS.last.lng],14);
-    else myPosOnce().then(p=>pmap.setView([p.lat,p.lng],14)).catch(()=>{});
+    pmap.on('click',e=>pmap.easeTo({center:e.lngLat}));}
+  setTimeout(()=>{pmap.resize();
+    if(around)pmap.jumpTo({center:[around.lng,around.lat],zoom:Math.max(pmap.getZoom(),13)});
+    else if(GPS.last)pmap.jumpTo({center:[GPS.last.lng,GPS.last.lat],zoom:14});
+    else myPosOnce().then(p=>pmap.jumpTo({center:[p.lng,p.lat],zoom:14})).catch(()=>{});
     reverseName()},60);
 }
 function reverseName(){clearTimeout(pkRev);if(pkNameEdited)return;const c=pmap.getCenter();
@@ -484,11 +503,12 @@ function reverseName(){clearTimeout(pkRev);if(pkNameEdited)return;const c=pmap.g
 $('#pk-name').addEventListener('input',()=>pkNameEdited=true);
 $('#pk-plus').onclick=()=>pmap.zoomIn();$('#pk-minus').onclick=()=>pmap.zoomOut();
 pkIcon.innerHTML='<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/></svg>';
-$('#pk-me').onclick=()=>myPosOnce().then(p=>pmap.setView([p.lat,p.lng],16)).catch(()=>toast('Location permission is needed','warn'));
+$('#pk-me').onclick=()=>myPosOnce().then(p=>pmap.easeTo({center:[p.lng,p.lat],zoom:16})).catch(()=>toast('Location permission is needed','warn'));
+$('#pk-layer').onclick=()=>$('#mb-layer').click();
 $('#pk-back').onclick=()=>$('#picker').classList.remove('on');
 $('#pk-ok').onclick=()=>{const c=pmap.getCenter();const name=$('#pk-name').value.trim()||`Pin ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
   $('#picker').classList.remove('on');if(pkCb)pkCb({name,lat:+c.lat.toFixed(6),lng:+c.lng.toFixed(6)})};
-placeSearch('#pk-q','#pk-r',p=>{pmap.setView([p.lat,p.lng],16);setTimeout(()=>{$('#pk-name').value=p.name.slice(0,40);pkNameEdited=true},800)});
+placeSearch('#pk-q','#pk-r',p=>{pmap.jumpTo({center:[p.lng,p.lat],zoom:16});setTimeout(()=>{$('#pk-name').value=p.name.slice(0,40);pkNameEdited=true},800)});
 
 /* ================= CREATE ================= */
 let C={start:null,dest:null,stops:[]};
@@ -636,26 +656,47 @@ async function copyInvite(){try{await navigator.clipboard.writeText(inviteText()
 $('#l-leave').onclick=()=>openSheet(`<h1>Leave trip?</h1><p class="muted" style="margin:8px 0 16px">${isLeader()?'As leader, leaving cancels the trip for everyone.':'You can rejoin later with the code (needs approval again).'}</p><button class="btn red" id="cf-leave">Leave</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`)||($('#cf-leave').onclick=async()=>{closeSheet();if(isLeader())await DB.update(P('meta'),{status:'ended',ended:DB.now()});else{await DB.remove(P('members/'+T.me));await DB.remove(P('requests/'+T.me))}exitTrip()});
 
 /* ================= LIVE ================= */
-let map=null,layers={},follow='all',fitDone=false;
+let map=null,layers={mk:{},stops:[]},follow='nav',nav3d=true,mapType=store.get('maptype')||'map',fitDone=false,progMove=false;
+const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/';
+function mapStyle(){return {version:8,sources:{
+  osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap'},
+  sat:{type:'raster',tiles:[ESRI+'World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Imagery © Esri, Maxar, Earthstar'},
+  roads:{type:'raster',tiles:[ESRI+'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19},
+  places:{type:'raster',tiles:[ESRI+'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19}},
+  layers:[{id:'osm',type:'raster',source:'osm',paint:{'raster-saturation':-0.25}},
+    {id:'sat',type:'raster',source:'sat',layout:{visibility:'none'}},
+    {id:'roads',type:'raster',source:'roads',layout:{visibility:'none'}},
+    {id:'places',type:'raster',source:'places',layout:{visibility:'none'}}]}}
+function setMapType(m,t){const sat=t==='sat';['sat','roads','places'].forEach(l=>m.setLayoutProperty(l,'visibility',sat?'visible':'none'));m.setLayoutProperty('osm','visibility',sat?'none':'visible')}
+function makeMap(el,opts){const m=new maplibregl.Map({container:el,style:mapStyle(),center:[121.0,14.6],zoom:11,attributionControl:{compact:true},maxPitch:70,...opts});return m}
 function startLive(){
   go('s-live');$('#v-name').textContent=T.meta.name;
-  if(!map){map=L.map('map',{zoomControl:false,attributionControl:true}).setView([14.6,121],12);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
-    map.on('dragstart',()=>{follow='free';updMapBtns()});}
-  setTimeout(()=>map.invalidateSize(),60);
-  drawRoute();fitDone=false;
+  if(!map){map=makeMap('map',{});
+    map.on('load',()=>{setMapType(map,mapType);
+      map.addSource('route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
+      map.addLayer({id:'route-casing',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#0A2A7A','line-width':['interpolate',['linear'],['zoom'],10,6,16,14]}});
+      map.addLayer({id:'route-line',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#2F6BFF','line-width':['interpolate',['linear'],['zoom'],10,4,16,10]}});
+      drawRoute();renderMarkers()});
+    const userMove=e=>{if(e.originalEvent&&!progMove){follow='free';updMapBtns()}};
+    map.on('dragstart',userMove);map.on('rotatestart',userMove);map.on('pitchstart',userMove);
+    map.on('rotate',()=>rotateVehicles());}
+  setTimeout(()=>map.resize(),60);
+  drawRoute();fitDone=false;follow='nav';updMapBtns();
   startGPS();keepAwake();
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.p==='p-map'));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-map'));
   if(!T.tick)T.tick=setInterval(()=>{if(T&&T.meta&&T.meta.status==='live'){renderMembers();renderBar()}},5000);
 }
 function drawRoute(){
-  if(!map||!T||!T.meta)return;
-  if(layers.route)layers.route.remove();if(layers.stops)layers.stops.remove();
-  const m=T.meta;layers.route=L.polyline(m.route.coords,{color:'#2B8CEB',weight:5,opacity:.9,dashArray:m.route.road?null:'6 8'}).addTo(map);
-  layers.stops=L.layerGroup(m.stops.map(s=>{const meet=m.meet&&m.meet.name===s.name;return L.marker([s.lat,s.lng],{icon:L.divIcon({className:'',html:`<div class="stopmk ${s.type} ${meet?'meet':''}"></div>`,iconSize:[26,26],iconAnchor:[13,13]})}).bindTooltip(esc(s.name))})).addTo(map);
-  // cumulative distances for convoy order
+  if(!T||!T.meta)return;const m=T.meta;
   const c=m.route.coords;T.cum=[0];for(let i=1;i<c.length;i++)T.cum.push(T.cum[i-1]+hav(c[i-1],c[i]));
   T.stopProg=m.stops.map(s=>project([s.lat,s.lng]).prog);
+  if(!map||!map.getSource('route'))return;
+  map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:c.map(p=>[p[1],p[0]])}});
+  map.setPaintProperty('route-line','line-dasharray',m.route.road?null:[2,1.5]);
+  layers.stops.forEach(x=>x.remove());
+  layers.stops=m.stops.map(st=>{const meet=m.meet&&m.meet.name===st.name;const el=document.createElement('div');el.style.position='relative';
+    el.innerHTML=`<div class="stopmk ${st.type} ${meet?'meet':''}"></div><div class="stoplbl">${esc(st.name)}</div>`;
+    return new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([st.lng,st.lat]).addTo(map)});
 }
 function project(pt){ // -> {prog km along route, off km from route}
   const c=T.meta.route.coords;if(c.length<2)return{prog:0,off:0};
@@ -690,29 +731,67 @@ function renderBar(){
   if(me.paused)b+=`<div class="banner info">Your location is paused. The group sees your last position.</div>`;
   $('#v-banners').innerHTML=b;
 }
+const VEH_SVG={
+  car:c=>`<svg viewBox="0 0 44 44"><rect x="9" y="9" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="31" y="9" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="9" y="28" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="31" y="28" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="11" y="4" width="22" height="36" rx="8" fill="${c}" stroke="#fff" stroke-width="2"/><path d="M14 14q8-4 16 0l-1.5 6h-13z" fill="#1b2a3d" opacity=".85"/><rect x="15.5" y="21" width="13" height="9" rx="2" fill="#fff" opacity=".22"/><path d="M15.5 31h13l1 4q-7.5 2-15 0z" fill="#1b2a3d" opacity=".7"/><rect x="13" y="5.5" width="4" height="2" rx="1" fill="#fff9c4"/><rect x="27" y="5.5" width="4" height="2" rx="1" fill="#fff9c4"/></svg>`,
+  moto:c=>`<svg viewBox="0 0 44 44"><rect x="19.5" y="2" width="5" height="11" rx="2.5" fill="#1b1f27"/><rect x="19.5" y="31" width="5" height="11" rx="2.5" fill="#1b1f27"/><path d="M15.5 10h13l2.5 21h-18z" fill="${c}" stroke="#fff" stroke-width="1.8"/><rect x="9" y="10.5" width="26" height="3.6" rx="1.8" fill="#1b1f27"/><rect x="20.5" y="4.5" width="3" height="2" rx="1" fill="#fff9c4"/><ellipse cx="22" cy="23.5" rx="8.5" ry="6" fill="${c}" stroke="#fff" stroke-width="1.5"/><circle cx="22" cy="19.5" r="5.2" fill="#fff" stroke="#1b1f27" stroke-width="1.2"/><path d="M18.6 18.5q3.4-3 6.8 0" fill="none" stroke="#1b2a3d" stroke-width="1.6"/></svg>`,
+  bike:c=>`<svg viewBox="0 0 44 44"><rect x="20.5" y="2" width="3" height="11" rx="1.5" fill="#1b1f27"/><rect x="20.5" y="31" width="3" height="11" rx="1.5" fill="#1b1f27"/><rect x="21" y="11" width="2" height="21" fill="#1b1f27"/><rect x="12" y="11" width="20" height="2.4" rx="1.2" fill="#1b1f27"/><ellipse cx="22" cy="23" rx="6.5" ry="5" fill="${c}" stroke="#fff" stroke-width="1.5"/><circle cx="22" cy="19.5" r="4" fill="${c}" stroke="#fff" stroke-width="1.6"/></svg>`,
+  other:c=>`<svg viewBox="0 0 44 44"><rect x="8" y="8" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="32" y="8" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="8" y="30" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="32" y="30" width="4" height="7" rx="1.5" fill="#1b1f27"/><rect x="10" y="3" width="24" height="38" rx="6" fill="${c}" stroke="#fff" stroke-width="2"/><path d="M13 9q9-3 18 0l-1 5h-16z" fill="#1b2a3d" opacity=".85"/><rect x="13.5" y="16" width="17" height="21" rx="2" fill="#fff" opacity=".2"/></svg>`};
+function bearingDeg(a,b){const r=Math.PI/180;const y=Math.sin((b[1]-a[1])*r)*Math.cos(b[0]*r);const x=Math.cos(a[0]*r)*Math.sin(b[0]*r)-Math.sin(a[0]*r)*Math.cos(b[0]*r)*Math.cos((b[1]-a[1])*r);return (Math.atan2(y,x)/r+360)%360}
+const headings={},lastPts={};
+function headingOf(u,l){
+  if(l.hd!=null&&isFinite(l.hd)&&(l.spd==null||l.spd>1))headings[u]=l.hd;
+  else{const p=lastPts[u];if(p&&hav([p.lat,p.lng],[l.lat,l.lng])>0.004)headings[u]=bearingDeg([p.lat,p.lng],[l.lat,l.lng])}
+  if(!lastPts[u]||hav([lastPts[u].lat,lastPts[u].lng],[l.lat,l.lng])>0.004)lastPts[u]={lat:l.lat,lng:l.lng};
+  if(headings[u]==null&&T.cum){const pr=project([l.lat,l.lng]);const c=T.meta.route.coords;let i=1;while(i<c.length-1&&T.cum[i]<pr.prog)i++;if(c.length>1)headings[u]=bearingDeg(c[i-1],c[i])}
+  return headings[u]||0}
+function rotateVehicles(){if(!map)return;const b=map.getBearing();Object.entries(layers.mk).forEach(([u,mk])=>{const r=mk.getElement().querySelector('.vrot');if(r)r.style.transform=`rotate(${(headings[u]||0)-b}deg)`})}
 function renderMarkers(){
-  if(!map)return;const {info}=memberInfo();layers.mk=layers.mk||{};
+  if(!map||!T||!T.meta)return;const {info}=memberInfo();
   Object.keys(layers.mk).forEach(u=>{if(!info[u]||!info[u].l){layers.mk[u].remove();delete layers.mk[u]}});
-  Object.values(info).forEach(x=>{if(!x.l)return;const stale=!x.fresh||!x.online||x.st.paused;
-    const html=`<div class="mk ${x.u===T.me?'me':''} ${stale?'stale':''} ${Voice.speaking.has(x.u)?'speak':''}" style="background:${x.m.color}">${x.m.role==='leader'?'<span class="cr">L</span>':''}${esc(x.m.ini)}${stale?`<span class="lbl">last seen ${ago(x.l.t)}</span>`:''}</div>`;
-    const icon=L.divIcon({className:'',html,iconSize:[34,34],iconAnchor:[17,17]});
-    if(layers.mk[x.u]){layers.mk[x.u].setLatLng([x.l.lat,x.l.lng]);layers.mk[x.u].setIcon(icon)}else layers.mk[x.u]=L.marker([x.l.lat,x.l.lng],{icon,zIndexOffset:x.u===T.me?1000:0}).addTo(map)});
-  // follow
+  Object.values(info).forEach(x=>{if(!x.l)return;const stale=!x.fresh||!x.online||x.st.paused;headingOf(x.u,x.l);
+    const svg=(VEH_SVG[x.m.veh]||VEH_SVG.moto)(x.m.color);
+    const key=[x.m.veh,x.m.color,x.m.ini,x.m.role,stale,stale?ago(x.l.t):'',Voice.speaking.has(x.u),x.u===T.me].join('|');
+    let mk=layers.mk[x.u];
+    if(!mk){const el=document.createElement('div');mk=layers.mk[x.u]=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([x.l.lng,x.l.lat]).addTo(map);if(x.u===T.me)el.style.zIndex=10}
+    const el=mk.getElement();
+    if(el.dataset.key!==key){el.dataset.key=key;el.className='veh'+(x.u===T.me?' me':'')+(stale?' stale':'')+(Voice.speaking.has(x.u)?' speak':'');
+      el.innerHTML=`${x.m.role==='leader'?'<span class="vcr">L</span>':''}<div class="vrot">${svg}</div><div class="vlbl" style="background:${x.m.color}">${esc(x.u===T.me?'You':x.m.ini)}${stale?` <span class="ls">· ${ago(x.l.t)}</span>`:''}</div>`}
+    mk.setLngLat([x.l.lng,x.l.lat])});
+  rotateVehicles();
+  // camera
   const me=info[T.me],ld=info[T.meta.leaderId];
-  if(follow==='me'&&me&&me.l)map.panTo([me.l.lat,me.l.lng]);
-  else if(follow==='lead'&&ld&&ld.l)map.panTo([ld.l.lat,ld.l.lng]);
-  else if(follow==='all'&&!fitDone){const pts=Object.values(info).filter(x=>x.l).map(x=>[x.l.lat,x.l.lng]);if(pts.length){map.fitBounds(L.latLngBounds(pts.concat(T.meta.route.coords.length?[T.meta.route.coords[0]]:[])).pad(.2),{maxZoom:15});fitDone=true}else if(layers.route){map.fitBounds(layers.route.getBounds().pad(.1));}}
-  // distance pills
-  const dest=T.meta.stops[T.meta.stops.length-1];$('#m-destlbl').textContent='To '+dest.name;
-  if(me&&me.l){$('#m-km').textContent=(me.remaining!=null&&me.off<1?me.remaining:hav([me.l.lat,me.l.lng],[dest.lat,dest.lng])).toFixed(1)+' km';
-    const meet=T.meta.meet;if(meet){$('#m-nextlbl').textContent='Meet at';$('#m-next').textContent=meet.name}
-    else{const i=T.stopProg?T.stopProg.findIndex((p,k)=>k>0&&p>me.prog+0.1):-1;$('#m-nextlbl').textContent='Next stop';$('#m-next').textContent=i>0?T.meta.stops[i].name:'—'}}
-  else{$('#m-km').textContent=T.meta.route.km+' km';$('#m-next').textContent=T.meta.stops[1]?T.meta.stops[1].name:'—'}
+  const cam=o=>{progMove=true;map.easeTo({...o,duration:900});setTimeout(()=>progMove=false,950)};
+  if(follow==='nav'){if(me&&me.l)cam({center:[me.l.lng,me.l.lat],zoom:Math.max(map.getZoom(),16.5),pitch:nav3d?60:0,bearing:nav3d?(headings[T.me]||0):0});else if(!fitDone)fitAll(info)}
+  else if(follow==='lead'&&ld&&ld.l)cam({center:[ld.l.lng,ld.l.lat],pitch:0,bearing:0});
+  else if(follow==='all'&&!fitDone)fitAll(info);
+  // banner + eta
+  const dest=T.meta.stops[T.meta.stops.length-1];let target=null,kind='';
+  const meet=T.meta.meet;
+  if(meet){target=meet;kind='Meeting point'}
+  else if(me&&me.l&&T.stopProg){const i=T.stopProg.findIndex((p,k)=>k>0&&p>me.prog+0.05);if(i>0){target=T.meta.stops[i];kind=i===T.meta.stops.length-1?'Destination':'Next stop'}}
+  if(!target){target=dest;kind='Destination'}
+  $('#nb-kind').textContent=kind;$('#nb-name').textContent=target.name;
+  if(me&&me.l){const ti=T.meta.stops.findIndex(s=>s.name===target.name&&s.lat===target.lat);
+    let d=(ti>=0&&T.stopProg&&me.off<0.5)?T.stopProg[ti]-me.prog:hav([me.l.lat,me.l.lng],[target.lat,target.lng]);if(d<0)d=hav([me.l.lat,me.l.lng],[target.lat,target.lng]);
+    $('#nb-dist').innerHTML=d<1?`${Math.round(d*1000/10)*10}<small>m</small>`:`${d.toFixed(d<10?1:0)}<small>km</small>`;
+    const rem=me.remaining!=null&&me.off<0.5?me.remaining:hav([me.l.lat,me.l.lng],[dest.lat,dest.lng]);
+    const r=T.meta.route;if(r.road&&r.dur&&r.km>0){const mins=Math.max(1,Math.round(rem/r.km*r.dur/60));const at=new Date(Date.now()+mins*60000);
+      $('#eta-t').textContent=mins<60?mins+' min':Math.floor(mins/60)+' h '+(mins%60)+' min';$('#eta-d').textContent=`${rem.toFixed(1)} km · arrive ${timeStr(at)} · ${dest.name}`}
+    else{$('#eta-t').textContent=rem.toFixed(1)+' km';$('#eta-d').textContent='to '+dest.name}}
+  else{$('#nb-dist').textContent='–';$('#eta-t').textContent=T.meta.route.km+' km';$('#eta-d').textContent='Waiting for your GPS…'}
+  T.navTarget=target;
 }
-function updMapBtns(){$('#mb-me').classList.toggle('on',follow==='me');$('#mb-lead').classList.toggle('on',follow==='lead');$('#mb-all').classList.toggle('on',follow==='all')}
-$('#mb-me').onclick=()=>{follow='me';updMapBtns();renderMarkers()};
+function fitAll(info){const pts=Object.values(info).filter(x=>x.l).map(x=>[x.l.lng,x.l.lat]);const c=T.meta.route.coords;
+  const all=pts.concat(c.length?[[c[0][1],c[0][0]],[c[c.length-1][1],c[c.length-1][0]]]:[]);if(!all.length)return;
+  const b=new maplibregl.LngLatBounds(all[0],all[0]);all.forEach(p=>b.extend(p));
+  progMove=true;map.fitBounds(b,{padding:{top:90,bottom:90,left:40,right:70},maxZoom:15,pitch:0,bearing:0,duration:800});setTimeout(()=>progMove=false,850);fitDone=true}
+function updMapBtns(){$('#mb-me').style.display=follow==='nav'?'none':'flex';$('#mb-lead').classList.toggle('on',follow==='lead');$('#mb-all').classList.toggle('on',follow==='all');$('#mb-3d').textContent=nav3d?'2D':'3D';$('#mb-layer').classList.toggle('on',mapType==='sat')}
+$('#mb-me').onclick=()=>{follow='nav';updMapBtns();renderMarkers()};
 $('#mb-lead').onclick=()=>{follow='lead';updMapBtns();renderMarkers()};
 $('#mb-all').onclick=()=>{follow='all';fitDone=false;updMapBtns();renderMarkers()};
+$('#mb-3d').onclick=()=>{nav3d=!nav3d;follow='nav';updMapBtns();renderMarkers()};
+$('#mb-layer').onclick=()=>{mapType=mapType==='sat'?'map':'sat';store.set('maptype',mapType);if(map&&map.getLayer('sat'))setMapType(map,mapType);if(pmap&&pmap.getLayer('sat'))setMapType(pmap,mapType);updMapBtns();toast(mapType==='sat'?'Satellite view':'Map view')};
+$('#nb-go').onclick=()=>{const t=T&&T.navTarget;if(!t)return;window.open(`https://www.google.com/maps/dir/?api=1&destination=${t.lat},${t.lng}&travelmode=driving`,'_blank')};
 function renderConvoy(){
   const {ord}=memberInfo();let h='';
   ord.forEach((x,i)=>{if(i>0){const far=x.gap>T.meta.thr;h+=`<div class="gap ${far?'far':''}"><i></i>${x.prog<0||ord[i-1].prog<0?'?':x.gap.toFixed(1)+' km'}</div>`;
@@ -735,14 +814,14 @@ function renderMembers(){
   $('#mark-arr').onclick=()=>{DB.update(P('state/'+T.me),{arrived:!me.arrived});if(!me.arrived)sysMsg(`🏆 ${meM().ini} arrived`)};
 }
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id===t.dataset.p));
-  if(t.dataset.p==='p-chat'){T.unread=0;updBadges();scrollChat()}if(t.dataset.p==='p-leader')renderLeader();if(t.dataset.p==='p-map'&&map)setTimeout(()=>map.invalidateSize(),30)});
+  if(t.dataset.p==='p-chat'){T.unread=0;updBadges();scrollChat()}if(t.dataset.p==='p-leader')renderLeader();if(t.dataset.p==='p-map'&&map)setTimeout(()=>map.resize(),30)});
 function updBadges(){if(!T)return;const bc=$('#b-chat');bc.style.display=T.unread?'':'none';bc.textContent=T.unread;const n=Object.values(T.requests).filter(q=>q.status==='pending').length;const bl=$('#b-lead');bl.style.display=n?'':'none';bl.textContent=n}
 
 /* ================= GPS ================= */
 const GPS={watch:null,last:null,lastSent:0,err:'',force:false,simT:null};
 function startGPS(){
   stopGPS();GPS.err='';
-  if(SIM){let d=Math.random()*0.3;const sp=0.08+Math.random()*0.08;GPS.simT=setInterval(()=>{if(!T||!T.cum)return;const c=T.meta.route.coords;d=Math.min(T.cum[T.cum.length-1],d+sp);let i=1;while(i<c.length-1&&T.cum[i]<d)i++;const f=(d-T.cum[i-1])/((T.cum[i]-T.cum[i-1])||1);onPos({lat:c[i-1][0]+(c[i][0]-c[i-1][0])*f,lng:c[i-1][1]+(c[i][1]-c[i-1][1])*f,hd:0,spd:12,acc:10})},2000);return}
+  if(SIM){let d=Math.random()*0.3;const sp=0.08+Math.random()*0.08;GPS.simT=setInterval(()=>{if(!T||!T.cum)return;const c=T.meta.route.coords;d=Math.min(T.cum[T.cum.length-1],d+sp);let i=1;while(i<c.length-1&&T.cum[i]<d)i++;const f=(d-T.cum[i-1])/((T.cum[i]-T.cum[i-1])||1);onPos({lat:c[i-1][0]+(c[i][0]-c[i-1][0])*f,lng:c[i-1][1]+(c[i][1]-c[i-1][1])*f,hd:bearingDeg(c[i-1],c[i]),spd:12,acc:10})},2000);return}
   if(!navigator.geolocation){GPS.err='This device has no GPS access.';return}
   GPS.watch=navigator.geolocation.watchPosition(p=>{GPS.err='';onPos({lat:p.coords.latitude,lng:p.coords.longitude,hd:p.coords.heading,spd:p.coords.speed,acc:p.coords.accuracy})},
     e=>{GPS.err=e.code===1?'Location permission is off. Allow location for this app to share your position.':'Waiting for GPS signal…';renderBar()},{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
@@ -752,6 +831,7 @@ function onPos(p){
   if(!T||!T.meta||T.meta.status!=='live')return;if((T.state[T.me]||{}).paused)return;
   const now=DB.now();const moved=GPS.last?hav([GPS.last.lat,GPS.last.lng],[p.lat,p.lng])*1000:999;
   if(!GPS.force&&now-GPS.lastSent<4000&&moved<20)return;if(!GPS.force&&now-GPS.lastSent<1500)return;
+  if((p.hd==null||isNaN(p.hd))&&GPS.last&&moved>3)p.hd=bearingDeg([GPS.last.lat,GPS.last.lng],[p.lat,p.lng]);else if(p.hd==null||isNaN(p.hd))p.hd=GPS.last?GPS.last.hd:null;
   GPS.force=false;GPS.last=p;GPS.lastSent=now;
   DB.set(P('loc/'+T.me),{lat:+p.lat.toFixed(6),lng:+p.lng.toFixed(6),hd:p.hd==null||isNaN(p.hd)?null:Math.round(p.hd),spd:p.spd==null?null:+p.spd.toFixed(1),acc:p.acc==null?null:Math.round(p.acc),t:now});
 }

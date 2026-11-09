@@ -8,8 +8,8 @@
     "@capacitor/ios": "^8.6.0",
     "@capacitor/app": "^8.1.2",
     "@capacitor-community/keep-awake": "^8.0.1",
-    "leaflet": "1.9.4",
-    "firebase": "10.14.1"
+    "firebase": "10.14.1",
+    "maplibre-gl": "4.7.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",

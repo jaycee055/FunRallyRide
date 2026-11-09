@@ -26,12 +26,11 @@ jobs:
           mkdir -p www/lib
           cp ../index.html ../privacy.html www/
           cp -r ../icons www/
-          cp node_modules/leaflet/dist/leaflet.js node_modules/leaflet/dist/leaflet.css www/lib/
-          cp -r node_modules/leaflet/dist/images www/lib/
+          cp node_modules/maplibre-gl/dist/maplibre-gl.js node_modules/maplibre-gl/dist/maplibre-gl.css www/lib/
           for f in app auth database; do cp node_modules/firebase/firebase-$f-compat.js www/lib/; done
-          sed -i 's#https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css#lib/leaflet.css#; s#https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js#lib/leaflet.js#' www/index.html
+          sed -i 's#https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/#lib/#g' www/index.html
           sed -i 's#https://cdn.jsdelivr.net/npm/firebase@10.14.1/#lib/#g' www/index.html
-          grep -q 'src="lib/leaflet.js"' www/index.html
+          grep -q 'src="lib/maplibre-gl.js"' www/index.html
           grep -q 'src="lib/firebase-database-compat.js"' www/index.html
       - name: Add Android platform and permissions
         working-directory: android-app

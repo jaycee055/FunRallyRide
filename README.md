@@ -5,7 +5,7 @@ Ride together. Talk live. Nobody gets left behind.
 RallyRide is a free group-ride app for motorcycle groups, road trips, cycling groups and friends travelling together:
 
 - **Create or join a trip.** The leader shares a code like `RIDE-AB12`; members enter it and wait for the leader's approval.
-- **Live shared map** (OpenStreetMap) with searchable places, the route, stops, everyone's position, and the group order from front to back, including the gap between riders.
+- **Live shared map** (OpenStreetMap, or satellite imagery from Esri) with a Google Maps–style tilted navigation view, vehicle icons (motorcycle, car, bicycle) that turn with each rider's direction, searchable places and a map pin picker, the route, stops, everyone's position, and the group order from front to back, including the gap between riders.
 - **Live open mic.** Group voice goes phone-to-phone with no per-minute cost. The leader can switch to leader-only or mute all.
 - **Group chat** with quick messages, location sharing and pinned announcements.
 - **Leader controls:** approve or decline, lock the trip, change the destination, add stops, set a meeting point, set the separation alert, make co-leaders, remove members, end the trip.
@@ -26,7 +26,8 @@ Everything runs on free plans with no card on file:
 | Trip data, locations, chat | Firebase Realtime Database (Spark) | 100 phones online at once, 1 GB stored, 10 GB/month downloaded |
 | Sign-in | Firebase Anonymous Auth | Free |
 | Voice | Phone-to-phone (WebRTC) + free STUN | No minute limits |
-| Map, search, routes | OpenStreetMap, Nominatim, OSRM | Free (fair use) |
+| Map, search, routes | MapLibre, OpenStreetMap, Nominatim, OSRM | Free (fair use) |
+| Satellite view | Esri World Imagery | Free for non-commercial use with attribution |
 | Website + Android builds | GitHub Pages + Actions | Free for public repos |
 
 ## Setup notes (owner)
