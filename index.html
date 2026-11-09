@@ -44,6 +44,7 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .logo .mark{width:42px;height:42px;border-radius:12px;background:var(--blue);display:flex;align-items:center;justify-content:center}
 .logo .mark svg{stroke:#fff;width:24px;height:24px}
 .logo .mark.frr{color:#fff;font-size:14px;font-weight:800;letter-spacing:-.3px;width:auto;min-width:42px;padding:0 7px}
+.logo .mark.img{background:#fff;object-fit:contain;padding:2px;box-shadow:0 1px 4px rgba(15,27,45,.15)}
 .logo{font-size:30px!important}
 .choice{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:12px}
 .choice .ci{width:44px;height:44px;border-radius:12px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -259,12 +260,12 @@ a{color:var(--blue-d)}
   <div id="toasts"></div>
 
   <!-- HOME -->
-  <section class="screen on" id="s-loading"><div class="hero" style="align-items:center"><div class="logo"><span class="mark frr">FRR</span>FunRallyRide</div><p class="muted" style="margin-top:14px">Loading…</p><div id="boot-err"></div></div></section>
+  <section class="screen on" id="s-loading"><div class="hero" style="align-items:center"><div class="logo"><img class="mark img" src="icons/logo-160.png" alt="FRR">FunRallyRide</div><p class="muted" style="margin-top:14px">Loading…</p><div id="boot-err"></div></div></section>
 
   <!-- LOG IN -->
   <section class="screen" id="s-auth">
     <div class="scroll"><div class="authhero">
-      <div class="logo"><span class="mark frr">FRR</span>FunRallyRide</div>
+      <div class="logo"><img class="mark img" src="icons/logo-160.png" alt="FRR">FunRallyRide</div>
       <p class="muted" style="margin-top:8px">Ride together. Talk live. Nobody gets left behind.</p>
       <h1 style="margin-top:28px">Log in</h1>
       <div class="label">Email</div><input class="field" id="a-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
@@ -349,7 +350,7 @@ a{color:var(--blue-d)}
     <div class="homehead"><div class="av" id="h-av" style="width:44px;height:44px">?</div><div class="hi"><span class="muted small">Welcome back</span><b id="h-name"></b></div>
       <button class="iconbtn" id="h-settings" title="Settings"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
     <div class="hero">
-      <div class="logo"><span class="mark frr">FRR</span>FunRallyRide</div>
+      <div class="logo"><img class="mark img" src="icons/logo-160.png" alt="FRR">FunRallyRide</div>
       <p class="muted" style="margin-top:8px">Ride together. Talk live. Nobody gets left behind.</p>
       <div id="resume"></div>
       <button class="choice" id="go-create"><span class="ci"><svg class="i" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span><b>Create a group trip</b><span class="muted small">Set the route, share a code, approve your group.</span></span></button>

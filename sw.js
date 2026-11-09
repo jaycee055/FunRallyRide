@@ -1,6 +1,6 @@
 // FunRallyRide offline support: keeps the app shell available; live data still needs internet.
-const CACHE = 'funrallyride-v5';
-const CORE = ['./', 'index.html', 'manifest.webmanifest', 'privacy.html', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon.png',
+const CACHE = 'funrallyride-v6';
+const CORE = ['./', 'index.html', 'manifest.webmanifest', 'privacy.html', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon.png', 'icons/logo-160.png',
   'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css',
   'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js',
   'https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-app-compat.js',
