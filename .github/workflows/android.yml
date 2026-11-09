@@ -49,7 +49,9 @@ jobs:
         working-directory: android-app
         run: |
           npx cap sync android
-          cd android && ./gradlew --no-daemon assembleRelease
+          cd android
+          sed -i 's/networkTimeout=[0-9]*/networkTimeout=120000/' gradle/wrapper/gradle-wrapper.properties
+          ./gradlew --no-daemon assembleRelease || (sleep 15 && ./gradlew --no-daemon assembleRelease)
       - name: Sign
         working-directory: android-app
         run: |
