@@ -90,16 +90,17 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .maplibregl-ctrl-attrib{font-size:9px}
 #map .maplibregl-ctrl-bottom-right{bottom:56px}
 .maplibregl-ctrl-attrib.maplibregl-compact{margin:0 0 4px 4px!important}
-.veh{position:relative;width:54px;height:54px}
-.veh .vrot{width:54px;height:54px;transition:transform .6s linear}
-.veh .vrot svg{width:54px;height:54px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
-.veh .vlbl{position:absolute;top:49px;left:50%;transform:translateX(-50%);color:#fff;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:999px;border:2px solid #fff;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.veh .vlbl .ls{font-weight:500;opacity:.9}
-.veh .vcr{position:absolute;top:-6px;right:-4px;width:17px;height:17px;border-radius:50%;background:#0F1B2D;color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;z-index:2}
-.veh.me .vrot svg{filter:drop-shadow(0 0 0 #fff) drop-shadow(0 0 6px rgba(43,140,235,.9))}
-.veh.stale{opacity:.55;filter:grayscale(1)}
-.veh.speak::before{content:"";position:absolute;inset:-8px;border-radius:50%;background:rgba(43,140,235,.25);animation:pu2 1s infinite}
-@keyframes pu2{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.3);opacity:0}}
+.veh{position:relative;width:56px;height:56px}
+.veh .vrot{position:absolute;inset:0;transition:transform .6s linear}
+.veh .vrot svg{position:absolute;left:50%;top:0;width:18px;height:14px;margin-left:-9px;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.35))}
+.veh .pin{position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;border:3px solid #fff;color:#fff;font-weight:800;font-size:13px;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(15,27,45,.35)}
+.veh .vlbl{position:absolute;top:52px;left:50%;transform:translateX(-50%);background:#fff;color:var(--text);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.veh .vlbl .ls{font-weight:500;color:var(--muted)}
+.veh .vcr{position:absolute;top:4px;right:2px;width:18px;height:18px;border-radius:50%;background:#0F1B2D;color:#fff;font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;z-index:2}
+.veh.me::before{content:"";position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:rgba(43,140,235,.35);animation:mepulse 2s ease-out infinite}
+@keyframes mepulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+.veh.stale .pin{filter:grayscale(1);opacity:.6}.veh.stale .vrot{display:none}
+.veh.speak .pin{box-shadow:0 0 0 4px rgba(255,255,255,.9),0 0 0 8px rgba(43,140,235,.45)}
 .stopmk{width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid #2F6BFF;box-shadow:0 1px 4px rgba(0,0,0,.35)}
 .stopmk.start{border-color:#0F1B2D}.stopmk.dest{background:#2F6BFF;border-color:#fff;width:28px;height:28px}
 .stopmk.meet{border-color:var(--amber);box-shadow:0 0 0 6px rgba(194,120,3,.3)}
@@ -180,6 +181,33 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .banner.info{background:var(--blue-soft);color:var(--blue-d)}
 .notice{background:var(--blue-soft);color:#174A7C;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5}
 a{color:var(--blue-d)}
+/* compact live screen so the map gets most of the space */
+#s-live .topbar{padding:8px 12px 6px}
+#s-live .tripname{font-size:17px}
+#s-live.mapmode .mbar{display:none}
+#s-live .sos{padding:8px 12px}
+.menubtn{width:40px;height:40px;border-radius:10px;background:var(--panel2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.navbanner{padding:7px 10px!important;border-radius:14px!important;gap:10px!important}
+.navbanner .nb-ic{min-width:44px!important}.navbanner .nb-ic svg{width:18px!important;height:18px!important}
+.navbanner .nb-ic b{font-size:16px!important}.navbanner .nb-txt .n{font-size:15.5px!important}.navbanner .nb-txt .k{font-size:11px!important}
+.nb-go{padding:7px 9px!important}
+.etabar{padding:6px 12px!important;bottom:8px!important;align-items:center!important}
+.etabar b{font-size:17px!important;white-space:nowrap;flex-shrink:0}
+.etabar span{font-size:12px!important}
+.mapbtns{bottom:58px!important;gap:8px!important}.mapbtns button{width:42px!important;height:42px!important}
+.recenter{bottom:58px!important;padding:9px 14px!important;font-size:14px!important}
+#map .maplibregl-ctrl-bottom-right{bottom:48px!important}
+.convoy{margin:6px 8px 0!important;padding:5px 10px!important;display:flex;align-items:center;gap:10px}
+.convoy>.row{display:none!important}
+.convoy .seq{flex:1}
+.convoy .cv .av{width:26px;height:26px;font-size:10px}
+.convoy .cv small{font-size:9px;margin-top:1px}
+.convoy .gap{margin-bottom:10px}
+.convoy::before{content:"Order";font-size:11px;font-weight:700;color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg)}
+.voice{margin:6px 8px 0!important;padding:6px 10px!important;border-radius:14px!important;gap:10px!important}
+.mic{width:40px!important;height:40px!important}.mic svg{width:19px!important;height:19px!important}
+.vtitle{font-size:11px!important}.vsub{font-size:12.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{margin-top:6px!important}.tab{padding:6px 0 8px!important}
 .authhero{padding:36px 24px 8px}
 .pwrow{position:relative}.pwrow .eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--blue-d);font-size:13px;font-weight:600;padding:8px}
 .linkbtn{color:var(--blue-d);font-weight:600;font-size:14px;padding:8px 0}
@@ -395,7 +423,7 @@ a{color:var(--blue-d)}
         <div class="row" style="gap:8px"><span class="live">LIVE</span><span class="muted small" id="v-online"></span></div>
         <div class="tripname" id="v-name"></div>
       </div>
-      <button class="sos" id="sos-btn">SOS</button>
+      <div class="row" style="gap:8px"><button class="sos" id="sos-btn">SOS</button><button class="menubtn" id="trip-menu" aria-label="Trip menu"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></svg></button></div>
     </div>
     <div class="mbar" id="v-mbar"></div>
     <div id="v-banners"></div>
@@ -636,7 +664,7 @@ chips('#c-veh','moto');
 $('#go-create').onclick=()=>{chips('#c-veh',PROFILE.veh||'moto');go('s-create')};
 $('#go-join').onclick=()=>{$('#j-preview').innerHTML='';$('#j-err').textContent='';go('s-join')};
 if(DB.mode==='local')$('#setup-warn').innerHTML='<div class="notice" style="margin-top:16px"><b>Test mode.</b> Not connected to the online service yet, so trips only work between tabs on this device. Add the Firebase config to go live.</div>';
-function renderResume(){const s=store.get('session');$('#resume').innerHTML=s?`<button class="choice" id="go-resume" style="border-color:var(--blue)"><span class="ci"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span><span><b>Return to your trip</b><span class="muted small">${esc(s.name||s.code)} · ${esc(s.code)}</span></span></button>`:'';if(s)$('#go-resume').onclick=()=>enterTrip(s.code)}
+function renderResume(){const s=store.get('session');$('#resume').innerHTML=s?`<button class="choice" id="go-resume" style="border-color:var(--blue)"><span class="ci"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span><span><b>Return to your trip</b><span class="muted small">${esc(s.name||s.code)} · ${esc(s.code)}</span></span></button>`:'';if(s)$('#go-resume').onclick=()=>{if(T&&T.code===s.code&&T.meta){T.bg=false;if(T.meta.status==='live'&&!map)startLive();else go(T.meta.status==='live'?'s-live':'s-lobby');if(T.meta.status==='lobby')renderLobby();if(map)setTimeout(()=>map.resize(),60)}else enterTrip(s.code)}}
 
 /* ================= MAP PICKER ================= */
 let pmap=null,pkCb=null,pkRev=null,pkNameEdited=false;
@@ -741,7 +769,7 @@ async function enterTrip(code){
   T=blankTrip(code);
   const sub=(p,cb)=>T.unsub.push(DB.on(P(p),cb));
   sub('meta',m=>{if(!m){toast('Trip no longer exists','warn');exitTrip();return}onMeta(m)});
-  T.unsub.push(DB.on(P('members'),m=>{T.members=m||{};if(T.meta&&!T.members[T.me]){toast('You were removed from the trip','warn');exitTrip();return}refresh()},()=>{if(T){toast('You are no longer in this trip','warn');exitTrip()}}));
+  T.unsub.push(DB.on(P('members'),m=>{T.members=m||{};if(T.meta&&!T.members[T.me]){if(!T.leaving)toast('You were removed from the trip','warn');exitTrip();return}refresh()},()=>{if(T){toast('You are no longer in this trip','warn');exitTrip()}}));
   sub('state',s=>{T.state=s||{};refresh()});
   sub('loc',l=>{T.loc=l||{};refreshLive()});
   sub('presence',p=>{T.presence=p||{};refresh()});
@@ -752,7 +780,7 @@ async function enterTrip(code){
   DB.set(P('presence/'+T.me),true);DB.onDisconnect(P('presence/'+T.me),null);
 }
 function leaveSubs(){if(!T)return;T.unsub.forEach(u=>u&&u());if(T.reqUnsub)T.reqUnsub();stopGPS();Voice.stop();if(T.code)DB.remove(P('presence/'+T.me))}
-function exitTrip(){leaveSubs();store.del('session');T=null;renderResume();go('s-home')}
+function exitTrip(){if(!T)return;leaveSubs();store.del('session');T=null;renderResume();go('s-home')}
 function onMeta(m){
   const prev=T.meta;T.meta=m;
   store.set('session',{code:T.code,name:m.name});
@@ -769,6 +797,7 @@ function onMeta(m){
   }
   if(m.status==='ended'){showSummary();return}
   if(!T.members[T.me]&&Object.keys(T.members).length)return;
+  if(T.bg){if(prev&&prev.status!==m.status&&m.status==='live')toast('Your trip has started. Tap Return to your trip.','ann');renderResume();return}
   if(m.status==='lobby'){if(!$('#s-lobby').classList.contains('on'))go('s-lobby');renderLobby()}
   else if(m.status==='live'){if(!$('#s-live').classList.contains('on'))startLive();refresh()}
 }
@@ -809,7 +838,7 @@ $('#l-copy').onclick=()=>copyInvite();
 $('#l-share').onclick=async()=>{const t=inviteText();try{if(navigator.share)await navigator.share({title:'Join my RallyRide trip',text:t});else copyInvite()}catch(e){}};
 const inviteText=()=>`Join my group trip "${T.meta.name}" on RallyRide.\nCode: ${T.code}\n${location.origin+location.pathname}`;
 async function copyInvite(){try{await navigator.clipboard.writeText(inviteText());toast('Invite copied')}catch(e){toast('Code: '+T.code)}}
-$('#l-leave').onclick=()=>openSheet(`<h1>Leave trip?</h1><p class="muted" style="margin:8px 0 16px">${isLeader()?'As leader, leaving cancels the trip for everyone.':'You can rejoin later with the code (needs approval again).'}</p><button class="btn red" id="cf-leave">Leave</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`)||($('#cf-leave').onclick=async()=>{closeSheet();if(isLeader())await DB.update(P('meta'),{status:'ended',ended:DB.now()});else{await DB.remove(P('members/'+T.me));await DB.remove(P('requests/'+T.me))}exitTrip()});
+$('#l-leave').onclick=()=>openSheet(`<h1>Leave trip?</h1><p class="muted" style="margin:8px 0 16px">${isLeader()?'As leader, leaving cancels the trip for everyone.':'You can rejoin later with the code (needs approval again).'}</p><button class="btn red" id="cf-leave">Leave</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`)||($('#cf-leave').onclick=async()=>{closeSheet();if(isLeader())await DB.update(P('meta'),{status:'ended',ended:DB.now()});else{await leaveTrip();return}exitTrip()});
 
 /* ================= LIVE ================= */
 let map=null,layers={mk:{},stops:[]},follow='nav',nav3d=true,mapType=store.get('maptype')||'map',fitDone=false,progMove=false;
@@ -839,7 +868,7 @@ function startLive(){
   setTimeout(()=>map.resize(),60);
   drawRoute();fitDone=false;follow='nav';updMapBtns();
   startGPS();keepAwake();
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.p==='p-map'));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-map'));
+  $('#s-live').classList.add('mapmode');document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.p==='p-map'));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-map'));
   if(!T.tick)T.tick=setInterval(()=>{if(T&&T.meta&&T.meta.status==='live'){renderMembers();renderBar()}},5000);
 }
 function drawRoute(){
@@ -905,13 +934,12 @@ function renderMarkers(){
   if(!map||!T||!T.meta)return;const {info}=memberInfo();
   Object.keys(layers.mk).forEach(u=>{if(!info[u]||!info[u].l){layers.mk[u].remove();delete layers.mk[u]}});
   Object.values(info).forEach(x=>{if(!x.l)return;const stale=!x.fresh||!x.online||x.st.paused;headingOf(x.u,x.l);
-    const svg=(VEH_SVG[x.m.veh]||VEH_SVG.moto)(x.m.color);
-    const key=[x.m.veh,x.m.color,x.m.ini,x.m.role,stale,stale?ago(x.l.t):'',Voice.speaking.has(x.u),x.u===T.me].join('|');
+        const key=[x.m.veh,x.m.color,x.m.ini,x.m.role,stale,stale?ago(x.l.t):'',Voice.speaking.has(x.u),x.u===T.me].join('|');
     let mk=layers.mk[x.u];
     if(!mk){const el=document.createElement('div');mk=layers.mk[x.u]=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([x.l.lng,x.l.lat]).addTo(map);if(x.u===T.me)el.style.zIndex=10}
     const el=mk.getElement();
     if(el.dataset.key!==key){el.dataset.key=key;el.className='veh'+(x.u===T.me?' me':'')+(stale?' stale':'')+(Voice.speaking.has(x.u)?' speak':'');
-      el.innerHTML=`${x.m.role==='leader'?'<span class="vcr">L</span>':''}<div class="vrot">${svg}</div><div class="vlbl" style="background:${x.m.color}">${esc(x.u===T.me?'You':x.m.ini)}${stale?` <span class="ls">· ${ago(x.l.t)}</span>`:''}</div>`}
+      el.innerHTML=`<div class="vrot"><svg viewBox="0 0 18 14"><path d="M9 0L18 14L9 10L0 14Z" fill="${x.m.color}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div class="pin" style="background:${x.m.color}">${esc(x.m.ini)}</div>${x.m.role==='leader'?'<span class="vcr">L</span>':''}${x.u===T.me||stale?`<div class="vlbl">${x.u===T.me?'You':esc(x.m.nick.split(' ')[0])}${stale?` <span class="ls">· ${ago(x.l.t)}</span>`:''}</div>`:''}`}
     mk.setLngLat([x.l.lng,x.l.lat])});
   rotateVehicles();
   // camera
@@ -969,7 +997,7 @@ function renderMembers(){
   $('#mark-stop').onclick=()=>{DB.update(P('state/'+T.me),{stopped:!me.stopped});if(!me.stopped)sysMsg(`⏸ ${meM().ini} stopped`)};
   $('#mark-arr').onclick=()=>{DB.update(P('state/'+T.me),{arrived:!me.arrived});if(!me.arrived)sysMsg(`🏆 ${meM().ini} arrived`)};
 }
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id===t.dataset.p));
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{$('#s-live').classList.toggle('mapmode',t.dataset.p==='p-map');document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id===t.dataset.p));
   if(t.dataset.p==='p-chat'){T.unread=0;updBadges();scrollChat()}if(t.dataset.p==='p-leader')renderLeader();if(t.dataset.p==='p-map'&&map)setTimeout(()=>map.resize(),30)});
 function updBadges(){if(!T)return;const bc=$('#b-chat');bc.style.display=T.unread?'':'none';bc.textContent=T.unread;const n=Object.values(T.requests).filter(q=>q.status==='pending').length;const bl=$('#b-lead');bl.style.display=n?'':'none';bl.textContent=n}
 
@@ -1188,6 +1216,25 @@ const AppPl=nativePlugin('App');if(AppPl)AppPl.addListener('backButton',()=>{if(
   if($('#s-create').classList.contains('on')||$('#s-join').classList.contains('on'))return go('s-home');if($('#s-settings').classList.contains('on')&&!ST.first)return showHome();if($('#s-signup').classList.contains('on'))return go('s-auth');if(!$('#s-home').classList.contains('on'))return AppPl.minimizeApp();AppPl.exitApp()});
 renderInstall();
 
+/* ================= TRIP MENU ================= */
+async function leaveTrip(){if(!T)return;T.leaving=true;const me=meM();try{await sysMsg(`${me?me.nick:'A member'} left the trip`)}catch(e){}
+  await DB.remove(P('loc/'+T.me)).catch(()=>{});await DB.remove(P('state/'+T.me)).catch(()=>{});await DB.remove(P('requests/'+T.me)).catch(()=>{});await DB.remove(P('members/'+T.me)).catch(()=>{});
+  exitTrip();toast('You left the trip')}
+$('#trip-menu').onclick=()=>{const lead=isLeader();
+  openSheet(`<h1>${esc(T.meta.name)}</h1><p class="muted small" style="margin:4px 0 14px">Code ${T.code}</p>
+  <button class="btn ghost" id="tm-home" style="margin-bottom:8px">Back to home <span class="muted small" style="font-weight:500">(trip keeps running)</span></button>
+  <button class="btn ghost" id="tm-settings" style="margin-bottom:8px">Settings</button>
+  ${lead?'<button class="btn red" id="tm-end" style="margin-bottom:8px">End trip for everyone</button>':'<button class="btn red" id="tm-leave" style="margin-bottom:8px">Leave trip</button>'}
+  <button class="btn ghost" id="tm-logout" style="margin-bottom:8px">Log out</button>
+  <button class="btn ghost" onclick="closeSheet()">Close</button>`);
+  $('#tm-home').onclick=()=>{closeSheet();T.bg=true;showHome()};
+  $('#tm-settings').onclick=()=>{closeSheet();openSettings(false)};
+  if($('#tm-leave'))$('#tm-leave').onclick=()=>{openSheet(`<h1>Leave this trip?</h1><p class="muted" style="margin:8px 0 16px">You stop sharing your location and leave the mic and chat. To come back you'll need the code and the leader's approval again.</p><button class="btn red" id="cf-lv">Leave trip</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`);$('#cf-lv').onclick=()=>{closeSheet();leaveTrip()}};
+  if($('#tm-end'))$('#tm-end').onclick=()=>{openSheet(`<h1>End trip?</h1><p class="muted" style="margin:8px 0 16px">Location sharing and the mic stop for everyone.</p><button class="btn red" id="cf-end2">End trip for everyone</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+    $('#cf-end2').onclick=async()=>{closeSheet();await sysMsg('🏁 Trip ended by the leader');await DB.update(P('meta'),{status:'ended',ended:DB.now()})}};
+  $('#tm-logout').onclick=()=>{openSheet(`<h1>Log out?</h1><p class="muted" style="margin:8px 0 16px">${lead?'The trip keeps running for your group. Log back in to return to it.':'You stay in the trip and can return after logging back in. To stop sharing completely, choose Leave trip instead.'}</p><button class="btn" id="cf-out2">Log out</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+    $('#cf-out2').onclick=async()=>{closeSheet();if(T)leaveSubs();T=null;await DB.auth.signOut();toast('Logged out')}}};
+
 /* ================= ACCOUNTS ================= */
 let PROFILE=null;
 const AUTH_ERR={'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong password.','auth/user-not-found':'Wrong email or password.','auth/invalid-email':'That email address looks wrong.',
@@ -1247,7 +1294,7 @@ function openSettings(first){ST.first=!!first;const pr=PROFILE||{nick:'',color:C
   $('#st-email').textContent=DB.user?DB.user.email:'';$('#st-sat').classList.toggle('on',mapType==='sat');$('#st-err').textContent='';go('s-settings')}
 $('#st-nick').oninput=()=>paintAv('#st-av',$('#st-nick').value,selColor('#st-color'));
 $('#h-settings').onclick=()=>openSettings(false);
-$('#st-back').onclick=()=>showHome();
+$('#st-back').onclick=()=>{if(T&&T.meta&&T.meta.status==='live')go('s-live');else if(T&&T.meta&&T.meta.status==='lobby')go('s-lobby');else showHome()};
 $('#st-save').onclick=()=>busy($('#st-save'),async()=>{const nick=$('#st-nick').value.trim();if(nick.length<2)return $('#st-err').textContent='Enter a nickname (at least 2 letters).';
   const prof={...(PROFILE||{created:DB.now()}),nick,color:selColor('#st-color'),veh:selVeh('#st-veh')};
   try{await DB.set('users/'+DB.uid,prof);PROFILE=prof;toast('Profile saved');if(ST.first)showHome();else paintAv('#h-av',nick,prof.color)}catch(e){$('#st-err').textContent=authErr(e)}});
