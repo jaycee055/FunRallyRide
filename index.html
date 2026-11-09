@@ -90,7 +90,8 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .maplibregl-ctrl-attrib{font-size:9px}
 #map .maplibregl-ctrl-bottom-right{bottom:56px}
 .maplibregl-ctrl-attrib.maplibregl-compact{margin:0 0 4px 4px!important}
-.veh{position:relative;width:56px;height:56px}
+.veh{width:56px;height:56px}
+.maplibregl-marker{position:absolute}
 .veh .vrot{position:absolute;inset:0;transition:transform .6s linear}
 .veh .vrot svg{position:absolute;left:50%;top:0;width:18px;height:14px;margin-left:-9px;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.35))}
 .veh .pin{position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;border:3px solid #fff;color:#fff;font-weight:800;font-size:13px;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(15,27,45,.35)}
@@ -362,6 +363,8 @@ a{color:var(--blue-d)}
       <input class="field" id="c-dest-q" placeholder="Search the destination">
       <button class="btn ghost" id="c-dest-map" style="margin-top:8px">Pick destination on map</button>
       <div id="c-dest-r"></div><div id="c-dest-v" class="small" style="margin-top:6px;color:var(--green)"></div>
+      <div class="label">Meeting</div>
+      <div class="switch"><div><div style="font-weight:600">Meet at the starting point first</div><div class="muted small">Everyone is guided to the start. The ride route shows after they arrive.</div></div><button class="tog on" id="c-meetfirst"></button></div>
       <div class="label">Joining</div>
       <div class="switch"><div><div style="font-weight:600">Leader approval required</div><div class="muted small">Members need the code AND your OK</div></div><button class="tog on" id="c-approve"></button></div>
       <p class="small" id="c-err" style="color:var(--red);margin-top:12px"></p>
@@ -705,6 +708,7 @@ placeSearch('#c-stop-q','#c-stop-r',p=>pickOnMap('Add a stop',p,q=>{C.stops.push
 function renderStops(){$('#c-stops').innerHTML=C.stops.map((s,i)=>`<div class="stoprow"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>${i+1}. ${esc(s.name)}</span><button data-i="${i}" class="muted">✕</button></div>`).join('');$('#c-stops').onclick=e=>{const b=e.target.closest('button');if(b){C.stops.splice(+b.dataset.i,1);renderStops()}}}
 $('#c-start-me').onclick=async()=>{$('#c-start-v').textContent='Finding you…';try{const p=await myPosOnce();C.start={name:'My location',lat:p.lat,lng:p.lng};$('#c-start-v').textContent='✓ My current location'}catch(e){$('#c-start-v').textContent='';$('#c-err').textContent='Location permission is needed for "my location".'}};
 $('#c-approve').onclick=e=>e.currentTarget.classList.toggle('on');
+$('#c-meetfirst').onclick=e=>e.currentTarget.classList.toggle('on');
 $('#c-start-map').onclick=()=>pickOnMap('Starting point',C.start,p=>{C.start=p;$('#c-start-v').textContent='✓ '+p.name});
 $('#c-stop-map').onclick=()=>pickOnMap('Add a stop',C.stops[C.stops.length-1]||C.start,p=>{C.stops.push(p);renderStops()});
 $('#c-dest-map').onclick=()=>pickOnMap('Destination',C.dest,p=>{C.dest=p;$('#c-dest-v').textContent='✓ '+p.name});
@@ -718,7 +722,7 @@ $('#c-go').onclick=async()=>{
     const pts=[C.start,...C.stops,C.dest];const route=await getRoute(pts);
     let code,ok=false;
     for(let i=0;i<6&&!ok;i++){code='RIDE-'+Array.from({length:4},()=>CODE_CH[Math.floor(Math.random()*CODE_CH.length)]).join('');
-      ok=await DB.createIfAbsent(`trips/${code}/meta`,{name,veh:selVeh('#c-veh'),leaderId:DB.uid,leaderNick:nick,status:'lobby',approve:$('#c-approve').classList.contains('on'),locked:false,voice:'open',thr:1.5,
+      ok=await DB.createIfAbsent(`trips/${code}/meta`,{name,veh:selVeh('#c-veh'),leaderId:DB.uid,leaderNick:nick,status:'lobby',approve:$('#c-approve').classList.contains('on'),meetFirst:$('#c-meetfirst').classList.contains('on'),locked:false,voice:'open',thr:1.5,
         stops:pts.map((p,i)=>({name:p.name,lat:p.lat,lng:p.lng,type:i===0?'start':i===pts.length-1?'dest':'stop'})),route,meet:null,pin:null,created:DB.now()})}
     if(!ok)throw new Error('Could not create a code, try again');
     await DB.set(`trips/${code}/members/${DB.uid}`,{nick,ini:initials(nick,[]),color:PROFILE.color||COLORS[0],veh:selVeh('#c-veh'),role:'leader',joined:DB.now()});
@@ -791,7 +795,8 @@ function onMeta(m){
     const pd=prev.stops[prev.stops.length-1],nd=m.stops[m.stops.length-1];
     if(pd.name!==nd.name||pd.lat!==nd.lat)toast('🏆 New destination: '+nd.name,'ann');
     if(m.voice&&prev.voice&&m.voice!==prev.voice)toast({open:'🎙 Open mic: everyone can talk',leader:'⭐ Leader-only mode',muted:'🔇 The leader muted the group'}[m.voice],'ann');
-    if(m.meet&&(!prev.meet||prev.meet.ts!==m.meet.ts))toast('📍 Meet at '+m.meet.name,'ann');
+    if(m.meet&&(!prev.meet||prev.meet.ts!==m.meet.ts)){toast('📍 Meet at '+m.meet.name+' first','ann');T.meetPath=null;drawRoute()}
+    if(!m.meet&&prev.meet){toast('Meeting done. Follow the blue line to the destination.','ann');drawRoute()}
     if(m.pin&&(!prev.pin||prev.pin.ts!==m.pin.ts))toast('📢 '+m.pin.text,'ann');
     if(JSON.stringify(prev.route)!==JSON.stringify(m.route)||JSON.stringify(prev.stops)!==JSON.stringify(m.stops))drawRoute();
   }
@@ -833,7 +838,7 @@ async function approveReq(u){
 }
 async function declineReq(u){await DB.set(P(`requests/${u}/status`),'declined')}
 $('#l-ready').onclick=()=>DB.update(P('state/'+T.me),{ready:!(T.state[T.me]||{}).ready});
-$('#l-start').onclick=async()=>{await DB.update(P('meta'),{status:'live',started:DB.now()});sysMsg('▶ Trip started · destination: '+T.meta.stops[T.meta.stops.length-1].name)};
+$('#l-start').onclick=async()=>{const st=T.meta.stops[0];await DB.update(P('meta'),{status:'live',started:DB.now(),...(T.meta.meetFirst?{meet:{name:st.name,lat:st.lat,lng:st.lng,ts:DB.now()}}:{})});sysMsg('▶ Trip started · destination: '+T.meta.stops[T.meta.stops.length-1].name)};
 $('#l-copy').onclick=()=>copyInvite();
 $('#l-share').onclick=async()=>{const t=inviteText();try{if(navigator.share)await navigator.share({title:'Join my RallyRide trip',text:t});else copyInvite()}catch(e){}};
 const inviteText=()=>`Join my group trip "${T.meta.name}" on RallyRide.\nCode: ${T.code}\n${location.origin+location.pathname}`;
@@ -859,8 +864,11 @@ function startLive(){
   if(!map){map=makeMap('map',{});
     map.on('load',()=>{setMapType(map,mapType);
       map.addSource('route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
-      map.addLayer({id:'route-casing',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#0A2A7A','line-width':['interpolate',['linear'],['zoom'],10,6,16,14]}});
-      map.addLayer({id:'route-line',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#2F6BFF','line-width':['interpolate',['linear'],['zoom'],10,4,16,10]}});
+      map.addLayer({id:'route-casing',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#ffffff','line-opacity':.7,'line-width':['interpolate',['linear'],['zoom'],10,5,16,11]}});
+      map.addLayer({id:'route-line',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#8496B0','line-opacity':.8,'line-width':['interpolate',['linear'],['zoom'],10,3,16,7]}});
+      map.addSource('guide',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
+      map.addLayer({id:'guide-casing',type:'line',source:'guide',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#0A2A7A','line-width':['interpolate',['linear'],['zoom'],10,7,16,15]}});
+      map.addLayer({id:'guide-line',type:'line',source:'guide',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#2F6BFF','line-width':['interpolate',['linear'],['zoom'],10,5,16,11]}});
       drawRoute();renderMarkers()});
     const userMove=e=>{if(e.originalEvent&&!progMove){follow='free';updMapBtns()}};
     map.on('dragstart',userMove);map.on('rotatestart',userMove);map.on('pitchstart',userMove);
@@ -879,9 +887,10 @@ function drawRoute(){
   map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:c.map(p=>[p[1],p[0]])}});
   map.setPaintProperty('route-line','line-dasharray',m.route.road?null:[2,1.5]);
   layers.stops.forEach(x=>x.remove());
-  layers.stops=m.stops.map(st=>{const meet=m.meet&&m.meet.name===st.name;const el=document.createElement('div');el.style.position='relative';
+  layers.stops=m.stops.map(st=>{const meet=m.meet&&m.meet.name===st.name;const el=document.createElement('div');
     el.innerHTML=`<div class="stopmk ${st.type} ${meet?'meet':''}"></div><div class="stoplbl">${esc(st.name)}</div>`;
     return new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([st.lng,st.lat]).addTo(map)});
+  if(m.meet&&!m.stops.some(st=>st.name===m.meet.name)){const el=document.createElement('div');el.innerHTML=`<div class="stopmk meet"></div><div class="stoplbl">Meet: ${esc(m.meet.name)}</div>`;layers.stops.push(new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([m.meet.lng,m.meet.lat]).addTo(map))}
 }
 function project(pt){ // -> {prog km along route, off km from route}
   const c=T.meta.route.coords;if(c.length<2)return{prog:0,off:0};
@@ -891,6 +900,34 @@ function project(pt){ // -> {prog km along route, off km from route}
     if(d<best.d)best={d,prog:T.cum[i-1]+t*(T.cum[i]-T.cum[i-1])}}
   return {prog:best.prog,off:best.d};
 }
+function cumOf(c){const a=[0];for(let i=1;i<c.length;i++)a.push(a[i-1]+hav(c[i-1],c[i]));return a}
+function projectOn(c,cum,pt){if(!c||c.length<2)return{i:1,t:0,prog:0,off:c&&c.length?hav(pt,c[0]):0,px:pt};
+  let best={d:1e9};const kx=111.32*Math.cos(pt[0]*Math.PI/180),ky=110.57;
+  for(let i=1;i<c.length;i++){const ax=(c[i-1][1]-pt[1])*kx,ay=(c[i-1][0]-pt[0])*ky,bx=(c[i][1]-pt[1])*kx,by=(c[i][0]-pt[0])*ky;
+    const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;let t=l2?-(ax*dx+ay*dy)/l2:0;t=Math.max(0,Math.min(1,t));const d=Math.hypot(ax+t*dx,ay+t*dy);
+    if(d<best.d)best={d,i,t}}
+  const a=c[best.i-1],b=c[best.i];return {i:best.i,t:best.t,prog:cum[best.i-1]+best.t*(cum[best.i]-cum[best.i-1]),off:best.d,px:[a[0]+(b[0]-a[0])*best.t,a[1]+(b[1]-a[1])*best.t]}}
+// the part of a line still ahead of a point (consumed part removed)
+function aheadOf(c,cum,pt){const pr=projectOn(c,cum,pt);const out=[pt];if(pr.off>0.03)out.push(pr.px);else out[0]=pt;for(let k=pr.i;k<c.length;k++)out.push(c[k]);return {coords:out,pr}}
+const meetActiveFor=u=>{const m=T&&T.meta&&T.meta.meet;if(!m)return false;const st=T.state[u]||{};return st.meetAt!==m.ts};
+let meetFetchAt=0;
+async function ensureMeetPath(me){const m=T.meta.meet;if(!m||!me||!me.l)return;
+  const mp=T.meetPath;const here=[me.l.lat,me.l.lng];
+  const stale=!mp||mp.ts!==m.ts||(projectOn(mp.coords,mp.cum,here).off>0.25&&Date.now()-meetFetchAt>30000);
+  if(!stale||Date.now()-meetFetchAt<8000)return;meetFetchAt=Date.now();
+  const r=await getRoute([{lat:here[0],lng:here[1]},{lat:m.lat,lng:m.lng}]);
+  if(T&&T.meta&&T.meta.meet&&T.meta.meet.ts===m.ts){T.meetPath={...r,cum:cumOf(r.coords),ts:m.ts};renderMarkers()}}
+function drawGuide(me){if(!map||!map.getSource('guide'))return;let coords=[];
+  if(me&&me.l){const here=[me.l.lat,me.l.lng];
+    if(meetActiveFor(T.me)){const m=T.meta.meet;const mp=T.meetPath;if(mp&&mp.ts===m.ts)coords=aheadOf(mp.coords,mp.cum,here).coords;else coords=[here,[m.lat,m.lng]]}
+    else if(T.cum)coords=aheadOf(T.meta.route.coords,T.cum,here).coords}
+  else coords=T.meta.route.coords;
+  T.guide=coords;map.getSource('guide').setData({type:'Feature',geometry:{type:'LineString',coordinates:coords.map(p=>[p[1],p[0]])}})}
+// smooth marker movement
+const glides=new Map();
+function glide(mk,lng,lat){const from=mk.getLngLat();if(Math.abs(from.lng-lng)+Math.abs(from.lat-lat)>0.05||Math.abs(from.lng-lng)+Math.abs(from.lat-lat)<1e-7){mk.setLngLat([lng,lat]);glides.delete(mk);return}
+  glides.set(mk,{f:[from.lng,from.lat],t:[lng,lat],s:performance.now()});if(glides.size===1)requestAnimationFrame(glideStep)}
+function glideStep(now){glides.forEach((g,mk)=>{const k=Math.min(1,(now-g.s)/1100);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;mk.setLngLat([g.f[0]+(g.t[0]-g.f[0])*e,g.f[1]+(g.t[1]-g.f[1])*e]);if(k>=1)glides.delete(mk)});if(glides.size)requestAnimationFrame(glideStep)}
 const STALE=60000;
 function memberInfo(){
   // compute progress/status per member
@@ -902,6 +939,8 @@ function memberInfo(){
   const ord=Object.values(info).sort((a,b)=>b.prog-a.prog);
   ord.forEach((x,i)=>{x.gap=i>0&&x.prog>=0&&ord[i-1].prog>=0?ord[i-1].prog-x.prog:0;
     let s;if(x.arrived)s=['lead','Arrived'];else if(x.st.sos)s=['behind','SOS'];else if(x.st.paused)s=['lost','Location paused'];else if(!x.l)s=['lost','No location yet'];else if(!x.fresh||!x.online)s=['lost','Signal lost'];
+    else if(T.meta.meet&&!meetActiveFor(x.u))s=['lead','At meeting point'];
+    else if(T.meta.meet)s=['amber',`${hav([x.l.lat,x.l.lng],[T.meta.meet.lat,T.meta.meet.lng]).toFixed(1)} km to meeting point`];
     else if(x.off>0.5)s=['amber','Off route'];else if(x.gap>T.meta.thr)s=['behind','Falling behind'];else if(x.l.spd!=null&&x.l.spd<1)s=['amber','Stopped'];else if(i===0)s=['lead','Front'];else s=['ok','On route'];
     x.status=s});
   return {info,ord};
@@ -936,11 +975,11 @@ function renderMarkers(){
   Object.values(info).forEach(x=>{if(!x.l)return;const stale=!x.fresh||!x.online||x.st.paused;headingOf(x.u,x.l);
         const key=[x.m.veh,x.m.color,x.m.ini,x.m.role,stale,stale?ago(x.l.t):'',Voice.speaking.has(x.u),x.u===T.me].join('|');
     let mk=layers.mk[x.u];
-    if(!mk){const el=document.createElement('div');mk=layers.mk[x.u]=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([x.l.lng,x.l.lat]).addTo(map);if(x.u===T.me)el.style.zIndex=10}
+    if(!mk){const el=document.createElement('div');mk=layers.mk[x.u]=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([x.l.lng,x.l.lat]).addTo(map);el.dataset.base=el.className;if(x.u===T.me)el.style.zIndex=10}
     const el=mk.getElement();
-    if(el.dataset.key!==key){el.dataset.key=key;el.className='veh'+(x.u===T.me?' me':'')+(stale?' stale':'')+(Voice.speaking.has(x.u)?' speak':'');
+    if(el.dataset.key!==key){el.dataset.key=key;el.className=(el.dataset.base||'')+' veh'+(x.u===T.me?' me':'')+(stale?' stale':'')+(Voice.speaking.has(x.u)?' speak':'');
       el.innerHTML=`<div class="vrot"><svg viewBox="0 0 18 14"><path d="M9 0L18 14L9 10L0 14Z" fill="${x.m.color}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div class="pin" style="background:${x.m.color}">${esc(x.m.ini)}</div>${x.m.role==='leader'?'<span class="vcr">L</span>':''}${x.u===T.me||stale?`<div class="vlbl">${x.u===T.me?'You':esc(x.m.nick.split(' ')[0])}${stale?` <span class="ls">· ${ago(x.l.t)}</span>`:''}</div>`:''}`}
-    mk.setLngLat([x.l.lng,x.l.lat])});
+    glide(mk,x.l.lng,x.l.lat)});
   rotateVehicles();
   // camera
   const me=info[T.me],ld=info[T.meta.leaderId];
@@ -948,14 +987,24 @@ function renderMarkers(){
   if(follow==='nav'){if(me&&me.l)cam({center:[me.l.lng,me.l.lat],zoom:Math.max(map.getZoom(),16.5),pitch:nav3d?60:0,bearing:nav3d?(headings[T.me]||0):0});else if(!fitDone)fitAll(info)}
   else if(follow==='lead'&&ld&&ld.l)cam({center:[ld.l.lng,ld.l.lat],pitch:0,bearing:0});
   else if(follow==='all'&&!fitDone)fitAll(info);
+  // meeting point: guide there first, mark arrival within 100 m
+  const meet=T.meta.meet;const goingToMeet=meetActiveFor(T.me);
+  if(meet&&goingToMeet&&me&&me.l){ensureMeetPath(me);
+    if(hav([me.l.lat,me.l.lng],[meet.lat,meet.lng])<0.1&&T.meetMarked!==meet.ts){T.meetMarked=meet.ts;DB.update(P('state/'+T.me),{meetAt:meet.ts});sysMsg(`${meM().nick} arrived at the meeting point (${meet.name})`);toast('You arrived at the meeting point. Your route to the destination is now shown.')}}
+  if(meet&&isMgr()){const all=Object.keys(T.members);const here=all.filter(u=>!meetActiveFor(u)).length;if(here===all.length&&T.allMetToast!==meet.ts&&all.length>1){T.allMetToast=meet.ts;toast(`Everyone is at ${meet.name}. Tap Start riding in the Leader tab.`,'ann')}}
+  drawGuide(me);
   // banner + eta
   const dest=T.meta.stops[T.meta.stops.length-1];let target=null,kind='';
-  const meet=T.meta.meet;
-  if(meet){target=meet;kind='Meeting point'}
+  if(meet&&goingToMeet){target=meet;kind='Go to meeting point'}
   else if(me&&me.l&&T.stopProg){const i=T.stopProg.findIndex((p,k)=>k>0&&p>me.prog+0.05);if(i>0){target=T.meta.stops[i];kind=i===T.meta.stops.length-1?'Destination':'Next stop'}}
   if(!target){target=dest;kind='Destination'}
   $('#nb-kind').textContent=kind;$('#nb-name').textContent=target.name;
-  if(me&&me.l){const ti=T.meta.stops.findIndex(s=>s.name===target.name&&s.lat===target.lat);
+  if(me&&me.l&&meet&&goingToMeet){const mp=T.meetPath&&T.meetPath.ts===meet.ts?T.meetPath:null;const here=[me.l.lat,me.l.lng];
+    const d=mp?Math.max(0,mp.cum[mp.cum.length-1]-projectOn(mp.coords,mp.cum,here).prog):hav(here,[meet.lat,meet.lng]);
+    $('#nb-dist').innerHTML=d<1?`${Math.round(d*1000/10)*10}<small>m</small>`:`${d.toFixed(d<10?1:0)}<small>km</small>`;
+    if(mp&&mp.road&&mp.dur&&mp.km>0){const mins=Math.max(1,Math.round(d/mp.km*mp.dur/60));$('#eta-t').textContent=mins<60?mins+' min':Math.floor(mins/60)+' h '+(mins%60)+' min';$('#eta-d').textContent=`${d.toFixed(1)} km to meeting point · ${meet.name}`}
+    else{$('#eta-t').textContent=d.toFixed(1)+' km';$('#eta-d').textContent='to meeting point · '+meet.name}}
+  else if(me&&me.l){const ti=T.meta.stops.findIndex(s=>s.name===target.name&&s.lat===target.lat);
     let d=(ti>=0&&T.stopProg&&me.off<0.5)?T.stopProg[ti]-me.prog:hav([me.l.lat,me.l.lng],[target.lat,target.lng]);if(d<0)d=hav([me.l.lat,me.l.lng],[target.lat,target.lng]);
     $('#nb-dist').innerHTML=d<1?`${Math.round(d*1000/10)*10}<small>m</small>`:`${d.toFixed(d<10?1:0)}<small>km</small>`;
     const rem=me.remaining!=null&&me.off<0.5?me.remaining:hav([me.l.lat,me.l.lng],[dest.lat,dest.lng]);
@@ -1127,7 +1176,10 @@ function renderLeader(){
   <div class="card"><h3>Destination & meeting points</h3>
     <div style="font-size:18px;font-weight:700">${esc(dest.name)}</div>
     <div class="muted small">${m.stops.map(s=>esc(s.name)).join(' → ')} · ${m.route.km} km${m.route.road?'':' (straight-line)'}</div>
-    ${m.meet?`<div class="small" style="color:var(--amber);margin-top:6px">Active meeting point: ${esc(m.meet.name)} <button class="muted" id="ld-unmeet">✕ clear</button></div>`:''}
+    ${m.meet?(()=>{const all=Object.entries(T.members);const here=all.filter(([u])=>!meetActiveFor(u));return `<div style="margin-top:10px;padding:10px;border-radius:12px;background:var(--amber-soft)"><div class="small" style="color:var(--amber);font-weight:700">Meeting point: ${esc(m.meet.name)}</div>
+      <div class="small" style="margin-top:4px"><b>${here.length}/${all.length}</b> arrived${here.length?': '+here.map(([,x])=>esc(x.nick.split(' ')[0])).join(', '):''}</div>
+      ${all.length>here.length?`<div class="small muted">Waiting for: ${all.filter(([u])=>meetActiveFor(u)).map(([,x])=>esc(x.nick.split(' ')[0])).join(', ')}</div>`:''}
+      <button class="btn sm" id="ld-unmeet" style="margin-top:8px">${here.length===all.length?'Everyone is here: start riding':'Start riding now'}</button></div>`})():''}
     <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm" id="ld-dest">Change destination</button><button class="btn sm ghost" id="ld-addstop">Add stop</button><button class="btn sm ghost" id="ld-meet">Set meeting point</button></div></div>
   <div class="card"><h3>Separation alert</h3>
     <div class="row between"><span class="small">Alert when a gap is bigger than</span><b id="thrv">${m.thr.toFixed(1)} km</b></div>
@@ -1150,7 +1202,7 @@ function renderLeader(){
   L_.querySelectorAll('[data-pro]').forEach(b=>b.onclick=()=>{const u=b.dataset.pro;const r=T.members[u].role==='coleader'?'member':'coleader';DB.update(P('members/'+u),{role:r});sysMsg(`${T.members[u].nick} is now ${r==='coleader'?'co-leader':'a member'}`)});
   L_.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const u=b.dataset.rm;const n=T.members[u].nick;openSheet(`<h1>Remove ${esc(n)}?</h1><p class="muted" style="margin:8px 0 16px">They leave the map, mic and chat right away.</p><button class="btn red" id="cf-rm">Remove</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
     $('#cf-rm').onclick=async()=>{closeSheet();await DB.remove(P('members/'+u));await DB.remove(P('loc/'+u));await DB.remove(P('requests/'+u));sysMsg(`${n} was removed by the leader`,'warn')}});
-  if($('#ld-unmeet'))$('#ld-unmeet').onclick=()=>DB.update(P('meta'),{meet:null});
+  if($('#ld-unmeet'))$('#ld-unmeet').onclick=()=>{DB.update(P('meta'),{meet:null});sysMsg('Leader: start riding! Follow the blue line to '+m.stops[m.stops.length-1].name,'ann')};
   $('#ld-dest').onclick=()=>placeSheet('Change destination','Send new destination to everyone',async p=>{const stops=[...m.stops];stops[stops.length-1]={name:p.name,lat:p.lat,lng:p.lng,type:'dest'};await saveRoute(stops);sysMsg('🏆 Leader changed the destination to '+p.name+' · route updated','ann')});
   $('#ld-addstop').onclick=()=>placeSheet('Add a stop','Add before destination',async p=>{const stops=[...m.stops];stops.splice(stops.length-1,0,{name:p.name,lat:p.lat,lng:p.lng,type:'stop'});await saveRoute(stops);sysMsg('📍 New stop added: '+p.name,'ann')});
   $('#ld-meet').onclick=()=>{openSheet(`<h1>Set meeting point</h1><div class="label">Pick a stop on the route</div>${m.stops.map((s,i)=>`<button class="btn ghost" style="margin-top:6px;text-align:left" data-ms="${i}">${s.type==='start'?'Start: ':s.type==='dest'?'Destination: ':''}${esc(s.name)}</button>`).join('')}<div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
