@@ -92,6 +92,21 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .maplibregl-ctrl-attrib{font-size:9px}
 #map .maplibregl-ctrl-bottom-right{bottom:56px}
 .maplibregl-ctrl-attrib.maplibregl-compact{margin:0 0 4px 4px!important}
+.lpin{width:52px;height:62px;cursor:pointer}
+.lpin .lp-pin{position:absolute;left:2px;top:0;width:48px;height:48px;border-radius:50%;border:3.5px solid #fff;color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.35);z-index:2}
+.lpin::after{content:"";position:absolute;left:50%;top:44px;margin-left:-8px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid #fff;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25));z-index:1}
+.lpin .vcr{top:-4px!important;right:-2px!important;z-index:3}
+.lpin.stale .lp-pin{filter:grayscale(1);opacity:.75}
+.lpin.speak .lp-pin{box-shadow:0 0 0 4px rgba(255,255,255,.95),0 0 0 9px rgba(43,140,235,.5)}
+.lpin.me .lp-pin{box-shadow:0 0 0 5px rgba(43,140,235,.35),0 4px 10px rgba(0,0,0,.35)}
+.lp-bub{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);background:#fff;color:var(--text);border-radius:12px;padding:6px 10px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.25);z-index:4;line-height:1.25}
+.lp-bub small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+.lp-bub::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff}
+.lpbtns{position:absolute;left:10px;bottom:58px;z-index:5;display:flex;gap:8px}
+.lpbtns button{background:#fff;border-radius:999px;padding:10px 15px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;box-shadow:0 2px 10px rgba(15,27,45,.22)}
+.lpbtns button svg{width:18px;height:18px}
+.lpbtns .sosf{color:var(--red)}
+#s-live.mapmode .topbar .sos{display:none}
 .veh{width:56px;height:56px}
 .maplibregl-marker{position:absolute}
 .veh .vrot{position:absolute;inset:0;transition:transform .6s linear}
@@ -198,7 +213,7 @@ a{color:var(--blue-d)}
 .etabar b{font-size:17px!important;white-space:nowrap;flex-shrink:0}
 .etabar span{font-size:12px!important}
 .mapbtns{bottom:58px!important;gap:8px!important}.mapbtns button{width:42px!important;height:42px!important}
-.recenter{bottom:58px!important;padding:9px 14px!important;font-size:14px!important}
+.recenter{bottom:108px!important;padding:9px 14px!important;font-size:14px!important}
 #map .maplibregl-ctrl-bottom-right{bottom:48px!important}
 .convoy{margin:6px 8px 0!important;padding:5px 10px!important;display:flex;align-items:center;gap:10px}
 .convoy>.row{display:none!important}
@@ -438,6 +453,7 @@ a{color:var(--blue-d)}
           <div id="map"></div>
           <div class="navbanner" id="navb"><div class="nb-ic"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><b id="nb-dist">–</b></div><div class="nb-txt"><div class="k" id="nb-kind">Next stop</div><div class="n" id="nb-name">–</div></div><button class="nb-go" id="nb-go">Directions</button></div>
           <div class="mapbtns"><button id="mb-layer" title="Map / Satellite"><svg class="i" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button><button id="mb-3d" title="3D / 2D">3D</button><button id="mb-lead" title="Follow leader"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button id="mb-all" title="Show everyone"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
+          <div class="lpbtns"><button id="mb-checkin"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Check in</button><button id="mb-sos" class="sosf"><svg class="i" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>SOS</button></div>
           <button class="recenter" id="mb-me"><svg viewBox="0 0 24 24"><polygon points="12 2 20 21 12 17 4 21 12 2"/></svg>Re-center</button>
           <div class="etabar"><b id="eta-t">–</b><span id="eta-d">–</span></div>
         </div>
@@ -649,9 +665,19 @@ function placeSearch(input,resultsEl,onPick){
         :'<p class="muted small" style="margin-top:6px">No places found. Try another name or pick on the map.</p>';
       $(resultsEl).onclick=e=>{const bt=e.target.closest('button');if(!bt)return;const p=js[+bt.dataset.i];onPick({name:p.name.slice(0,40),full:p.name+(p.addr?', '+p.addr:''),lat:+p.lat,lng:+p.lng});$(resultsEl).innerHTML='';$(input).value=''}},250)});
 }
-async function getRoute(points){
-  try{const q=points.map(p=>p.lng+','+p.lat).join(';');const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${q}?overview=simplified&geometries=geojson`);const j=await r.json();
-    if(j.routes&&j.routes[0]){return {coords:j.routes[0].geometry.coordinates.map(c=>[+c[1].toFixed(5),+c[0].toFixed(5)]),km:+(j.routes[0].distance/1000).toFixed(1),dur:Math.round(j.routes[0].duration),road:true}}}catch(e){}
+// keep road shape but drop redundant points (~4 m tolerance)
+function simplify(pts,tol){if(pts.length<3)return pts;const keep=new Uint8Array(pts.length);keep[0]=keep[pts.length-1]=1;const st=[[0,pts.length-1]];
+  while(st.length){const [a,b]=st.pop();let md=0,mi=-1;const [ay,ax]=pts[a],[by,bx]=pts[b];const dx=bx-ax,dy=by-ay,L=dx*dx+dy*dy;
+    for(let i=a+1;i<b;i++){const [py,px]=pts[i];let t=L?((px-ax)*dx+(py-ay)*dy)/L:0;t=Math.max(0,Math.min(1,t));const ex=ax+t*dx-px,ey=ay+t*dy-py;const d=ex*ex+ey*ey;if(d>md){md=d;mi=i}}
+    if(mi>0&&md>tol*tol){keep[mi]=1;st.push([a,mi],[mi,b])}}
+  return pts.filter((_,i)=>keep[i])}
+const ROUTERS=['https://router.project-osrm.org/route/v1/driving/','https://routing.openstreetmap.de/routed-car/route/v1/driving/'];
+async function getRoute(points){const q=points.map(p=>(+p.lng).toFixed(6)+','+(+p.lat).toFixed(6)).join(';');
+  for(const base of ROUTERS){
+    try{const ac=new AbortController();const to=setTimeout(()=>ac.abort(),12000);
+      const r=await fetch(`${base}${q}?overview=full&geometries=geojson`,{signal:ac.signal});clearTimeout(to);const j=await r.json();
+      if(j.routes&&j.routes[0]){const c=j.routes[0].geometry.coordinates.map(c=>[+c[1].toFixed(5),+c[0].toFixed(5)]);
+        return {coords:simplify(c,0.00004),km:+(j.routes[0].distance/1000).toFixed(1),dur:Math.round(j.routes[0].duration),road:true}}}catch(e){}}
   const coords=points.map(p=>[p.lat,p.lng]);let km=0;for(let i=1;i<coords.length;i++)km+=hav(coords[i-1],coords[i]);return {coords,km:+km.toFixed(1),road:false};
 }
 function myPosOnce(){return new Promise((res,rej)=>{if(SIM){res({lat:14.5995,lng:120.9842});return}if(!navigator.geolocation)return rej(new Error('No GPS'));navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:15000})})}
@@ -779,7 +805,7 @@ async function enterTrip(code){
   sub('state',s=>{T.state=s||{};refresh()});
   sub('loc',l=>{T.loc=l||{};refreshLive()});
   sub('presence',p=>{T.presence=p||{};refresh()});
-  sub('chat',c=>{const n=Object.keys(c||{}).length,o=Object.keys(T.chat).length;T.chat=c||{};if(n>o&&!$('#p-chat').classList.contains('on')&&o>0)T.unread+=n-o;renderChat();updBadges()});
+  T.seenChat=new Set();sub('chat',c=>{Object.entries(c||{}).forEach(([k,v])=>{if(!T.seenChat.has(k)){T.seenChat.add(k);if(T.chatReady&&v.type==='checkin'&&v.uid!==T.me)toast(v.t)}});T.chatReady=true;const n=Object.keys(c||{}).length,o=Object.keys(T.chat).length;T.chat=c||{};if(n>o&&!$('#p-chat').classList.contains('on')&&o>0)T.unread+=n-o;renderChat();updBadges()});
   sub('alerts',a=>{T.alerts=a||{};onAlerts()});
   // presence
   DB.onConnected(c=>{if(!c||!T)return;DB.set(P('presence/'+T.me),true);DB.onDisconnect(P('presence/'+T.me),null)});
@@ -848,7 +874,7 @@ async function copyInvite(){try{await navigator.clipboard.writeText(inviteText()
 $('#l-leave').onclick=()=>openSheet(`<h1>Leave trip?</h1><p class="muted" style="margin:8px 0 16px">${isLeader()?'As leader, leaving cancels the trip for everyone.':'You can rejoin later with the code (needs approval again).'}</p><button class="btn red" id="cf-leave">Leave</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`)||($('#cf-leave').onclick=async()=>{closeSheet();if(isLeader())await DB.update(P('meta'),{status:'ended',ended:DB.now()});else{await leaveTrip();return}exitTrip()});
 
 /* ================= LIVE ================= */
-let map=null,layers={mk:{},stops:[]},follow='nav',nav3d=true,mapType=store.get('maptype')||'map',fitDone=false,progMove=false;
+let map=null,layers={mk:{},stops:[]},follow='nav',nav3d=true,mapType=store.get('maptype')||'sat',fitDone=false,progMove=false;
 const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/';
 function mapStyle(){return {version:8,sources:{
   osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap'},
@@ -856,25 +882,31 @@ function mapStyle(){return {version:8,sources:{
   roads:{type:'raster',tiles:[ESRI+'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19},
   places:{type:'raster',tiles:[ESRI+'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19}},
   layers:[{id:'osm',type:'raster',source:'osm',paint:{'raster-saturation':-0.25}},
-    {id:'sat',type:'raster',source:'sat',layout:{visibility:'none'}},
+    {id:'sat',type:'raster',source:'sat',layout:{visibility:'none'},paint:{'raster-saturation':-0.08,'raster-contrast':0.08,'raster-brightness-max':0.93}},
     {id:'roads',type:'raster',source:'roads',layout:{visibility:'none'}},
     {id:'places',type:'raster',source:'places',layout:{visibility:'none'}}]}}
 function setMapType(m,t){const sat=t==='sat';['sat','roads','places'].forEach(l=>m.setLayoutProperty(l,'visibility',sat?'visible':'none'));m.setLayoutProperty('osm','visibility',sat?'none':'visible')}
 function makeMap(el,opts){const m=new maplibregl.Map({container:el,style:mapStyle(),center:[121.0,14.6],zoom:11,attributionControl:{compact:true},maxPitch:70,...opts});return m}
-function startLive(){
+async function upgradeRoute(){const m=T&&T.meta;if(!m||!m.route||!m.stops||T.meta.leaderId!==T.me||T.routeUp)return;T.routeUp=1;
+  const r=m.route;if(r.road&&r.coords.length>=r.km*4)return;const n=await getRoute(m.stops);
+  if(n.road&&T&&T.meta===m)await DB.update(P('meta'),{route:n})}
+function startLive(){upgradeRoute();
   go('s-live');$('#v-name').textContent=T.meta.name;
   if(!map){map=makeMap('map',{});
     map.on('load',()=>{setMapType(map,mapType);
       map.addSource('route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
       map.addLayer({id:'route-casing',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#ffffff','line-opacity':.7,'line-width':['interpolate',['linear'],['zoom'],10,5,16,11]}});
       map.addLayer({id:'route-line',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#8496B0','line-opacity':.8,'line-width':['interpolate',['linear'],['zoom'],10,3,16,7]}});
+      map.addSource('snap',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
+      map.addLayer({id:'snap-line',type:'line',source:'snap',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#2F6BFF','line-width':['interpolate',['linear'],['zoom'],12,3,18,6],'line-dasharray':[0,2]}});
       map.addSource('guide',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
       map.addLayer({id:'guide-casing',type:'line',source:'guide',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#0A2A7A','line-width':['interpolate',['linear'],['zoom'],10,7,16,15]}});
       map.addLayer({id:'guide-line',type:'line',source:'guide',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#2F6BFF','line-width':['interpolate',['linear'],['zoom'],10,5,16,11]}});
       drawRoute();renderMarkers()});
     const userMove=e=>{if(e.originalEvent&&!progMove){follow='free';updMapBtns()}};
     map.on('dragstart',userMove);map.on('rotatestart',userMove);map.on('pitchstart',userMove);
-    map.on('rotate',()=>rotateVehicles());}
+    map.on('rotate',()=>rotateVehicles());
+    map.on('click',()=>{if(T&&T.sel){T.sel=null;renderMarkers()}});}
   setTimeout(()=>map.resize(),60);
   drawRoute();fitDone=false;follow='nav';updMapBtns();
   startGPS();keepAwake();
@@ -910,21 +942,23 @@ function projectOn(c,cum,pt){if(!c||c.length<2)return{i:1,t:0,prog:0,off:c&&c.le
     if(d<best.d)best={d,i,t}}
   const a=c[best.i-1],b=c[best.i];return {i:best.i,t:best.t,prog:cum[best.i-1]+best.t*(cum[best.i]-cum[best.i-1]),off:best.d,px:[a[0]+(b[0]-a[0])*best.t,a[1]+(b[1]-a[1])*best.t]}}
 // the part of a line still ahead of a point (consumed part removed)
-function aheadOf(c,cum,pt){const pr=projectOn(c,cum,pt);const out=[pt];if(pr.off>0.03)out.push(pr.px);else out[0]=pt;for(let k=pr.i;k<c.length;k++)out.push(c[k]);return {coords:out,pr}}
+function aheadOf(c,cum,pt){const pr=projectOn(c,cum,pt);const out=[pt];if(pr.off>0.012)out.push(pr.px);else out[0]=pt;for(let k=pr.i;k<c.length;k++)out.push(c[k]);return {coords:out,pr}}
 const meetActiveFor=u=>{const m=T&&T.meta&&T.meta.meet;if(!m)return false;const st=T.state[u]||{};return st.meetAt!==m.ts};
 let meetFetchAt=0;
 async function ensureMeetPath(me){const m=T.meta.meet;if(!m||!me||!me.l)return;
   const mp=T.meetPath;const here=[me.l.lat,me.l.lng];
-  const stale=!mp||mp.ts!==m.ts||(projectOn(mp.coords,mp.cum,here).off>0.25&&Date.now()-meetFetchAt>30000);
+  const stale=!mp||mp.ts!==m.ts||(!mp.road&&Date.now()-meetFetchAt>15000)||(projectOn(mp.coords,mp.cum,here).off>0.2&&Date.now()-meetFetchAt>10000);
   if(!stale||Date.now()-meetFetchAt<8000)return;meetFetchAt=Date.now();
   const r=await getRoute([{lat:here[0],lng:here[1]},{lat:m.lat,lng:m.lng}]);
   if(T&&T.meta&&T.meta.meet&&T.meta.meet.ts===m.ts){T.meetPath={...r,cum:cumOf(r.coords),ts:m.ts};renderMarkers()}}
-function drawGuide(me){if(!map||!map.getSource('guide'))return;let coords=[];
+function drawGuide(me){if(!map||!map.getSource('guide'))return;let coords=[];T.offRoad=false;
   if(me&&me.l){const here=[me.l.lat,me.l.lng];
-    if(meetActiveFor(T.me)){const m=T.meta.meet;const mp=T.meetPath;if(mp&&mp.ts===m.ts)coords=aheadOf(mp.coords,mp.cum,here).coords;else coords=[here,[m.lat,m.lng]]}
-    else if(T.cum)coords=aheadOf(T.meta.route.coords,T.cum,here).coords}
+    if(meetActiveFor(T.me)){const m=T.meta.meet;const mp=T.meetPath;if(mp&&mp.ts===m.ts){const a=aheadOf(mp.coords,mp.cum,here);coords=a.coords;T.offRoad=a.pr.off>0.012}else{coords=[here,[m.lat,m.lng]];T.offRoad='all'}}
+    else if(T.cum){const a=aheadOf(T.meta.route.coords,T.cum,here);coords=a.coords;T.offRoad=a.pr.off>0.012}}
   else coords=T.meta.route.coords;
-  T.guide=coords;map.getSource('guide').setData({type:'Feature',geometry:{type:'LineString',coordinates:coords.map(p=>[p[1],p[0]])}})}
+  let snap=[];if(T.offRoad==='all'){snap=coords;coords=[]}else if(me&&me.l&&coords.length>2&&T.offRoad){snap=[coords[0],coords[1]];coords=coords.slice(1)}
+  if(map.getSource('snap'))map.getSource('snap').setData({type:'Feature',geometry:{type:'LineString',coordinates:snap.map(p=>[p[1],p[0]])}});
+  T.guide=coords.length?(snap.length?[snap[0],...coords]:coords):snap;map.getSource('guide').setData({type:'Feature',geometry:{type:'LineString',coordinates:coords.map(p=>[p[1],p[0]])}})}
 // smooth marker movement
 const glides=new Map();
 function glide(mk,lng,lat){const from=mk.getLngLat();if(Math.abs(from.lng-lng)+Math.abs(from.lat-lat)>0.05||Math.abs(from.lng-lng)+Math.abs(from.lat-lat)<1e-7){mk.setLngLat([lng,lat]);glides.delete(mk);return}
@@ -975,12 +1009,16 @@ function renderMarkers(){
   if(!map||!T||!T.meta)return;const {info}=memberInfo();
   Object.keys(layers.mk).forEach(u=>{if(!info[u]||!info[u].l){layers.mk[u].remove();delete layers.mk[u]}});
   Object.values(info).forEach(x=>{if(!x.l)return;const stale=!x.fresh||!x.online||x.st.paused;headingOf(x.u,x.l);
-        const key=[x.m.veh,x.m.color,x.m.ini,x.m.role,stale,stale?ago(x.l.t):'',Voice.speaking.has(x.u),x.u===T.me].join('|');
+        const kmh=x.l.spd!=null&&x.l.spd>1?Math.round(x.l.spd*3.6):0;const sel=T.sel===x.u;
+        let bub='';if(stale)bub=`${esc(x.u===T.me?'You':x.m.nick.split(' ')[0])}<small>last seen ${ago(x.l.t)}</small>`;
+        else if(sel)bub=`${esc(x.m.nick)}${kmh?` · ${kmh} km/h`:''}<small>${esc(x.status?x.status[1]:'')} · ${ago(x.l.t)}</small>`;
+        else if(x.u===T.me)bub=`You${kmh?` · ${kmh} km/h`:''}`;
+        const key=[x.m.color,x.m.ini,x.m.role,stale,bub,Voice.speaking.has(x.u),x.u===T.me].join('|');
     let mk=layers.mk[x.u];
-    if(!mk){const el=document.createElement('div');mk=layers.mk[x.u]=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([x.l.lng,x.l.lat]).addTo(map);el.dataset.base=el.className;if(x.u===T.me)el.style.zIndex=10}
+    if(!mk){const el=document.createElement('div');mk=layers.mk[x.u]=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat([x.l.lng,x.l.lat]).addTo(map);el.dataset.base=el.className;if(x.u===T.me)el.style.zIndex=10;const uid=x.u;el.addEventListener('click',ev=>{ev.stopPropagation();T.sel=T.sel===uid?null:uid;renderMarkers()})}
     const el=mk.getElement();
-    if(el.dataset.key!==key){el.dataset.key=key;el.className=(el.dataset.base||'')+' veh'+(x.u===T.me?' me':'')+(stale?' stale':'')+(Voice.speaking.has(x.u)?' speak':'');
-      el.innerHTML=`<div class="vrot"><svg viewBox="0 0 18 14"><path d="M9 0L18 14L9 10L0 14Z" fill="${x.m.color}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div class="pin" style="background:${x.m.color}">${esc(x.m.ini)}</div>${x.m.role==='leader'?'<span class="vcr">L</span>':''}${x.u===T.me||stale?`<div class="vlbl">${x.u===T.me?'You':esc(x.m.nick.split(' ')[0])}${stale?` <span class="ls">· ${ago(x.l.t)}</span>`:''}</div>`:''}`}
+    if(el.dataset.key!==key){el.dataset.key=key;el.className=(el.dataset.base||'')+' lpin'+(x.u===T.me?' me':'')+(stale?' stale':'')+(Voice.speaking.has(x.u)?' speak':'');
+      el.style.zIndex=sel?20:(x.u===T.me?10:'');el.innerHTML=`${bub?`<div class="lp-bub">${bub}</div>`:''}<div class="lp-pin" style="background:${x.m.color}">${esc(x.m.ini)}</div>${x.m.role==='leader'?'<span class="vcr">L</span>':''}`}
     glide(mk,x.l.lng,x.l.lat)});
   rotateVehicles();
   // camera
@@ -1157,7 +1195,7 @@ function sysMsg(t,k=''){return DB.push(P('chat'),{uid:T.me,t,type:'sys',k,ts:DB.
 function renderChat(){
   if(!T)return;const items=Object.entries(T.chat).sort((a,b)=>a[1].ts-b[1].ts).slice(-200);
   $('#msgs').innerHTML=items.map(([,c])=>{if(c.type==='sys')return `<div class="sys ${c.k||''}">${esc(noEmo(c.t))}</div>`;const m=T.members[c.uid]||{nick:'Former member',ini:'?',color:'#555'};
-    const loc=c.type==='loc'?` <a href="https://www.google.com/maps?q=${c.lat},${c.lng}" target="_blank" rel="noopener">open map</a>`:'';
+    const loc=(c.type==='loc'||c.type==='checkin')?` <a href="https://www.google.com/maps?q=${c.lat},${c.lng}" target="_blank" rel="noopener">open map</a>`:'';
     return `<div class="msg ${c.uid===T.me?'me':''}">${avHTML(m)}<div class="bub" style="border-color:${m.color}">${c.uid===T.me?'':`<div class="who" style="color:${m.color}">${esc(m.nick)}</div>`}${esc(c.t)}${loc}<time>${timeStr(c.ts)}</time></div></div>`}).join('');
   const pin=T.meta&&T.meta.pin;$('#pin').style.display=pin?'':'none';if(pin)$('#pin').textContent='Pinned: '+noEmo(pin.text);
   scrollChat();
@@ -1269,6 +1307,13 @@ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!NATIVE&&!
 const AppPl=nativePlugin('App');if(AppPl)AppPl.addListener('backButton',()=>{if($('#picker').classList.contains('on'))return $('#picker').classList.remove('on');if($('#sheet').classList.contains('on'))return closeSheet();if($('#sosb').classList.contains('on'))return $('#sosb').classList.remove('on');
   if($('#s-create').classList.contains('on')||$('#s-join').classList.contains('on'))return go('s-home');if($('#s-settings').classList.contains('on')&&!ST.first)return showHome();if($('#s-signup').classList.contains('on'))return go('s-auth');if(!$('#s-home').classList.contains('on'))return AppPl.minimizeApp();AppPl.exitApp()});
 renderInstall();
+
+/* ================= CHECK IN ================= */
+$('#mb-sos').onclick=()=>$('#sos-btn').click();
+$('#mb-checkin').onclick=async()=>{const l=T&&T.loc[T.me];if(!l)return toast('Waiting for your GPS…','warn');
+  const b=$('#mb-checkin');b.disabled=true;let place='';
+  try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=17&accept-language=en&lat=${l.lat}&lon=${l.lng}`);const j=await r.json();const a=j.address||{};place=j.name||a.road||a.village||a.suburb||a.town||a.city||''}catch(e){}
+  await send(`📍 ${meM().nick} checked in${place?' at '+place:''}`,'checkin',{lat:l.lat,lng:l.lng});b.disabled=false;toast('Checked in'+(place?' at '+place:''))};
 
 /* ================= TRIP MENU ================= */
 async function leaveTrip(){if(!T)return;T.leaving=true;const me=meM();try{await sysMsg(`${me?me.nick:'A member'} left the trip`)}catch(e){}
