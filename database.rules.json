@@ -6,7 +6,7 @@
       "$code": {
         "meta": {
           ".read": "auth != null",
-          ".write": "auth != null && ((!data.exists() && newData.child('leaderId').val() === auth.uid) || (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader'))",
+          ".write": "auth != null && ((!data.exists() && newData.child('leaderId').val() === auth.uid && auth.token.email_verified === true) || (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader'))",
           "leaderId": {
             ".validate": "!data.exists() || newData.val() === data.val()"
           },
@@ -28,7 +28,7 @@
           ".write": "auth != null && (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader')",
           "$uid": {
             ".read": "auth != null && auth.uid === $uid",
-            ".write": "auth != null && ((root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader') || (auth.uid === $uid && (!newData.exists() || (newData.child('status').val() === 'pending' && root.child('trips/'+$code+'/meta/locked').val() !== true && root.child('trips/'+$code+'/meta/status').val() !== 'ended'))))",
+            ".write": "auth != null && ((root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader') || (auth.uid === $uid && (!newData.exists() || (auth.token.email_verified === true && newData.child('status').val() === 'pending' && root.child('trips/'+$code+'/meta/locked').val() !== true && root.child('trips/'+$code+'/meta/status').val() !== 'ended'))))",
             "nick": {
               ".validate": "newData.isString() && newData.val().length <= 20"
             }
@@ -75,6 +75,15 @@
               ".write": "auth != null && auth.uid === $from && root.child('trips/'+$code+'/members/'+auth.uid).exists()"
             }
           }
+        }
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "nick": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 20"
         }
       }
     }

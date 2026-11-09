@@ -10,7 +10,9 @@ RallyRide is a free group-ride app for motorcycle groups, road trips, cycling gr
 - **Group chat** with quick messages, location sharing and pinned announcements.
 - **Leader controls:** approve or decline, lock the trip, change the destination, add stops, set a meeting point, set the separation alert, make co-leaders, remove members, end the trip.
 - **Safety:** falling-behind and signal-lost alerts, SOS with incident type, an "I stopped" / "I arrived" status, and an arrival checklist.
-- No profile photos: each person is shown by their **initials and a color**.
+- **Accounts:** sign up with email and password, email confirmation, log in, forgot password, change password, log out and delete account.
+- **Profile with no photos:** each person is shown by their **initials and a color**, with a default vehicle.
+- **Google-style place search** that suggests places as you type (Photon), focused on the Philippines and sorted by distance from you.
 
 ## Get the app
 
@@ -24,7 +26,7 @@ Everything runs on free plans with no card on file:
 | Part | Service | Free plan |
 |---|---|---|
 | Trip data, locations, chat | Firebase Realtime Database (Spark) | 100 phones online at once, 1 GB stored, 10 GB/month downloaded |
-| Sign-in | Firebase Anonymous Auth | Free |
+| Accounts and emails | Firebase Authentication (email/password) | Free |
 | Voice | Phone-to-phone (WebRTC) + free STUN | No minute limits |
 | Map, search, routes | MapLibre, OpenStreetMap, Nominatim, OSRM | Free (fair use) |
 | Satellite view | Esri World Imagery | Free for non-commercial use with attribution |
@@ -32,7 +34,7 @@ Everything runs on free plans with no card on file:
 
 ## Setup notes (owner)
 
-1. **Firebase:** paste the web config into `FIREBASE_CONFIG` near the top of the script in `index.html`. In the Firebase console, enable **Authentication → Anonymous** and paste `database.rules.json` into **Realtime Database → Rules**, then click Publish.
+1. **Firebase** (project `rallyride-ed714`): the web config is in `FIREBASE_CONFIG` in `index.html`. **Authentication → Email/Password** is enabled. Rules are in `database.rules.json`; after changing them, paste them into **Realtime Database → Rules** and click **Publish**.
 2. **Website:** repo **Settings → Pages → Deploy from a branch → main / (root)**.
 3. **Android:** every push to `main` builds a signed APK and publishes it under **Releases** (see `.github/workflows/android.yml`).
    - The signing key `android-app/release.keystore` is committed, with a fallback password in the workflow, so that updates install over older versions. Anyone who copies the repo could sign an app with the same key. To lock this down, change the keystore password and add it as the repository secret `KEYSTORE_PASSWORD`.

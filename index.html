@@ -67,9 +67,14 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
 .card h3{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:10px}
 .req{display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel2);border-radius:12px;margin-bottom:8px}
-.results{background:#fff;border:1px solid var(--line);border-radius:12px;margin-top:6px;overflow:hidden;box-shadow:0 6px 18px rgba(15,27,45,.06)}
-.results button{display:block;width:100%;text-align:left;padding:11px 13px;font-size:13px;border-bottom:1px solid var(--line)}
-.results button:last-child{border:0}
+.results{background:#fff;border:1px solid var(--line);border-radius:16px;margin-top:6px;overflow:hidden;box-shadow:0 8px 24px rgba(15,27,45,.12);position:relative;z-index:20}
+.results button{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:12px 16px;font-size:15px;color:var(--text)}
+.results button:active,.results button:hover{background:var(--panel2)}
+.results .rp{flex-shrink:0;width:22px;height:22px;stroke:#5F6B7A;fill:none;stroke-width:1.8}
+.results .rt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.results .rt .nm{font-weight:400}.results .rt .nm b{font-weight:700}
+.results .rt .ad{color:#6B7280;margin-left:6px}
+.results .rk{font-size:12px;color:#8A94A3;flex-shrink:0}
 .stoprow{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-top:6px;font-size:13px}.stoprow span{flex:1}
 .topbar{padding:10px 14px 6px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff}
 .live{font-size:11px;font-weight:700;color:var(--red);letter-spacing:.5px;display:inline-flex;align-items:center;gap:5px}
@@ -175,6 +180,16 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .banner.info{background:var(--blue-soft);color:var(--blue-d)}
 .notice{background:var(--blue-soft);color:#174A7C;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5}
 a{color:var(--blue-d)}
+.authhero{padding:36px 24px 8px}
+.pwrow{position:relative}.pwrow .eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--blue-d);font-size:13px;font-weight:600;padding:8px}
+.linkbtn{color:var(--blue-d);font-weight:600;font-size:14px;padding:8px 0}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.sw{width:38px;height:38px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.sw.on{box-shadow:0 0 0 3px var(--text)}
+.homehead{display:flex;align-items:center;gap:12px;padding:14px 20px 0}
+.homehead .hi{flex:1;min-width:0}.homehead .hi b{display:block;font-size:16px}
+.iconbtn{width:44px;height:44px;border-radius:12px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.verified{font-size:11px;font-weight:600;color:var(--green);background:var(--green-soft);padding:2px 8px;border-radius:999px}
 .picker{position:absolute;inset:0;z-index:970;background:var(--bg);display:none;flex-direction:column;padding-top:env(safe-area-inset-top)}
 .picker.on{display:flex}
 .picker .ph{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line)}
@@ -198,7 +213,95 @@ a{color:var(--blue-d)}
   <div id="toasts"></div>
 
   <!-- HOME -->
-  <section class="screen on" id="s-home">
+  <section class="screen on" id="s-loading"><div class="hero" style="align-items:center"><div class="logo"><span class="mark"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>RallyRide</div><p class="muted" style="margin-top:14px">Loading…</p><div id="boot-err"></div></div></section>
+
+  <!-- LOG IN -->
+  <section class="screen" id="s-auth">
+    <div class="scroll"><div class="authhero">
+      <div class="logo"><span class="mark"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>RallyRide</div>
+      <p class="muted" style="margin-top:8px">Ride together. Talk live. Nobody gets left behind.</p>
+      <h1 style="margin-top:28px">Log in</h1>
+      <div class="label">Email</div><input class="field" id="a-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
+      <div class="label">Password</div><div class="pwrow"><input class="field" id="a-pw" type="password" autocomplete="current-password" placeholder="Your password"><button class="eye" data-eye="a-pw">Show</button></div>
+      <div style="text-align:right"><button class="linkbtn" id="a-forgot">Forgot password?</button></div>
+      <p class="small" id="a-err" style="color:var(--red);min-height:18px"></p>
+      <button class="btn" id="a-go">Log in</button>
+      <p class="muted" style="text-align:center;margin-top:18px">New to RallyRide? <button class="linkbtn" id="a-tosignup">Create an account</button></p>
+      <p class="muted small" style="text-align:center;margin-top:10px"><a href="privacy.html">Privacy</a></p>
+    </div></div>
+  </section>
+
+  <!-- SIGN UP -->
+  <section class="screen" id="s-signup">
+    <div class="scroll pad">
+      <button class="back" id="su-back">← Back to log in</button>
+      <h1>Create your account</h1>
+      <p class="muted small" style="margin-top:4px">No photo needed. You'll show as your initials and color.</p>
+      <div class="row" style="margin-top:16px"><div class="av" id="su-av" style="width:56px;height:56px;font-size:20px;background:#2B8CEB">?</div><div class="muted small">Preview</div></div>
+      <div class="label">Nickname</div><input class="field" id="su-nick" maxlength="16" placeholder="e.g. Alex Lim">
+      <div class="label">Your color</div><div class="swatches" id="su-color"></div>
+      <div class="label">Vehicle</div><div class="chips" id="su-veh"></div>
+      <div class="label">Email</div><input class="field" id="su-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
+      <div class="label">Password</div><div class="pwrow"><input class="field" id="su-pw" type="password" autocomplete="new-password" placeholder="At least 8 characters"><button class="eye" data-eye="su-pw">Show</button></div>
+      <div class="label">Confirm password</div><input class="field" id="su-pw2" type="password" autocomplete="new-password" placeholder="Type it again">
+      <label class="row small" style="margin-top:14px;align-items:flex-start"><input type="checkbox" id="su-agree" style="margin-top:3px;width:18px;height:18px"><span>I agree to the <a href="privacy.html">privacy policy</a>. My location is shared only with trips I join.</span></label>
+      <p class="small" id="su-err" style="color:var(--red);margin-top:10px;min-height:18px"></p>
+      <button class="btn" id="su-go">Create account</button>
+      <div style="height:20px"></div>
+    </div>
+  </section>
+
+  <!-- VERIFY EMAIL -->
+  <section class="screen" id="s-verify">
+    <div class="hero" style="text-align:center">
+      <div class="pulse"><svg class="i" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg></div>
+      <h1>Confirm your email</h1>
+      <p class="muted" style="margin-top:8px">We sent a confirmation link to<br><b id="v-email" style="color:var(--text)"></b></p>
+      <p class="muted small" style="margin-top:10px">Open the email, tap the link, then come back here. Check your spam folder if you don't see it.</p>
+      <div style="height:22px"></div>
+      <button class="btn" id="v-done">I've confirmed my email</button>
+      <div style="height:10px"></div>
+      <button class="btn ghost" id="v-resend">Resend email</button>
+      <p class="small" id="v-msg" style="margin-top:10px;min-height:18px"></p>
+      <button class="linkbtn" id="v-logout">Use a different email</button>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="screen" id="s-settings">
+    <div class="scroll pad">
+      <button class="back" id="st-back">← Back</button>
+      <h1 id="st-title">Settings</h1>
+      <p class="muted small" id="st-sub"></p>
+      <div class="card" style="margin-top:14px"><h3>Profile</h3>
+        <div class="row"><div class="av" id="st-av" style="width:56px;height:56px;font-size:20px">?</div><div class="muted small">This is how others see you on the map and in chat.</div></div>
+        <div class="label">Nickname</div><input class="field" id="st-nick" maxlength="16">
+        <div class="label">Your color</div><div class="swatches" id="st-color"></div>
+        <div class="label">Default vehicle</div><div class="chips" id="st-veh"></div>
+        <p class="small" id="st-err" style="color:var(--red);margin-top:8px;min-height:16px"></p>
+        <button class="btn" id="st-save">Save profile</button>
+      </div>
+      <div id="st-more">
+        <div class="card"><h3>Account</h3>
+          <div class="row between"><div style="min-width:0"><div class="small muted">Email</div><div id="st-email" style="font-weight:600;word-break:break-all"></div></div><span class="verified">Confirmed</span></div>
+          <div style="height:12px"></div>
+          <button class="btn ghost" id="st-pw">Change password</button>
+          <div style="height:8px"></div>
+          <button class="btn ghost" id="st-logout">Log out</button>
+        </div>
+        <div class="card"><h3>App</h3>
+          <div class="switch" style="margin-top:0"><div><div style="font-weight:600">Satellite map</div><div class="muted small">Show satellite photos instead of the street map</div></div><button class="tog" id="st-sat"></button></div>
+          <p class="small" style="margin-top:12px"><a href="privacy.html">Privacy policy</a> · <a href="https://github.com/jaycee055/RallyRide/issues">Help &amp; feedback</a></p>
+        </div>
+        <button class="btn ghost" id="st-delete" style="color:var(--red);border-color:#F5C2C2">Delete my account</button>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-home">
+    <div class="homehead"><div class="av" id="h-av" style="width:44px;height:44px">?</div><div class="hi"><span class="muted small">Welcome back</span><b id="h-name"></b></div>
+      <button class="iconbtn" id="h-settings" title="Settings"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
     <div class="hero">
       <div class="logo"><span class="mark"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>RallyRide</div>
       <p class="muted" style="margin-top:8px">Ride together. Talk live. Nobody gets left behind.</p>
@@ -215,8 +318,6 @@ a{color:var(--blue-d)}
     <div class="scroll pad">
       <button class="back" data-go="s-home">← Back</button>
       <h1>New group trip</h1>
-      <div class="label">Your nickname</div>
-      <input class="field" id="c-nick" maxlength="16" placeholder="e.g. Alex">
       <div class="label">Trip name</div>
       <input class="field" id="c-name" maxlength="40" placeholder="e.g. Sunday Mountain Ride">
       <div class="label">Vehicle type</div>
@@ -389,7 +490,6 @@ const store={get(k){try{return JSON.parse(localStorage.getItem('rallyride:'+k))}
 function makeLocalDB(){
   // Test mode: each value stored under its own key so tabs never overwrite each other.
   const PFX='rallyride:ldb:';const bc=('BroadcastChannel' in window)?new BroadcastChannel('rallyride-db'):null;
-  let uid=sessionStorage.getItem('rallyride:luid');if(!uid){uid='u'+Math.random().toString(36).slice(2,10);sessionStorage.setItem('rallyride:luid',uid)}
   const norm=p=>p.split('/').filter(Boolean).join('/');
   const keys=()=>{const a=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(PFX))a.push(k.slice(PFX.length))}return a};
   function getAt(p){p=norm(p);const ks=keys().filter(k=>k===p||k.startsWith(p+'/')).sort((a,b)=>a.length-b.length);if(!ks.length)return undefined;
@@ -408,7 +508,17 @@ function makeLocalDB(){
   window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith(PFX))subs.forEach(s=>s.check())});setInterval(()=>subs.forEach(s=>s.check()),1000);
   const dis=[];window.addEventListener('pagehide',()=>{dis.forEach(([p,v])=>{clear(p);put(p,v)});notify()});
   let pushN=0;
-  return {uid,mode:'local',ready:Promise.resolve(),
+  const authCbs=[];const AK='rallyride:lauth';const users=()=>{try{return JSON.parse(localStorage.getItem(AK))||{}}catch(e){return{}}};
+  const mkUser=(email,id)=>({uid:id,email,emailVerified:true,isAnonymous:false});
+  let cur=sessionStorage.getItem('rallyride:lcur');let user=cur?mkUser(cur,users()[cur]&&users()[cur].uid):null;if(user&&!user.uid)user=null;
+  const fire=()=>{api.user=user;api.uid=user?user.uid:null;authCbs.forEach(cb=>cb(user))};
+  const api={mode:'local',user,uid:user?user.uid:null,ready:Promise.resolve(),onAuth:cb=>{authCbs.push(cb);setTimeout(()=>cb(user))},
+    auth:{async signUp(e,p){const u=users();if(u[e])throw {code:'auth/email-already-in-use'};u[e]={pw:p,uid:'u'+Math.random().toString(36).slice(2,10)};localStorage.setItem(AK,JSON.stringify(u));sessionStorage.setItem('rallyride:lcur',e);user=mkUser(e,u[e].uid);fire()},
+      async signIn(e,p){const u=users()[e];if(!u||u.pw!==p)throw {code:'auth/invalid-credential'};sessionStorage.setItem('rallyride:lcur',e);user=mkUser(e,u.uid);fire()},
+      async signOut(){sessionStorage.removeItem('rallyride:lcur');user=null;fire()},async sendVerify(){},async refresh(){return true},async reset(){},
+      async changePassword(o,n){const u=users();if(u[user.email].pw!==o)throw {code:'auth/wrong-password'};u[user.email].pw=n;localStorage.setItem(AK,JSON.stringify(u))},
+      async deleteAccount(pw){const u=users();if(u[user.email].pw!==pw)throw {code:'auth/wrong-password'};delete u[user.email];localStorage.setItem(AK,JSON.stringify(u));await this.signOut()}}};
+  Object.assign(api,{
     on(p,cb){const s={last:undefined,check(){const v=getAt(p);const j=JSON.stringify(v??null);if(j!==s.last){s.last=j;cb(v??null)}}};subs.add(s);setTimeout(()=>s.check());return()=>subs.delete(s)},
     onChildAdded(p,cb){const seen=new Set();const s={check(){const v=getAt(p)||{};Object.keys(v).sort().forEach(k=>{if(!seen.has(k)){seen.add(k);cb(k,v[k])}})}};subs.add(s);setTimeout(()=>s.check());return()=>subs.delete(s)},
     async get(p){return getAt(p)??null},
@@ -419,12 +529,26 @@ function makeLocalDB(){
     async createIfAbsent(p,v){if(getAt(p)!=null)return false;localStorage.setItem(PFX+norm(p),JSON.stringify(v));notify();return true},
     onDisconnect(p,v){dis.push([p,v])},
     onConnected(cb){cb(true)},
-    now:()=>Date.now()};
+    now:()=>Date.now()});
+  return api;
 }
 function makeFirebaseDB(cfg){
   firebase.initializeApp(cfg);if(cfg.projectId==='demo-convoy'){firebase.auth().useEmulator('http://127.0.0.1:9099',{disableWarnings:true});firebase.database().useEmulator('127.0.0.1',9000)}const db=firebase.database();const api={mode:'firebase',uid:null};
   let offset=0;db.ref('.info/serverTimeOffset').on('value',s=>offset=s.val()||0);
-  api.ready=new Promise((res,rej)=>{firebase.auth().onAuthStateChanged(u=>{if(u){api.uid=u.uid;res()}});firebase.auth().signInAnonymously().catch(rej)});
+  const fa=firebase.auth();const authCbs=[];api.user=null;
+  api.ready=new Promise(res=>{let first=true;fa.onAuthStateChanged(u=>{api.user=u;api.uid=u?u.uid:null;authCbs.forEach(cb=>cb(u));if(first){first=false;res()}})});
+  api.onAuth=cb=>{authCbs.push(cb)};
+  const reauth=pw=>fa.currentUser.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(fa.currentUser.email,pw));
+  api.auth={
+    signUp:(e,p)=>fa.createUserWithEmailAndPassword(e,p),
+    signIn:(e,p)=>fa.signInWithEmailAndPassword(e,p),
+    signOut:()=>fa.signOut(),
+    sendVerify:()=>fa.currentUser.sendEmailVerification(),
+    async refresh(){if(!fa.currentUser)return false;await fa.currentUser.reload();await fa.currentUser.getIdToken(true);api.user=fa.currentUser;return fa.currentUser.emailVerified},
+    reset:e=>fa.sendPasswordResetEmail(e),
+    async changePassword(oldPw,newPw){await reauth(oldPw);await fa.currentUser.updatePassword(newPw)},
+    async deleteAccount(pw){await reauth(pw);await fa.currentUser.delete()}
+  };
   api.on=(p,cb,onErr)=>{const r=db.ref(p);const h=s=>cb(s.val());r.on('value',h,e=>{console.warn('read denied',p,e.message);if(onErr)onErr(e)});return()=>r.off('value',h)};
   api.onChildAdded=(p,cb)=>{const r=db.ref(p);const h=s=>cb(s.key,s.val());r.on('child_added',h,e=>console.warn(e.message));return()=>r.off('child_added',h)};
   api.get=async p=>(await db.ref(p).get()).val();
@@ -459,12 +583,38 @@ const timeStr=t=>new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-dig
 
 /* place search (OpenStreetMap Nominatim, free) */
 let searchT=null;
+/* Search is focused on the rider's country (Philippines by default) and sorted toward where they are. */
+let COUNTRY=store.get('cc')||'ph';
+function searchBias(){try{if(pmap&&$('#picker').classList.contains('on')){const c=pmap.getCenter();return {lat:c.lat,lng:c.lng}}}catch(e){}
+  if(typeof GPS!=='undefined'&&GPS.last)return GPS.last;const h=store.get('lastpos');return h||null}
+async function detectCountry(){try{const p=await myPosOnce();store.set('lastpos',{lat:p.lat,lng:p.lng});const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=3&lat=${p.lat}&lon=${p.lng}`);const j=await r.json();
+  const cc=j.address&&j.address.country_code;if(cc){COUNTRY=cc;store.set('cc',cc)}}catch(e){}}
+function sortNear(list,b){if(!b)return list;return list.map(p=>({p,d:hav([b.lat,b.lng],[p.lat,p.lng])})).sort((x,y)=>x.d-y.d).map(x=>x.p)}
+const PH_CENTER={lat:12.88,lng:121.77};
+async function photon(q){const b=searchBias()||(COUNTRY==='ph'?PH_CENTER:null);
+  let url=`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=15&lang=en`;if(b)url+=`&lat=${b.lat}&lon=${b.lng}&location_bias_scale=0.2&zoom=12`;
+  const j=await (await fetch(url)).json();const cc=COUNTRY.toUpperCase();
+  const items=(j.features||[]).map(f=>{const p=f.properties;const name=p.name||[p.housenumber,p.street].filter(Boolean).join(' ')||p.city||p.state;
+    const addr=[p.name&&p.street?((p.housenumber?p.housenumber+' ':'')+p.street):null,p.district||p.locality,p.city&&p.city!==name?p.city:null,p.state&&p.state!==name?p.state:null].filter(Boolean);
+    return {name,addr:[...new Set(addr)].join(', '),lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],cc:p.countrycode}}).filter(x=>x.name);
+  const seen=new Set();const uniq=items.filter(x=>{const k=x.name+'|'+x.addr;if(seen.has(k))return false;seen.add(k);return true});
+  const local=uniq.filter(x=>x.cc===cc),other=uniq.filter(x=>x.cc!==cc);
+  return local.concat(local.length>=3?[]:other).slice(0,6)}
+async function nominatim(q){const b=searchBias();let url=`https://nominatim.openstreetmap.org/search?format=json&limit=6&accept-language=en&q=${encodeURIComponent(q)}&countrycodes=${COUNTRY}`;
+  if(b)url+=`&viewbox=${b.lng-1},${b.lat+1},${b.lng+1},${b.lat-1}&bounded=0`;const js=await (await fetch(url)).json();
+  return js.map(p=>{const parts=p.display_name.split(',').map(x=>x.trim());return {name:parts[0],addr:parts.slice(1,4).join(', '),lat:+p.lat,lng:+p.lon}})}
+async function suggest(q){let r=[];try{r=await photon(q)}catch(e){}if(!r.length){try{r=await nominatim(q)}catch(e){}}return r}
+function boldMatch(name,q){const words=q.toLowerCase().split(/\s+/).filter(Boolean);return esc(name).split(/(\s+)/).map(w=>{const lw=w.toLowerCase();const hit=words.find(x=>lw.startsWith(x));return hit?`<b>${w.slice(0,hit.length)}</b>${w.slice(hit.length)}`:w}).join('')}
+const PIN_SVG='<svg class="rp" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+let searchSeq=0;
 function placeSearch(input,resultsEl,onPick){
-  $(input).addEventListener('input',()=>{clearTimeout(searchT);const q=$(input).value.trim();if(q.length<3){$(resultsEl).innerHTML='';return}
-    searchT=setTimeout(async()=>{try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&q='+encodeURIComponent(q));const js=await r.json();
-      $(resultsEl).innerHTML=js.length?`<div class="results">${js.map((p,i)=>`<button data-i="${i}">${esc(p.display_name)}</button>`).join('')}</div>`:'<p class="muted small" style="margin-top:6px">No places found</p>';
-      $(resultsEl).onclick=e=>{const b=e.target.closest('button');if(!b)return;const p=js[+b.dataset.i];onPick({name:p.display_name.split(',')[0],full:p.display_name,lat:+p.lat,lng:+p.lon});$(resultsEl).innerHTML='';$(input).value=''}}
-      catch(e){$(resultsEl).innerHTML='<p class="muted small" style="margin-top:6px">Search unavailable — check internet</p>'}},500)});
+  $(input).setAttribute('autocomplete','off');
+  $(input).addEventListener('input',()=>{clearTimeout(searchT);const q=$(input).value.trim();if(q.length<2){$(resultsEl).innerHTML='';return}
+    searchT=setTimeout(async()=>{const my=++searchSeq;const js=await suggest(q);if(my!==searchSeq)return;
+      const b=searchBias();
+      $(resultsEl).innerHTML=js.length?`<div class="results">${js.map((p,i)=>{const km=b?hav([b.lat,b.lng],[p.lat,p.lng]):null;return `<button data-i="${i}">${PIN_SVG}<span class="rt"><span class="nm">${boldMatch(p.name,q)}</span><span class="ad">${esc(p.addr)}</span></span>${km!=null?`<span class="rk">${km<10?km.toFixed(1):Math.round(km)} km</span>`:''}</button>`}).join('')}</div>`
+        :'<p class="muted small" style="margin-top:6px">No places found. Try another name or pick on the map.</p>';
+      $(resultsEl).onclick=e=>{const bt=e.target.closest('button');if(!bt)return;const p=js[+bt.dataset.i];onPick({name:p.name.slice(0,40),full:p.name+(p.addr?', '+p.addr:''),lat:+p.lat,lng:+p.lng});$(resultsEl).innerHTML='';$(input).value=''}},250)});
 }
 async function getRoute(points){
   try{const q=points.map(p=>p.lng+','+p.lat).join(';');const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${q}?overview=simplified&geometries=geojson`);const j=await r.json();
@@ -483,7 +633,7 @@ const isMgr=()=>isLeader()||(meM()&&meM().role==='coleader');
 
 /* ================= HOME ================= */
 chips('#c-veh','moto');
-$('#go-create').onclick=()=>{$('#c-nick').value=store.get('nick')||'';go('s-create')};
+$('#go-create').onclick=()=>{chips('#c-veh',PROFILE.veh||'moto');go('s-create')};
 $('#go-join').onclick=()=>{$('#j-preview').innerHTML='';$('#j-err').textContent='';go('s-join')};
 if(DB.mode==='local')$('#setup-warn').innerHTML='<div class="notice" style="margin-top:16px"><b>Test mode.</b> Not connected to the online service yet, so trips only work between tabs on this device. Add the Firebase config to go live.</div>';
 function renderResume(){const s=store.get('session');$('#resume').innerHTML=s?`<button class="choice" id="go-resume" style="border-color:var(--blue)"><span class="ci"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span><span><b>Return to your trip</b><span class="muted small">${esc(s.name||s.code)} · ${esc(s.code)}</span></span></button>`:'';if(s)$('#go-resume').onclick=()=>enterTrip(s.code)}
@@ -491,15 +641,16 @@ function renderResume(){const s=store.get('session');$('#resume').innerHTML=s?`<
 /* ================= MAP PICKER ================= */
 let pmap=null,pkCb=null,pkRev=null,pkNameEdited=false;
 const pkIcon=document.getElementById('pk-me');
-function pickOnMap(title,around,cb){
-  $('#pk-title').textContent=title;$('#pk-name').value='';pkNameEdited=false;$('#pk-q').value='';$('#pk-r').innerHTML='';pkCb=cb;
+function pickOnMap(title,around,cb,focus){
+  $('#pk-title').textContent=title;$('#pk-name').value=focus&&around?around.name:'';pkNameEdited=!!(focus&&around);$('#pk-q').value='';$('#pk-r').innerHTML='';pkCb=cb;
   $('#picker').classList.add('on');
   if(!pmap){pmap=makeMap('pmap',{center:[121.77,12.88],zoom:5,dragRotate:false,pitchWithRotate:false});pmap.touchZoomRotate.disableRotation();
     pmap.on('load',()=>setMapType(pmap,mapType));
     pmap.on('moveend',()=>reverseName());
     pmap.on('click',e=>pmap.easeTo({center:e.lngLat}));}
   setTimeout(()=>{pmap.resize();
-    if(around)pmap.jumpTo({center:[around.lng,around.lat],zoom:Math.max(pmap.getZoom(),13)});
+    if(around)pmap.jumpTo({center:[around.lng,around.lat],zoom:focus?17:Math.max(pmap.getZoom(),13)});
+    else if(store.get('lastpos')&&!GPS.last){const lp=store.get('lastpos');pmap.jumpTo({center:[lp.lng,lp.lat],zoom:13})}
     else if(GPS.last)pmap.jumpTo({center:[GPS.last.lng,GPS.last.lat],zoom:14});
     else myPosOnce().then(p=>pmap.jumpTo({center:[p.lng,p.lat],zoom:14})).catch(()=>{});
     reverseName()},60);
@@ -520,9 +671,9 @@ placeSearch('#pk-q','#pk-r',p=>{pmap.jumpTo({center:[p.lng,p.lat],zoom:16});setT
 
 /* ================= CREATE ================= */
 let C={start:null,dest:null,stops:[]};
-placeSearch('#c-start-q','#c-start-r',p=>{C.start=p;$('#c-start-v').textContent='✓ '+p.name});
-placeSearch('#c-dest-q','#c-dest-r',p=>{C.dest=p;$('#c-dest-v').textContent='✓ '+p.name});
-placeSearch('#c-stop-q','#c-stop-r',p=>{C.stops.push(p);renderStops()});
+placeSearch('#c-start-q','#c-start-r',p=>pickOnMap('Starting point',p,q=>{C.start=q;$('#c-start-v').textContent='✓ '+q.name},true));
+placeSearch('#c-dest-q','#c-dest-r',p=>pickOnMap('Destination',p,q=>{C.dest=q;$('#c-dest-v').textContent='✓ '+q.name},true));
+placeSearch('#c-stop-q','#c-stop-r',p=>pickOnMap('Add a stop',p,q=>{C.stops.push(q);renderStops()},true));
 function renderStops(){$('#c-stops').innerHTML=C.stops.map((s,i)=>`<div class="stoprow"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>${i+1}. ${esc(s.name)}</span><button data-i="${i}" class="muted">✕</button></div>`).join('');$('#c-stops').onclick=e=>{const b=e.target.closest('button');if(b){C.stops.splice(+b.dataset.i,1);renderStops()}}}
 $('#c-start-me').onclick=async()=>{$('#c-start-v').textContent='Finding you…';try{const p=await myPosOnce();C.start={name:'My location',lat:p.lat,lng:p.lng};$('#c-start-v').textContent='✓ My current location'}catch(e){$('#c-start-v').textContent='';$('#c-err').textContent='Location permission is needed for "my location".'}};
 $('#c-approve').onclick=e=>e.currentTarget.classList.toggle('on');
@@ -531,8 +682,7 @@ $('#c-stop-map').onclick=()=>pickOnMap('Add a stop',C.stops[C.stops.length-1]||C
 $('#c-dest-map').onclick=()=>pickOnMap('Destination',C.dest,p=>{C.dest=p;$('#c-dest-v').textContent='✓ '+p.name});
 const CODE_CH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 $('#c-go').onclick=async()=>{
-  const nick=$('#c-nick').value.trim(),name=$('#c-name').value.trim();
-  if(!nick)return $('#c-err').textContent='Enter your nickname.';
+  const nick=PROFILE.nick,name=$('#c-name').value.trim();
   if(!name)return $('#c-err').textContent='Enter a trip name.';
   if(!C.start||!C.dest)return $('#c-err').textContent='Set a starting point and a destination (search or pick on map).';
   $('#c-err').textContent='';$('#c-go').disabled=true;$('#c-go').textContent='Creating…';
@@ -543,8 +693,7 @@ $('#c-go').onclick=async()=>{
       ok=await DB.createIfAbsent(`trips/${code}/meta`,{name,veh:selVeh('#c-veh'),leaderId:DB.uid,leaderNick:nick,status:'lobby',approve:$('#c-approve').classList.contains('on'),locked:false,voice:'open',thr:1.5,
         stops:pts.map((p,i)=>({name:p.name,lat:p.lat,lng:p.lng,type:i===0?'start':i===pts.length-1?'dest':'stop'})),route,meet:null,pin:null,created:DB.now()})}
     if(!ok)throw new Error('Could not create a code, try again');
-    await DB.set(`trips/${code}/members/${DB.uid}`,{nick,ini:initials(nick,[]),color:COLORS[0],veh:selVeh('#c-veh'),role:'leader',joined:DB.now()});
-    store.set('nick',nick);
+    await DB.set(`trips/${code}/members/${DB.uid}`,{nick,ini:initials(nick,[]),color:PROFILE.color||COLORS[0],veh:selVeh('#c-veh'),role:'leader',joined:DB.now()});
     C={start:null,dest:null,stops:[]};['#c-start-v','#c-dest-v','#c-stops'].forEach(s=>$(s).innerHTML='');$('#c-name').value='';
     enterTrip(code);
   }catch(e){$('#c-err').textContent='Could not create the trip: '+e.message}
@@ -565,17 +714,16 @@ $('#j-find').onclick=async()=>{
   J={code,meta};
   $('#j-preview').innerHTML=`<div class="card" style="margin-top:16px"><h3>Trip found</h3><div style="font-size:20px;font-weight:700">${esc(meta.name)}</div>
     <div class="muted small" style="margin-top:4px">Leader: ${esc(meta.leaderNick)} · ${vIcon(meta.veh)}<br>${meta.stops.map(s=>esc(s.name)).join(' → ')}</div></div>
-    <div class="label">Your nickname</div><input class="field" id="j-nick" maxlength="16" value="${esc(store.get('nick')||'')}" placeholder="e.g. Mark">
+    <div class="label">Joining as</div><div class="row">${avHTML({ini:initials(PROFILE.nick,[]),color:PROFILE.color})}<b>${esc(PROFILE.nick)}</b></div>
     <div class="label">Vehicle type</div><div class="chips" id="j-veh"></div>
     <div class="notice" style="margin-top:14px">When the trip is live, your location is shared <b>only with members of this trip</b>, and sharing stops when the trip ends. You can pause it any time.</div>
     <div style="height:14px"></div><button class="btn" id="j-req">Request to join</button>`;
-  chips('#j-veh',meta.veh||'moto');
+  chips('#j-veh',PROFILE.veh||meta.veh||'moto');
   $('#j-req').onclick=requestJoin;
 };
 async function requestJoin(){
-  const nick=$('#j-nick').value.trim();if(!nick)return $('#j-err').textContent='Enter your nickname.';
-  store.set('nick',nick);
-  await DB.set(`trips/${J.code}/requests/${DB.uid}`,{nick,veh:selVeh('#j-veh'),at:DB.now(),status:'pending'});
+  const nick=PROFILE.nick;
+  await DB.set(`trips/${J.code}/requests/${DB.uid}`,{nick,veh:selVeh('#j-veh'),color:PROFILE.color||null,at:DB.now(),status:'pending'});
   $('#w-text').textContent=`Request sent to ${J.meta.leaderNick} for "${J.meta.name}" (${J.code}).`;
   go('s-wait');
   const code=J.code;
@@ -648,7 +796,7 @@ function renderRequests(){
 document.addEventListener('click',e=>{const a=e.target.closest('[data-ap]'),d=e.target.closest('[data-dc]');if(a)approveReq(a.dataset.ap);if(d)declineReq(d.dataset.dc)});
 async function approveReq(u){
   const q=T.requests[u];if(!q)return;
-  const used=Object.values(T.members).map(m=>m.color);const color=COLORS.find(c=>!used.includes(c))||COLORS[Object.keys(T.members).length%COLORS.length];
+  const used=Object.values(T.members).map(m=>m.color);const color=(q.color&&!used.includes(q.color)?q.color:null)||COLORS.find(c=>!used.includes(c))||COLORS[Object.keys(T.members).length%COLORS.length];
   const ini=initials(q.nick,Object.values(T.members).map(m=>m.ini));
   await DB.set(P('members/'+u),{nick:q.nick,ini,color,veh:q.veh,role:'member',joined:DB.now()});
   await DB.set(P(`requests/${u}/status`),'approved');
@@ -985,7 +1133,7 @@ function renderLeader(){
 async function saveRoute(stops){toast('Updating route…');const route=await getRoute(stops);await DB.update(P('meta'),{stops,route})}
 function placeSheet(title,btn,onPick){openSheet(`<h1>${title}</h1><button class="btn" id="ps-map" style="margin-top:14px">Pick on map</button><div class="label">Or search a place</div><input class="field" id="ps-q" placeholder="Type at least 3 letters"><div id="ps-r"></div><div style="height:10px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
   $('#ps-map').onclick=()=>{closeSheet();const d=T.meta.stops[T.meta.stops.length-1];pickOnMap(title,d,onPick)};
-  placeSearch('#ps-q','#ps-r',p=>{closeSheet();onPick(p)})}
+  placeSearch('#ps-q','#ps-r',p=>{closeSheet();pickOnMap(title,p,onPick,true)})}
 
 /* ================= SOS ================= */
 const SOS_TYPES=['Breakdown','Accident','Medical help','Separated','Other'];
@@ -1037,10 +1185,85 @@ function renderInstall(){if(NATIVE||standalone){$('#install-area').innerHTML='';
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;renderInstall()});
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!NATIVE&&!/claude/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});
 const AppPl=nativePlugin('App');if(AppPl)AppPl.addListener('backButton',()=>{if($('#picker').classList.contains('on'))return $('#picker').classList.remove('on');if($('#sheet').classList.contains('on'))return closeSheet();if($('#sosb').classList.contains('on'))return $('#sosb').classList.remove('on');
-  if($('#s-create').classList.contains('on')||$('#s-join').classList.contains('on'))return go('s-home');if(!$('#s-home').classList.contains('on'))return AppPl.minimizeApp();AppPl.exitApp()});
-renderInstall();renderResume();
-DB.ready.catch(e=>{$('#setup-warn').innerHTML=`<div class="banner">Can't reach the online service: ${esc(e.message)}. Check internet, and that Anonymous sign-in is enabled in Firebase.</div>`});
-(async()=>{await DB.ready.catch(()=>{});const s=store.get('session');if(s){const mem=await DB.get(`trips/${s.code}/members/${DB.uid}`).catch(()=>null);const meta=await DB.get(`trips/${s.code}/meta`).catch(()=>null);if(mem&&meta&&meta.status!=='ended')enterTrip(s.code);else{store.del('session');renderResume()}}})();
+  if($('#s-create').classList.contains('on')||$('#s-join').classList.contains('on'))return go('s-home');if($('#s-settings').classList.contains('on')&&!ST.first)return showHome();if($('#s-signup').classList.contains('on'))return go('s-auth');if(!$('#s-home').classList.contains('on'))return AppPl.minimizeApp();AppPl.exitApp()});
+renderInstall();
+
+/* ================= ACCOUNTS ================= */
+let PROFILE=null;
+const AUTH_ERR={'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong password.','auth/user-not-found':'Wrong email or password.','auth/invalid-email':'That email address looks wrong.',
+  'auth/email-already-in-use':'An account with this email already exists. Try logging in.','auth/weak-password':'Password is too weak. Use at least 8 characters.','auth/too-many-requests':'Too many tries. Wait a few minutes and try again.',
+  'auth/network-request-failed':'No internet connection.','auth/requires-recent-login':'Please log in again, then retry.','auth/missing-password':'Enter your password.'};
+const authErr=e=>AUTH_ERR[e&&e.code]||('Something went wrong'+(e&&e.message?': '+e.message.replace(/^Firebase: /,''):'.'));
+const emailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+document.addEventListener('click',e=>{const b=e.target.closest('[data-eye]');if(!b)return;const i=document.getElementById(b.dataset.eye);i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'Show':'Hide'});
+function swatches(el,sel,onPick){$(el).innerHTML=COLORS.map(c=>`<button class="sw ${c===sel?'on':''}" data-c="${c}" style="background:${c}" aria-label="color ${c}"></button>`).join('');
+  $(el).onclick=e=>{const b=e.target.closest('.sw');if(!b)return;$(el).querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===b));onPick&&onPick(b.dataset.c)}}
+const selColor=el=>($(el).querySelector('.sw.on')||{dataset:{c:COLORS[0]}}).dataset.c;
+function paintAv(el,nick,color){const a=$(el);a.textContent=nick?initials(nick,[]):'?';a.style.background=color}
+async function busy(btn,fn){const t=btn.textContent;btn.disabled=true;btn.textContent='Please wait…';try{await fn()}finally{btn.disabled=false;btn.textContent=t}}
+
+async function routeAuth(u){
+  if(!u){PROFILE=null;if(T)leaveSubs();T=null;go('s-auth');return}
+  if(u.isAnonymous){await DB.auth.signOut();return}
+  if(!u.emailVerified){$('#v-email').textContent=u.email;go('s-verify');return}
+  PROFILE=await DB.get('users/'+u.uid).catch(()=>null);
+  if(!PROFILE||!PROFILE.nick){openSettings(true);return}
+  showHome();
+  const sess=store.get('session');if(sess){const mem=await DB.get(`trips/${sess.code}/members/${u.uid}`).catch(()=>null);const meta=await DB.get(`trips/${sess.code}/meta`).catch(()=>null);
+    if(mem&&meta&&meta.status!=='ended')enterTrip(sess.code);else{store.del('session');renderResume()}}
+}
+function showHome(){if(!store.get('cc'))detectCountry();paintAv('#h-av',PROFILE.nick,PROFILE.color);$('#h-name').textContent=PROFILE.nick;renderResume();go('s-home')}
+
+// log in
+$('#a-go').onclick=()=>busy($('#a-go'),async()=>{const e=$('#a-email').value.trim(),p=$('#a-pw').value;$('#a-err').textContent='';
+  if(!emailOk(e))return $('#a-err').textContent='Enter your email address.';if(!p)return $('#a-err').textContent='Enter your password.';
+  try{await DB.auth.signIn(e,p);$('#a-pw').value=''}catch(err){$('#a-err').textContent=authErr(err)}});
+$('#a-pw').onkeydown=e=>{if(e.key==='Enter')$('#a-go').click()};
+$('#a-tosignup').onclick=()=>{$('#su-err').textContent='';if(!$('#su-color').innerHTML)swatches('#su-color',COLORS[Math.floor(Math.random()*COLORS.length)],c=>paintAv('#su-av',$('#su-nick').value,c));chips('#su-veh','moto');paintAv('#su-av',$('#su-nick').value,selColor('#su-color'));$('#su-email').value=$('#a-email').value;go('s-signup')};
+$('#su-back').onclick=()=>go('s-auth');
+$('#su-nick').oninput=()=>paintAv('#su-av',$('#su-nick').value,selColor('#su-color'));
+$('#a-forgot').onclick=()=>{openSheet(`<h1>Reset your password</h1><p class="muted" style="margin:8px 0 4px">Enter your account email. We'll send you a link to set a new password.</p><div class="label">Email</div><input class="field" id="fp-email" type="email" value="${esc($('#a-email').value.trim())}" placeholder="you@example.com"><p class="small" id="fp-err" style="color:var(--red);min-height:18px;margin-top:6px"></p><button class="btn" id="fp-go">Send reset link</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+  $('#fp-go').onclick=()=>busy($('#fp-go'),async()=>{const e=$('#fp-email').value.trim();if(!emailOk(e))return $('#fp-err').textContent='Enter a valid email address.';
+    try{await DB.auth.reset(e)}catch(err){if(err.code!=='auth/user-not-found'){$('#fp-err').textContent=authErr(err);return}}
+    closeSheet();toast('If that email has an account, a reset link is on its way.')})};
+// sign up
+$('#su-go').onclick=()=>busy($('#su-go'),async()=>{const nick=$('#su-nick').value.trim(),e=$('#su-email').value.trim(),p=$('#su-pw').value,p2=$('#su-pw2').value;const err=t=>$('#su-err').textContent=t;err('');
+  if(nick.length<2)return err('Enter a nickname (at least 2 letters).');if(!emailOk(e))return err('Enter a valid email address.');
+  if(p.length<8)return err('Password must be at least 8 characters.');if(p!==p2)return err("Passwords don't match.");if(!$('#su-agree').checked)return err('Please agree to the privacy policy.');
+  try{const prof={nick,color:selColor('#su-color'),veh:selVeh('#su-veh'),created:DB.now()};await DB.auth.signUp(e,p);await DB.set('users/'+DB.uid,prof);PROFILE=prof;
+    try{await DB.auth.sendVerify()}catch(x){}$('#su-pw').value='';$('#su-pw2').value='';$('#v-email').textContent=e;
+    if(DB.mode==='local')routeAuth(DB.user);else go('s-verify')}catch(x){err(authErr(x))}});
+// verify
+$('#v-done').onclick=()=>busy($('#v-done'),async()=>{try{const ok=await DB.auth.refresh();if(ok){toast('Email confirmed. Welcome!');routeAuth(DB.user)}else $('#v-msg').textContent="Not confirmed yet. Tap the link in the email first."}catch(e){$('#v-msg').textContent=authErr(e)}});
+let resendAt=0;$('#v-resend').onclick=()=>busy($('#v-resend'),async()=>{if(Date.now()-resendAt<60000)return $('#v-msg').textContent='Please wait a minute before sending again.';
+  try{await DB.auth.sendVerify();resendAt=Date.now();$('#v-msg').textContent='Sent. Check your inbox and spam folder.'}catch(e){$('#v-msg').textContent=authErr(e)}});
+$('#v-logout').onclick=()=>DB.auth.signOut();
+// settings
+let ST={first:false,color:null};
+function openSettings(first){ST.first=!!first;const pr=PROFILE||{nick:'',color:COLORS[0],veh:'moto'};
+  $('#st-title').textContent=first?'Set up your profile':'Settings';$('#st-sub').textContent=first?'Choose how your group will see you.':'';
+  $('#st-back').style.display=first?'none':'';$('#st-more').style.display=first?'none':'';
+  $('#st-nick').value=pr.nick||'';swatches('#st-color',pr.color||COLORS[0],c=>paintAv('#st-av',$('#st-nick').value,c));chips('#st-veh',pr.veh||'moto');paintAv('#st-av',pr.nick,pr.color||COLORS[0]);
+  $('#st-email').textContent=DB.user?DB.user.email:'';$('#st-sat').classList.toggle('on',mapType==='sat');$('#st-err').textContent='';go('s-settings')}
+$('#st-nick').oninput=()=>paintAv('#st-av',$('#st-nick').value,selColor('#st-color'));
+$('#h-settings').onclick=()=>openSettings(false);
+$('#st-back').onclick=()=>showHome();
+$('#st-save').onclick=()=>busy($('#st-save'),async()=>{const nick=$('#st-nick').value.trim();if(nick.length<2)return $('#st-err').textContent='Enter a nickname (at least 2 letters).';
+  const prof={...(PROFILE||{created:DB.now()}),nick,color:selColor('#st-color'),veh:selVeh('#st-veh')};
+  try{await DB.set('users/'+DB.uid,prof);PROFILE=prof;toast('Profile saved');if(ST.first)showHome();else paintAv('#h-av',nick,prof.color)}catch(e){$('#st-err').textContent=authErr(e)}});
+$('#st-sat').onclick=()=>{$('#mb-layer').click();$('#st-sat').classList.toggle('on',mapType==='sat')};
+$('#st-logout').onclick=()=>{openSheet(`<h1>Log out?</h1><p class="muted" style="margin:8px 0 16px">You'll need your email and password to log back in.</p><button class="btn" id="cf-out">Log out</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+  $('#cf-out').onclick=async()=>{closeSheet();if(T)leaveSubs();T=null;store.del('session');await DB.auth.signOut();toast('Logged out')}};
+$('#st-pw').onclick=()=>{openSheet(`<h1>Change password</h1><div class="label">Current password</div><input class="field" id="cp-old" type="password" autocomplete="current-password"><div class="label">New password</div><input class="field" id="cp-new" type="password" autocomplete="new-password" placeholder="At least 8 characters"><div class="label">Confirm new password</div><input class="field" id="cp-new2" type="password" autocomplete="new-password"><p class="small" id="cp-err" style="color:var(--red);min-height:18px;margin-top:6px"></p><button class="btn" id="cp-go">Update password</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+  $('#cp-go').onclick=()=>busy($('#cp-go'),async()=>{const o=$('#cp-old').value,n=$('#cp-new').value,n2=$('#cp-new2').value;const er=t=>$('#cp-err').textContent=t;
+    if(n.length<8)return er('New password must be at least 8 characters.');if(n!==n2)return er("New passwords don't match.");
+    try{await DB.auth.changePassword(o,n);closeSheet();toast('Password updated')}catch(e){er(authErr(e))}})};
+$('#st-delete').onclick=()=>{openSheet(`<h1 style="color:var(--red)">Delete account?</h1><p class="muted" style="margin:8px 0 4px">This permanently deletes your RallyRide account and profile. It can't be undone. Trips you led stay visible to their members until they end.</p><div class="label">Enter your password to confirm</div><input class="field" id="da-pw" type="password" autocomplete="current-password"><p class="small" id="da-err" style="color:var(--red);min-height:18px;margin-top:6px"></p><button class="btn red" id="da-go">Delete my account</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+  $('#da-go').onclick=()=>busy($('#da-go'),async()=>{const pw=$('#da-pw').value;if(!pw)return $('#da-err').textContent='Enter your password.';
+    try{const uid=DB.uid;if(T){if(!isLeader())await DB.remove(P('members/'+T.me)).catch(()=>{});leaveSubs();T=null}store.del('session');store.del('history');
+      await DB.remove('users/'+uid);await DB.auth.deleteAccount(pw);closeSheet();toast('Your account was deleted')}catch(e){$('#da-err').textContent=authErr(e)}})};
+
+DB.ready.then(()=>{DB.onAuth(u=>routeAuth(u));if(DB.mode==='firebase')routeAuth(DB.user)}).catch(e=>{$('#boot-err').innerHTML=`<div class="banner">Can't reach RallyRide's servers. Check your internet and reopen the app.</div>`});
 </script>
 </body>
 </html>

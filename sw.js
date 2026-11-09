@@ -1,5 +1,5 @@
 // RallyRide offline support: keeps the app shell available; live data still needs internet.
-const CACHE = 'rallyride-v2';
+const CACHE = 'rallyride-v3';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'privacy.html', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon.png',
   'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css',
   'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js',
@@ -12,7 +12,7 @@ self.addEventListener('fetch', e => {
   const req = e.request; if (req.method !== 'GET') return;
   const url = new URL(req.url);
   // never cache live data, search, routing or map tiles
-  if (/firebaseio|firebasedatabase|googleapis\.com\/identitytoolkit|securetoken|nominatim|project-osrm|tile\.openstreetmap|arcgisonline/.test(url.href)) return;
+  if (/firebaseio|firebasedatabase|googleapis\.com\/identitytoolkit|securetoken|nominatim|photon\.komoot|project-osrm|tile\.openstreetmap|arcgisonline/.test(url.href)) return;
   if (req.mode === 'navigate') { // network first for the page so updates arrive immediately
     e.respondWith(fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put('index.html', cp)); return r; }).catch(() => caches.match('index.html')));
     return;
