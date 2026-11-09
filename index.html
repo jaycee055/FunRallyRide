@@ -253,6 +253,17 @@ a{color:var(--blue-d)}
 .pfoot{background:#fff;border-top:1px solid var(--line);padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
 .pickrow{display:flex;gap:8px;margin-top:8px}
 .pickrow .btn{flex:1}
+textarea.field{resize:vertical;font-family:inherit;line-height:1.4}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.ridecard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+.rc-date{width:50px;height:54px;border-radius:12px;background:var(--blue-soft);color:var(--blue-d);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.rc-date b{font-size:21px;line-height:1}.rc-date span{font-size:11px;font-weight:700;text-transform:uppercase;margin-top:2px}
+.rc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.rc-main b{font-size:15.5px}.rc-main span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.chgban{background:var(--amber-soft);border:1px solid #F3D19C;border-radius:14px;padding:12px 14px;margin:10px 0;color:#7A4B00;font-size:14px}
+.rollc{position:absolute;left:10px;right:10px;top:80px;z-index:5;background:#fff;border-radius:14px;padding:8px 12px;font-size:13px;box-shadow:0 2px 10px rgba(15,27,45,.2)}
+.rollc .over{color:var(--red);font-weight:700}.rollc .linkbtn{font-size:12.5px;margin-top:2px}
+.bikeln{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -325,6 +336,7 @@ a{color:var(--blue-d)}
         <div class="label">Nickname</div><input class="field" id="st-nick" maxlength="16">
         <div class="label">Your color</div><div class="swatches" id="st-color"></div>
         <div class="label">Default vehicle</div><div class="chips" id="st-veh"></div>
+        <div class="label">Your ride details (optional)</div><input class="field" id="st-bike" maxlength="40" placeholder="e.g. Red Raider 150 · ABC 1234"><div class="muted small" style="margin-top:4px">Helps your group spot you at the meeting point.</div>
         <p class="small" id="st-err" style="color:var(--red);margin-top:8px;min-height:16px"></p>
         <button class="btn" id="st-save">Save profile</button>
       </div>
@@ -353,8 +365,9 @@ a{color:var(--blue-d)}
       <div class="logo"><img class="mark img" src="icons/logo-160.png" alt="FRR">FunRallyRide</div>
       <p class="muted" style="margin-top:8px">Ride together. Talk live. Nobody gets left behind.</p>
       <div id="resume"></div>
-      <button class="choice" id="go-create"><span class="ci"><svg class="i" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span><b>Create a group trip</b><span class="muted small">Set the route, share a code, approve your group.</span></span></button>
+      <button class="choice" id="go-create"><span class="ci"><svg class="i" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span><b>Create a group trip</b><span class="muted small">Ride now or plan ahead. Invite your group and approve who joins.</span></span></button>
       <button class="choice" id="go-join"><span class="ci"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span><span><b>Join a trip</b><span class="muted small">Enter your leader's code and wait for approval.</span></span></button>
+      <div id="rides"></div>
       <div id="setup-warn"></div>
       <p class="muted small" style="margin-top:22px;text-align:center"><a href="privacy.html">Privacy</a> · <span id="install-area"></span></p>
     </div>
@@ -367,6 +380,9 @@ a{color:var(--blue-d)}
       <h1>New group trip</h1>
       <div class="label">Trip name</div>
       <input class="field" id="c-name" maxlength="40" placeholder="e.g. Sunday Mountain Ride">
+      <div class="label">When</div>
+      <div class="seg" id="c-whenseg"><button class="on" data-w="now">Ride now</button><button data-w="sched">Plan ahead</button></div>
+      <div id="c-whenbox" style="display:none;margin-top:8px"><input class="field" id="c-when" type="datetime-local"><p class="muted small" style="margin-top:6px">Your group can say Going, Maybe or Can't go before the ride day.</p></div>
       <div class="label">Vehicle type</div>
       <div class="chips" id="c-veh"></div>
       <div class="label">Starting point</div>
@@ -385,6 +401,10 @@ a{color:var(--blue-d)}
       <div class="switch"><div><div style="font-weight:600">Meet at the starting point first</div><div class="muted small">Everyone is guided to the start. The ride route shows after they arrive.</div></div><button class="tog on" id="c-meetfirst"></button></div>
       <div class="label">Joining</div>
       <div class="switch"><div><div style="font-weight:600">Leader approval required</div><div class="muted small">Members need the code AND your OK</div></div><button class="tog on" id="c-approve"></button></div>
+      <div class="label">Wait time at the meeting point</div>
+      <div class="seg" id="c-wait"><button data-m="0">No wait</button><button data-m="10">10 min</button><button class="on" data-m="15">15 min</button><button data-m="30">30 min</button></div>
+      <div class="label">Ride rules / notes (optional)</div>
+      <textarea class="field" id="c-rules" maxlength="300" rows="3" placeholder="e.g. Full face helmet. Gas stop at Km 60. No overtaking the leader."></textarea>
       <p class="small" id="c-err" style="color:var(--red);margin-top:12px"></p>
       <div style="height:14px"></div>
       <button class="btn" id="c-go">Create trip & get code</button>
@@ -412,6 +432,7 @@ a{color:var(--blue-d)}
       <p class="muted" id="w-text" style="margin-top:8px"></p>
       <p class="muted small" style="margin-top:20px">You can't see the map, mic or chat until the leader approves you.</p>
       <div style="height:30px"></div>
+      <button class="btn" id="w-home">Back to home</button><div style="height:8px"></div>
       <button class="btn ghost" id="w-cancel">Cancel request</button>
     </div>
   </section>
@@ -421,6 +442,7 @@ a{color:var(--blue-d)}
     <div class="scroll pad">
       <div class="row between"><h1 id="l-name"></h1><button class="back" id="l-leave">Leave</button></div>
       <p class="muted small" id="l-route"></p>
+      <div id="l-chg"></div><div id="l-whencard"></div><div id="l-rsvpcard"></div><div id="l-rulescard"></div>
       <div class="codebox" id="l-codebox">
         <div class="muted small">Share this join code</div>
         <div class="code" id="l-code"></div>
@@ -434,6 +456,8 @@ a{color:var(--blue-d)}
       <div style="height:18px"></div>
       <button class="btn" id="l-start">Start group trip</button>
       <p class="muted small" id="l-hint" style="text-align:center;margin-top:8px"></p>
+      <div id="l-mgr" class="row" style="margin-top:12px;justify-content:center"><button class="btn sm ghost" id="l-edit">Edit ride</button><button class="btn sm ghost" id="l-cancel" style="color:var(--red)">Cancel ride</button></div>
+      <div style="height:16px"></div>
     </div>
   </section>
 
@@ -456,7 +480,7 @@ a{color:var(--blue-d)}
           <div class="mapbtns"><button id="mb-layer" title="Map / Satellite"><svg class="i" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button><button id="mb-3d" title="3D / 2D">3D</button><button id="mb-lead" title="Follow leader"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button id="mb-all" title="Show everyone"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
           <div class="lpbtns"><button id="mb-checkin"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Check in</button><button id="mb-sos" class="sosf"><svg class="i" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>SOS</button></div>
           <button class="recenter" id="mb-me"><svg viewBox="0 0 24 24"><polygon points="12 2 20 21 12 17 4 21 12 2"/></svg>Re-center</button>
-          <div class="etabar"><b id="eta-t">–</b><span id="eta-d">–</span></div>
+          <div class="rollc" id="rollc" style="display:none"></div><div class="etabar"><b id="eta-t">–</b><span id="eta-d">–</span></div>
         </div>
         <div class="convoy"><div class="row between" style="margin-bottom:5px"><span class="ttl">Group order</span><span class="small muted">front → back</span></div><div class="seq" id="seq"></div></div>
       </div>
@@ -530,6 +554,7 @@ const VEH=[['moto','Motorcycle'],['car','Car'],['bike','Bicycle'],['other','Othe
 const vIcon=k=>({moto:'Motorcycle',car:'Car',bike:'Bicycle',other:'Other'})[k]||'Motorcycle';
 const QUICK=['Wait for me!',"I'm behind","Let's stop here","I'm following you",'Need gas',"I'm here!"];
 const PARAMS=new URLSearchParams(location.search);
+try{const jq=(PARAMS.get('join')||'').toUpperCase();if(/^RIDE-[A-Z0-9]{4}$/.test(jq))sessionStorage.setItem('pjoin',jq)}catch(e){}
 const SIM=PARAMS.get('sim')==='1';
 const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
 const store={get(k){try{return JSON.parse(localStorage.getItem('rallyride:'+k))}catch(e){return null}},set(k,v){try{localStorage.setItem('rallyride:'+k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem('rallyride:'+k)}catch(e){}}};
@@ -691,12 +716,58 @@ const meM=()=>T&&T.members[T.me];
 const isLeader=()=>T&&T.meta&&T.meta.leaderId===T.me;
 const isMgr=()=>isLeader()||(meM()&&meM().role==='coleader');
 
+/* ================= PLANNED RIDES HELPERS ================= */
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const RSVP_L={going:'Going',maybe:'Maybe',no:"Can't go"};
+function fmtTime(ts){const d=new Date(ts);let h=d.getHours();const ap=h<12?'AM':'PM';h=h%12||12;return `${h}:${String(d.getMinutes()).padStart(2,'0')} ${ap}`}
+function fmtWhen(ts){const d=new Date(ts);return `${DAYS[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()} · ${fmtTime(ts)}`}
+function untilTxt(ts){const ms=ts-Date.now();if(ms<=0)return 'now';const min=Math.round(ms/60000);if(min<60)return `in ${min} min`;const h=Math.floor(min/60);
+  const d=new Date(ts),t=new Date();const days=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(t.getFullYear(),t.getMonth(),t.getDate()))/864e5);
+  if(days===0)return `in ${h} h${min%60?' '+(min%60)+' min':''}`;return days===1?'tomorrow':`in ${days} days`}
+const toLocalInput=ts=>new Date(ts-new Date(ts).getTimezoneOffset()*60000).toISOString().slice(0,16);
+function rideTag(m,now=Date.now()){if(!m)return['lost','Removed'];if(m.status==='cancelled')return['behind','Cancelled'];if(m.status==='ended')return['lost','Ended'];if(m.status==='live')return['lead','Live now'];
+  if(m.when&&m.when-now<=3600e3)return['amber','Starting soon'];return['ok',m.when?'Upcoming':'Not started']}
+function segPick(el,cb){$(el).onclick=e=>{const b=e.target.closest('button');if(!b)return;$(el).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));cb&&cb(b)}}
+function myRide(code,v){if(!DB.uid)return;try{const pr=v?DB.update(`myrides/${DB.uid}/${code}`,v):DB.remove(`myrides/${DB.uid}/${code}`);if(pr&&pr.catch)pr.catch(()=>{})}catch(e){}}
+function calLinks(m,code){const st=m.stops[0],de=m.stops[m.stops.length-1];const s=new Date(m.when),e=new Date(m.when+(Math.ceil(((m.route&&m.route.dur)||3600)/3600)+1)*3600e3);
+  const z=d=>d.toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');const link=location.origin+location.pathname+'?join='+code;
+  const det=`Meet at ${st.name}, ride to ${de.name}. Open FunRallyRide (code ${code}): ${link}`;
+  const g=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.name)}&dates=${z(s)}/${z(e)}&details=${encodeURIComponent(det)}&location=${encodeURIComponent(st.name)}`;
+  const c=t=>String(t).replace(/([,;\\])/g,'\\$1');
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//FunRallyRide//EN','BEGIN:VEVENT',`UID:${code}-${m.when}@funrallyride`,`DTSTAMP:${z(new Date())}`,`DTSTART:${z(s)}`,`DTEND:${z(e)}`,`SUMMARY:${c(m.name)}`,`LOCATION:${c(st.name)}`,`DESCRIPTION:${c(det)}`,'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:Ride starts in 1 hour','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  return {g,ics:'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics)}}
+let MYR=[];
+function clashCheck(when,code){if(!when)return null;return MYR.find(x=>x.code!==code&&x.m&&x.m.when&&!['ended','cancelled'].includes(x.m.status)&&x.r.st!=='pending'&&(x.st||{}).rsvp!=='no'&&Math.abs(x.m.when-when)<4*3600e3)||null}
+function confirmClash(c,go){openSheet(`<h1>Schedule conflict</h1><p class="muted" style="margin:8px 0 16px">You're already in <b>${esc(c.m.name)}</b> on ${fmtWhen(c.m.when)}. Join this one too?</p><button class="btn" id="cl-yes">Yes, continue</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);$('#cl-yes').onclick=()=>{closeSheet();go()}}
+async function loadRides(){let idx={};try{idx=(await DB.get('myrides/'+DB.uid))||{}}catch(e){}
+  MYR=await Promise.all(Object.entries(idx).map(async([code,r])=>{const m=await DB.get(`trips/${code}/meta`).catch(()=>null);let st={};
+    if(m&&r.st==='pending'){const mem=await DB.get(`trips/${code}/members/${DB.uid}`).catch(()=>null);
+      if(mem){r.st='member';myRide(code,{st:'member'})}else{const q=await DB.get(`trips/${code}/requests/${DB.uid}`).catch(()=>null);if(!q||q.status==='declined'){myRide(code,null);return {code,r,m:null,gone:1}}}}
+    if(m&&r.st!=='pending')st=(await DB.get(`trips/${code}/state/${DB.uid}`).catch(()=>null))||{};
+    if(!m)myRide(code,null);return {code,r,m,st}}));
+  MYR=MYR.filter(x=>x.m)}
+async function renderRides(cached){const box=$('#rides');if(!box||!DB.uid)return;if(!cached)await loadRides();const now=Date.now();
+  const past=x=>x.m.status==='ended'||x.m.status==='cancelled';
+  const up=MYR.filter(x=>!past(x)).sort((a,b)=>(a.m.when||a.m.created||0)-(b.m.when||b.m.created||0));
+  const old=MYR.filter(past).sort((a,b)=>((b.m.when||b.m.created||0)-(a.m.when||a.m.created||0))).slice(0,8);
+  const card=x=>{const m=x.m;const [c,t]=x.r.st==='pending'?['amber','Waiting approval']:rideTag(m,now);const rs=x.st.rsvp;const chg=!past(x)&&m.chg&&m.chg.by!==DB.uid&&m.chg.ts>(x.st.ack||0)&&rs!=='no'&&x.r.st!=='pending';
+    const d=m.when?new Date(m.when):null;
+    return `<button class="ridecard" data-ride="${x.code}"><div class="rc-date">${d?`<b>${d.getDate()}</b><span>${MON[d.getMonth()]}</span>`:'<b>•</b><span>Now</span>'}</div><div class="rc-main"><b>${esc(m.name)}</b><span class="muted small">${d?fmtWhen(m.when)+(past(x)?'':' · '+untilTxt(m.when)):'No set time'}</span><span class="muted small">${esc(m.stops[0].name)} → ${esc(m.stops[m.stops.length-1].name)}</span>${chg?`<span class="small" style="color:var(--amber);font-weight:700">⚠ ${esc(m.chg.text)}</span>`:''}</div><div class="rc-side"><span class="st ${c}">${t}</span>${rs&&!past(x)?`<span class="small muted">${RSVP_L[rs]}</span>`:''}</div></button>`};
+  box.innerHTML=(up.length?`<div class="label" style="margin-top:18px">Your rides</div>${up.map(card).join('')}`:'')+(old.length?`<div class="label">Past rides</div>${old.map(card).join('')}`:'');
+  box.onclick=e=>{const b=e.target.closest('[data-ride]');if(!b)return;const x=MYR.find(y=>y.code===b.dataset.ride);if(x)openRide(x)}}
+function openRide(x){const m=x.m;
+  if(m.status==='cancelled'||m.status==='ended'){openSheet(`<h1>${esc(m.name)}</h1><p class="muted" style="margin:8px 0 16px">${m.status==='cancelled'?`This ride was cancelled${m.cancel&&m.cancel.reason?': '+esc(m.cancel.reason):''}.`:'This ride has ended.'}${m.when?'<br>'+fmtWhen(m.when):''}</p><button class="btn ghost" id="or-rm">Remove from my list</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Close</button>`);$('#or-rm').onclick=()=>{myRide(x.code,null);MYR=MYR.filter(y=>y!==x);closeSheet();renderRides(true)};return}
+  if(x.r.st==='pending'){J={code:x.code,meta:m};waitApproval(x.code);return}
+  openTrip(x.code)}
+function openTrip(code){if(T&&T.code===code&&T.meta){T.bg=false;T.optIn=true;if(T.meta.status==='live'&&!map)startLive();else go(T.meta.status==='live'?'s-live':'s-lobby');if(T.meta.status==='lobby')renderLobby();if(map)setTimeout(()=>map.resize(),60)}else enterTrip(code,true)}
+setInterval(()=>{if($('#s-home').classList.contains('on'))renderRides(true);if(T&&T.meta&&T.meta.status==='lobby'&&$('#s-lobby').classList.contains('on'))renderLobby();if(T&&T.meta&&T.meta.status==='live')renderRoll()},30000);
+
 /* ================= HOME ================= */
 chips('#c-veh','moto');
 $('#go-create').onclick=()=>{chips('#c-veh',PROFILE.veh||'moto');go('s-create')};
 $('#go-join').onclick=()=>{$('#j-preview').innerHTML='';$('#j-err').textContent='';go('s-join')};
 if(DB.mode==='local')$('#setup-warn').innerHTML='<div class="notice" style="margin-top:16px"><b>Test mode.</b> Not connected to the online service yet, so trips only work between tabs on this device. Add the Firebase config to go live.</div>';
-function renderResume(){const s=store.get('session');$('#resume').innerHTML=s?`<button class="choice" id="go-resume" style="border-color:var(--blue)"><span class="ci"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span><span><b>Return to your trip</b><span class="muted small">${esc(s.name||s.code)} · ${esc(s.code)}</span></span></button>`:'';if(s)$('#go-resume').onclick=()=>{if(T&&T.code===s.code&&T.meta){T.bg=false;if(T.meta.status==='live'&&!map)startLive();else go(T.meta.status==='live'?'s-live':'s-lobby');if(T.meta.status==='lobby')renderLobby();if(map)setTimeout(()=>map.resize(),60)}else enterTrip(s.code)}}
+function renderResume(){const s=store.get('session');$('#resume').innerHTML=s?`<button class="choice" id="go-resume" style="border-color:var(--blue)"><span class="ci"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span><span><b>Return to your trip</b><span class="muted small">${esc(s.name||s.code)} · ${esc(s.code)}</span></span></button>`:'';if(s)$('#go-resume').onclick=()=>openTrip(s.code)}
 
 /* ================= MAP PICKER ================= */
 let pmap=null,pkCb=null,pkRev=null,pkNameEdited=false;
@@ -737,6 +808,10 @@ placeSearch('#c-stop-q','#c-stop-r',p=>pickOnMap('Add a stop',p,q=>{C.stops.push
 function renderStops(){$('#c-stops').innerHTML=C.stops.map((s,i)=>`<div class="stoprow"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>${i+1}. ${esc(s.name)}</span><button data-i="${i}" class="muted">✕</button></div>`).join('');$('#c-stops').onclick=e=>{const b=e.target.closest('button');if(b){C.stops.splice(+b.dataset.i,1);renderStops()}}}
 $('#c-start-me').onclick=async()=>{$('#c-start-v').textContent='Finding you…';try{const p=await myPosOnce();C.start={name:'My location',lat:p.lat,lng:p.lng};$('#c-start-v').textContent='✓ My current location'}catch(e){$('#c-start-v').textContent='';$('#c-err').textContent='Location permission is needed for "my location".'}};
 $('#c-approve').onclick=e=>e.currentTarget.classList.toggle('on');
+segPick('#c-wait');
+segPick('#c-whenseg',b=>{const on=b.dataset.w==='sched';$('#c-whenbox').style.display=on?'':'none';
+  if(on&&!$('#c-when').value){const d=new Date();d.setDate(d.getDate()+1);d.setHours(5,0,0,0);$('#c-when').value=toLocalInput(d.getTime())}
+  $('#c-when').min=toLocalInput(Date.now());$('#c-go').textContent=on?'Create ride & invite':'Create trip & get code'});
 $('#c-meetfirst').onclick=e=>e.currentTarget.classList.toggle('on');
 $('#c-start-map').onclick=()=>pickOnMap('Starting point',C.start,p=>{C.start=p;$('#c-start-v').textContent='✓ '+p.name});
 $('#c-stop-map').onclick=()=>pickOnMap('Add a stop',C.stops[C.stops.length-1]||C.start,p=>{C.stops.push(p);renderStops()});
@@ -746,19 +821,23 @@ $('#c-go').onclick=async()=>{
   const nick=PROFILE.nick,name=$('#c-name').value.trim();
   if(!name)return $('#c-err').textContent='Enter a trip name.';
   if(!C.start||!C.dest)return $('#c-err').textContent='Set a starting point and a destination (search or pick on map).';
+  let when=null;if($('#c-whenseg .on').dataset.w==='sched'){const v=$('#c-when').value;if(!v)return $('#c-err').textContent='Pick the date and time of the ride.';when=new Date(v).getTime();if(when<Date.now()-5*60000)return $('#c-err').textContent='That time has already passed. Pick a later time.'}
+  const wait=+$('#c-wait .on').dataset.m,rules=$('#c-rules').value.trim().slice(0,300);const btnTxt=$('#c-go').textContent;
   $('#c-err').textContent='';$('#c-go').disabled=true;$('#c-go').textContent='Creating…';
   try{await DB.ready;
     const pts=[C.start,...C.stops,C.dest];const route=await getRoute(pts);
     let code,ok=false;
     for(let i=0;i<6&&!ok;i++){code='RIDE-'+Array.from({length:4},()=>CODE_CH[Math.floor(Math.random()*CODE_CH.length)]).join('');
       ok=await DB.createIfAbsent(`trips/${code}/meta`,{name,veh:selVeh('#c-veh'),leaderId:DB.uid,leaderNick:nick,status:'lobby',approve:$('#c-approve').classList.contains('on'),meetFirst:$('#c-meetfirst').classList.contains('on'),locked:false,voice:'open',thr:1.5,
-        stops:pts.map((p,i)=>({name:p.name,lat:p.lat,lng:p.lng,type:i===0?'start':i===pts.length-1?'dest':'stop'})),route,meet:null,pin:null,created:DB.now()})}
+        stops:pts.map((p,i)=>({name:p.name,lat:p.lat,lng:p.lng,type:i===0?'start':i===pts.length-1?'dest':'stop'})),route,meet:null,pin:null,created:DB.now(),when,wait,rules})}
     if(!ok)throw new Error('Could not create a code, try again');
-    await DB.set(`trips/${code}/members/${DB.uid}`,{nick,ini:initials(nick,[]),color:PROFILE.color||COLORS[0],veh:selVeh('#c-veh'),role:'leader',joined:DB.now()});
+    await DB.set(`trips/${code}/members/${DB.uid}`,{nick,ini:initials(nick,[]),color:PROFILE.color||COLORS[0],veh:selVeh('#c-veh'),bike:PROFILE.bike||'',role:'leader',joined:DB.now()});
+    await DB.set(`trips/${code}/state/${DB.uid}`,{rsvp:'going',ack:DB.now()}).catch(()=>{});myRide(code,{st:'member',at:DB.now()});
+    $('#c-rules').value='';
     C={start:null,dest:null,stops:[]};['#c-start-v','#c-dest-v','#c-stops'].forEach(s=>$(s).innerHTML='');$('#c-name').value='';
     enterTrip(code);
   }catch(e){$('#c-err').textContent='Could not create the trip: '+e.message}
-  $('#c-go').disabled=false;$('#c-go').textContent='Create trip & get code';
+  $('#c-go').disabled=false;$('#c-go').textContent=btnTxt||'Create trip & get code';
 };
 
 /* ================= JOIN ================= */
@@ -769,54 +848,65 @@ $('#j-find').onclick=async()=>{
   $('#j-err').textContent='';await DB.ready;
   const meta=await DB.get(`trips/${code}/meta`);
   if(!meta||meta.status==='ended')return $('#j-err').textContent='No active trip with that code.';
+  if(meta.status==='cancelled')return $('#j-err').textContent='This ride was cancelled'+(meta.cancel&&meta.cancel.reason?': '+meta.cancel.reason:'.');
   const already=await DB.get(`trips/${code}/members/${DB.uid}`).catch(()=>null);
-  if(already){enterTrip(code);return}
+  if(already){myRide(code,{st:'member'});enterTrip(code,true);return}
   if(meta.locked)return $('#j-err').textContent='This trip is locked by the leader.';
   J={code,meta};
   $('#j-preview').innerHTML=`<div class="card" style="margin-top:16px"><h3>Trip found</h3><div style="font-size:20px;font-weight:700">${esc(meta.name)}</div>
-    <div class="muted small" style="margin-top:4px">Leader: ${esc(meta.leaderNick)} · ${vIcon(meta.veh)}<br>${meta.stops.map(s=>esc(s.name)).join(' → ')}</div></div>
+    ${meta.when?`<div style="margin-top:6px;font-weight:700;color:var(--blue-d)">📅 ${fmtWhen(meta.when)} · ${untilTxt(meta.when)}</div>`:''}
+    <div class="muted small" style="margin-top:4px">Leader: ${esc(meta.leaderNick)} · ${vIcon(meta.veh)}<br>${meta.stops.map(s=>esc(s.name)).join(' → ')}</div>
+    ${meta.rules?`<div class="small" style="margin-top:8px;white-space:pre-wrap"><b>Ride rules:</b> ${esc(meta.rules)}</div>`:''}</div>
     <div class="label">Joining as</div><div class="row">${avHTML({ini:initials(PROFILE.nick,[]),color:PROFILE.color})}<b>${esc(PROFILE.nick)}</b></div>
     <div class="label">Vehicle type</div><div class="chips" id="j-veh"></div>
+    <div class="label">Your ride details (optional)</div><input class="field" id="j-bike" maxlength="40" placeholder="e.g. Red Raider 150 · ABC 1234" value="${esc(PROFILE.bike||'')}">
     <div class="notice" style="margin-top:14px">When the trip is live, your location is shared <b>only with members of this trip</b>, and sharing stops when the trip ends. You can pause it any time.</div>
     <div style="height:14px"></div><button class="btn" id="j-req">Request to join</button>`;
   chips('#j-veh',PROFILE.veh||meta.veh||'moto');
   $('#j-req').onclick=requestJoin;
 };
 async function requestJoin(){
-  const nick=PROFILE.nick;
-  await DB.set(`trips/${J.code}/requests/${DB.uid}`,{nick,veh:selVeh('#j-veh'),color:PROFILE.color||null,at:DB.now(),status:'pending'});
-  $('#w-text').textContent=`Request sent to ${J.meta.leaderNick} for "${J.meta.name}" (${J.code}).`;
-  go('s-wait');
-  const code=J.code;
-  const un=DB.on(`trips/${code}/requests/${DB.uid}/status`,st=>{
-    if(st==='approved'){un();toast('✅ You were approved!');enterTrip(code)}
-    else if(st==='declined'){un();toast('Your request was declined','warn');DB.remove(`trips/${code}/requests/${DB.uid}`);go('s-home')}
+  const c=clashCheck(J.meta.when,J.code);if(c&&!J.clashOk)return confirmClash(c,()=>{J.clashOk=true;requestJoin()});
+  const nick=PROFILE.nick;const bike=($('#j-bike')?$('#j-bike').value.trim():PROFILE.bike||'').slice(0,40);
+  await DB.set(`trips/${J.code}/requests/${DB.uid}`,{nick,veh:selVeh('#j-veh'),bike,color:PROFILE.color||null,at:DB.now(),status:'pending'});
+  myRide(J.code,{st:'pending',at:DB.now()});waitApproval(J.code);
+}
+function waitApproval(code){
+  $('#w-text').textContent=`Request sent to ${J.meta.leaderNick} for "${J.meta.name}" (${code}).`;go('s-wait');
+  if(J.un)J.un();
+  const un=J.un=DB.on(`trips/${code}/requests/${DB.uid}/status`,st=>{
+    if(st==='approved'){un();myRide(code,{st:'member'});toast('✅ You were approved for '+J.meta.name);if($('#s-wait').classList.contains('on'))enterTrip(code,true);else renderRides()}
+    else if(st==='declined'){un();toast('Your request was declined','warn');DB.remove(`trips/${code}/requests/${DB.uid}`);myRide(code,null);if($('#s-wait').classList.contains('on'))showHome();else renderRides()}
   });
-  $('#w-cancel').onclick=()=>{un();DB.remove(`trips/${code}/requests/${DB.uid}`);go('s-home')};
+  $('#w-cancel').onclick=()=>{un();DB.remove(`trips/${code}/requests/${DB.uid}`);myRide(code,null);showHome()};
+  $('#w-home').onclick=()=>showHome();
 }
 
 /* ================= ENTER TRIP / SUBSCRIPTIONS ================= */
-async function enterTrip(code){
+async function enterTrip(code,optIn){
   await DB.ready;
   if(T)leaveSubs();
-  T=blankTrip(code);
+  T=blankTrip(code);T.optIn=!!optIn;
+  const my0=await DB.get(`trips/${code}/state/${DB.uid}`).catch(()=>null);if(my0)T.state[T.me]=my0;
   const sub=(p,cb)=>T.unsub.push(DB.on(P(p),cb));
   sub('meta',m=>{if(!m){toast('Trip no longer exists','warn');exitTrip();return}onMeta(m)});
-  T.unsub.push(DB.on(P('members'),m=>{T.members=m||{};if(T.meta&&!T.members[T.me]){if(!T.leaving)toast('You were removed from the trip','warn');exitTrip();return}refresh()},()=>{if(T){toast('You are no longer in this trip','warn');exitTrip()}}));
+  T.unsub.push(DB.on(P('members'),m=>{T.members=m||{};if(T.meta&&!T.members[T.me]){if(!T.leaving){toast('You were removed from the trip','warn');myRide(T.code,null)}exitTrip();return}refresh()},()=>{if(T){toast('You are no longer in this trip','warn');exitTrip()}}));
   sub('state',s=>{T.state=s||{};refresh()});
   sub('loc',l=>{T.loc=l||{};refreshLive()});
   sub('presence',p=>{T.presence=p||{};refresh()});
-  T.seenChat=new Set();sub('chat',c=>{Object.entries(c||{}).forEach(([k,v])=>{if(!T.seenChat.has(k)){T.seenChat.add(k);if(T.chatReady&&v.type==='checkin'&&v.uid!==T.me)toast(v.t)}});T.chatReady=true;const n=Object.keys(c||{}).length,o=Object.keys(T.chat).length;T.chat=c||{};if(n>o&&!$('#p-chat').classList.contains('on')&&o>0)T.unread+=n-o;renderChat();updBadges()});
+  T.seenChat=new Set();sub('chat',c=>{Object.entries(c||{}).forEach(([k,v])=>{if(!T.seenChat.has(k)){T.seenChat.add(k);if(T.chatReady&&v.uid!==T.me&&(v.type==='checkin'||(v.type==='sys'&&(v.k==='late'||v.k==='note'||(v.k==='rsvp'&&isMgr())))))toast(v.t,v.k==='late'?'ann':'')}});T.chatReady=true;const n=Object.keys(c||{}).length,o=Object.keys(T.chat).length;T.chat=c||{};if(n>o&&!$('#p-chat').classList.contains('on')&&o>0)T.unread+=n-o;renderChat();updBadges()});
   sub('alerts',a=>{T.alerts=a||{};onAlerts()});
   // presence
   DB.onConnected(c=>{if(!c||!T)return;DB.set(P('presence/'+T.me),true);DB.onDisconnect(P('presence/'+T.me),null)});
   DB.set(P('presence/'+T.me),true);DB.onDisconnect(P('presence/'+T.me),null);
 }
 function leaveSubs(){if(!T)return;T.unsub.forEach(u=>u&&u());if(T.reqUnsub)T.reqUnsub();stopGPS();Voice.stop();if(T.code)DB.remove(P('presence/'+T.me))}
-function exitTrip(){if(!T)return;leaveSubs();store.del('session');T=null;renderResume();go('s-home')}
+function exitTrip(){if(!T)return;leaveSubs();store.del('session');T=null;renderResume();if(PROFILE)showHome();else go('s-home')}
 function onMeta(m){
   const prev=T.meta;T.meta=m;
+  if(m.status==='cancelled'){const c=m.cancel||{};const nm=m.name;leaveSubs();store.del('session');T=null;showHome();openSheet(`<h1>Ride cancelled</h1><p class="muted" style="margin:8px 0 16px"><b>${esc(nm)}</b> was cancelled${c.by?' by '+esc(c.by):''}${c.reason?': '+esc(c.reason):'.'}</p><button class="btn" onclick="closeSheet()">OK</button>`);return}
   store.set('session',{code:T.code,name:m.name});
+  if(!prev)myRide(T.code,{st:'member'});
   // leader-only: watch join requests
   if(isMgr()&&!T.reqUnsub)T.reqUnsub=DB.on(P('requests'),r=>{const old=T.requests;T.requests=r||{};
     Object.entries(T.requests).forEach(([u,q])=>{if(q.status==='pending'&&!(old[u]&&old[u].status==='pending')){toast(`🔔 ${q.nick} wants to join`,'ann');if(!T.meta.approve&&isLeader())approveReq(u)}});renderRequests();updBadges()});
@@ -827,10 +917,12 @@ function onMeta(m){
     if(m.meet&&(!prev.meet||prev.meet.ts!==m.meet.ts)){toast('📍 Meet at '+m.meet.name+' first','ann');T.meetPath=null;drawRoute()}
     if(!m.meet&&prev.meet){toast('Meeting done. Follow the blue line to the destination.','ann');drawRoute()}
     if(m.pin&&(!prev.pin||prev.pin.ts!==m.pin.ts))toast('📢 '+m.pin.text,'ann');
+    if(m.chg&&(!prev.chg||prev.chg.ts!==m.chg.ts)&&m.chg.by!==T.me)toast('⚠ Ride updated: '+m.chg.text,'ann');
     if(JSON.stringify(prev.route)!==JSON.stringify(m.route)||JSON.stringify(prev.stops)!==JSON.stringify(m.stops))drawRoute();
   }
   if(m.status==='ended'){showSummary();return}
   if(!T.members[T.me]&&Object.keys(T.members).length)return;
+  if(m.status==='live'&&!(T.optIn&&(!prev||prev.status==='live'))&&!T.bg&&!isMgr()&&(T.state[T.me]||{}).rsvp==='no'){T.bg=true;showHome();toast("The ride started. You said you can't go. Tap Return to your trip to join.",'ann')}
   if(T.bg){if(prev&&prev.status!==m.status&&m.status==='live')toast('Your trip has started. Tap Return to your trip.','ann');renderResume();return}
   if(m.status==='lobby'){if(!$('#s-lobby').classList.contains('on'))go('s-lobby');renderLobby()}
   else if(m.status==='live'){if(!$('#s-live').classList.contains('on'))startLive();refresh()}
@@ -839,21 +931,71 @@ function refresh(){if(!T||!T.meta)return;if(T.meta.status==='lobby')renderLobby(
 
 /* ================= LOBBY ================= */
 function renderLobby(){
-  const m=T.meta;$('#l-name').textContent=m.name;$('#l-route').textContent=m.stops.map(s=>s.name).join(' → ')+(m.route?` · ${m.route.km} km`:'');
-  $('#l-code').textContent=T.code;$('#l-codebox').style.display=isMgr()?'':'none';$('#l-reqwrap').style.display=isMgr()?'':'none';
-  const mem=Object.entries(T.members);$('#l-count').textContent=mem.length;
-  $('#l-members').innerHTML=mem.map(([u,x])=>{const st=T.state[u]||{};const on=T.presence[u];
-    return `<div class="row" style="padding:8px 0">${avHTML(x,{off:!on})}<div style="flex:1"><b>${esc(x.nick)}${u===T.me?' (you)':''}</b> ${x.role!=='member'?`<span class="role">${x.role==='coleader'?'Co-leader':'Leader'}</span>`:''}<div class="muted small">${vIcon(x.veh)} ${on?'Connected':'Disconnected'}</div></div>
-    <span class="st ${!on?'lost':st.ready||x.role==='leader'?'lead':'amber'}">${!on?'Offline':st.ready||x.role==='leader'?'Ready':'Not ready'}</span></div>`}).join('');
-  $('#l-ready').classList.toggle('on',!!(T.state[T.me]||{}).ready);
-  $('#l-ready').parentElement.style.display=isLeader()?'none':'';
-  $('#l-start').style.display=isLeader()?'':'none';
-  $('#l-hint').textContent=isLeader()?'Starts live location sharing and the live mic for everyone':'Waiting for the leader to start the trip…';
+  const m=T.meta;const my=T.state[T.me]||{};const mgr=isMgr();const sched=!!m.when;
+  $('#l-name').textContent=m.name;$('#l-route').textContent=m.stops.map(s=>s.name).join(' → ')+(m.route?` · ${m.route.km} km`:'');
+  $('#l-code').textContent=T.code;$('#l-codebox').style.display=mgr?'':'none';$('#l-reqwrap').style.display=mgr?'':'none';
+  const chg=m.chg&&m.chg.by!==T.me&&m.chg.ts>(my.ack||0)&&my.rsvp!=='no'?m.chg:null;
+  $('#l-chg').innerHTML=chg?`<div class="chgban"><b>⚠ Ride updated</b><div style="margin-top:2px">${esc(chg.text)}</div><div class="row" style="margin-top:10px"><button class="btn sm" id="chg-ok">Still going</button><button class="btn sm ghost" id="chg-no">Can't go</button></div></div>`:'';
+  let wc='';if(sched){const cal=calLinks(m,T.code);const left=m.when-Date.now();
+    wc=`<div class="card" style="margin-top:12px"><div class="muted small">Ride date</div><div style="font-size:18px;font-weight:800">${fmtWhen(m.when)}</div>
+      <div class="small" style="color:${left>0?'var(--blue-d)':'var(--amber)'};font-weight:700">${left>0?'Starts '+untilTxt(m.when):'Meet time now · waiting for the leader to start'}</div>
+      <div class="muted small" style="margin-top:6px">Meet at <b>${esc(m.stops[0].name)}</b>${m.wait?` · leaving ${m.wait} min after meet time (${fmtTime(m.when+m.wait*60000)})`:''}</div>
+      <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:8px"><a class="btn sm ghost" target="_blank" rel="noopener" href="${cal.g}">Add to Google Calendar</a><a class="btn sm ghost" download="${T.code}.ics" href="${cal.ics}">Phone calendar</a></div></div>`}
+  else if(m.wait)wc=`<p class="muted small" style="margin-top:6px">Wait time at the meeting point: ${m.wait} min</p>`;
+  $('#l-whencard').innerHTML=wc;
+  const mem=Object.entries(T.members);const rv=u=>(T.state[u]||{}).rsvp||((T.members[u]||{}).role==='leader'?'going':'');
+  const cnt={going:0,maybe:0,no:0,none:0};mem.forEach(([u])=>cnt[rv(u)||'none']++);
+  const cur=rv(T.me);
+  $('#l-rsvpcard').innerHTML=sched?`<div class="card"><h3>Are you going?</h3><div class="seg" id="rsvp-seg">${['going','maybe','no'].map(k=>`<button data-r="${k}" class="${cur===k?'on'+(k==='no'?' red':k==='maybe'?' amber':''):''}">${RSVP_L[k]}</button>`).join('')}</div>
+    <div class="muted small" style="margin-top:8px">${cnt.going} going · ${cnt.maybe} maybe · ${cnt.no} can't go${cnt.none?` · ${cnt.none} no reply`:''}</div>
+    ${cur!=='no'?`<button class="btn sm ghost" id="l-late" style="margin-top:10px">${my.late?`Running ${my.late.min} min late · change`:"I'll be late"}</button>`:''}</div>`:'';
+  $('#l-rulescard').innerHTML=m.rules?`<div class="card"><h3>Ride rules</h3><div style="white-space:pre-wrap;font-size:14px">${esc(m.rules)}</div></div>`:'';
+  $('#l-count').textContent=mem.length;
+  $('#l-members').innerHTML=mem.map(([u,x])=>{const st=T.state[u]||{};const on=T.presence[u];let chip;
+    if(sched){const r=rv(u);chip=st.late&&r!=='no'?['amber',`${st.late.min} min late`]:r==='going'?['lead','Going']:r==='maybe'?['amber','Maybe']:r==='no'?['lost',"Can't go"]:['lost','No reply']}
+    else chip=!on?['lost','Offline']:st.ready||x.role==='leader'?['lead','Ready']:['amber','Not ready'];
+    return `<div class="row" style="padding:8px 0">${avHTML(x,{off:!on})}<div style="flex:1;min-width:0"><b>${esc(x.nick)}${u===T.me?' (you)':''}</b> ${x.role!=='member'?`<span class="role">${x.role==='coleader'?'Co-leader':'Leader'}</span>`:''}<div class="muted small">${vIcon(x.veh)}${x.bike?' · '+esc(x.bike):''}${on?' · Online':''}</div>
+    ${isLeader()&&u!==T.me?`<button class="linkbtn small" data-lpro="${u}">${x.role==='coleader'?'Remove co-leader':'Make co-leader'}</button>`:''}</div>
+    <span class="st ${chip[0]}">${chip[1]}</span></div>`}).join('');
+  $('#l-ready').classList.toggle('on',!!my.ready);
+  $('#l-ready').parentElement.style.display=isLeader()||sched?'none':'';
+  $('#l-start').style.display=mgr?'':'none';$('#l-mgr').style.display=mgr?'':'none';
+  $('#l-start').textContent=sched&&m.when-Date.now()>3600e3?'Start ride now (early)':'Start group ride';
+  $('#l-hint').textContent=mgr?(sched?'On ride day, starting moves everyone into the live map and mic':'Starts live location sharing and the live mic for everyone'):(sched?'On ride day, the leader starts the ride and you go straight to the live map.':'Waiting for the leader to start the trip…');
   renderRequests();
 }
+$('#s-lobby').addEventListener('click',e=>{if(!T)return;const r=e.target.closest('[data-r]');if(r&&r.closest('#rsvp-seg'))return setRsvp(r.dataset.r);
+  if(e.target.closest('#chg-ok'))return setRsvp('going',true);if(e.target.closest('#chg-no'))return setRsvp('no',true);
+  if(e.target.closest('#l-late'))return lateSheet();
+  const pr=e.target.closest('[data-lpro]');if(pr){const u=pr.dataset.lpro;const r2=T.members[u].role==='coleader'?'member':'coleader';DB.update(P('members/'+u),{role:r2});sysMsg(`${T.members[u].nick} is now ${r2==='coleader'?'co-leader':'a member'}`)}});
+async function setRsvp(k,ack){const my=T.state[T.me]||{};
+  if(k==='going'&&my.rsvp!=='going'){const c=clashCheck(T.meta.when,T.code);if(c&&!T.clashOk)return confirmClash(c,()=>{T.clashOk=true;setRsvp(k,ack)})}
+  await DB.update(P('state/'+T.me),{rsvp:k,ack:DB.now(),...(k==='no'?{late:null}:{})});myRide(T.code,{rsvp:k});
+  if(my.rsvp!==k){const n=meM().nick;sysMsg(k==='going'?`✅ ${n} is going`:k==='maybe'?`🤔 ${n} might come`:`❌ ${n} can't make it`,'rsvp')}else if(ack)toast('Thanks, the leader knows you are still going')}
+function lateSheet(){const my=T.state[T.me]||{};openSheet(`<h1>Running late?</h1><p class="muted" style="margin:6px 0 12px">Your group and the leader will see it.</p><div class="seg" id="late-seg">${[10,20,30,60].map(n=>`<button data-l="${n}">${n} min</button>`).join('')}</div><div style="height:12px"></div>${my.late?`<button class="btn ghost" id="late-clear">I'm on time now</button><div style="height:8px"></div>`:''}<button class="btn ghost" onclick="closeSheet()">Close</button>`);
+  $('#late-seg').onclick=e=>{const b=e.target.closest('[data-l]');if(!b)return;const n=+b.dataset.l;closeSheet();DB.update(P('state/'+T.me),{late:{min:n,ts:DB.now()}});sysMsg(`⏰ ${meM().nick} will be ${n} min late`,'late');toast('Your group was told')};
+  if($('#late-clear'))$('#late-clear').onclick=()=>{closeSheet();DB.update(P('state/'+T.me),{late:null});sysMsg(`👍 ${meM().nick} is on time`,'note')}}
+function editRide(){const m=T.meta;openSheet(`<h1>Edit ride</h1><div class="label">Date & time</div><input class="field" id="er-when" type="datetime-local" value="${m.when?toLocalInput(m.when):''}"><p class="muted small" style="margin-top:4px">Leave empty if there's no set time.</p>
+  <div class="label">Wait time at the meeting point</div><div class="seg" id="er-wait">${[0,10,15,30].map(n=>`<button data-m="${n}" class="${(m.wait||0)===n?'on':''}">${n?n+' min':'No wait'}</button>`).join('')}</div>
+  <div class="label">Ride rules / notes</div><textarea class="field" id="er-rules" rows="3" maxlength="300">${esc(m.rules||'')}</textarea>
+  <div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px"><button class="btn sm ghost" id="er-meet">Change meeting point</button><button class="btn sm ghost" id="er-dest">Change destination</button></div>
+  <div style="height:14px"></div><button class="btn" id="er-save">Save & tell the group</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Close</button>`);
+  segPick('#er-wait');
+  $('#er-save').onclick=()=>busy($('#er-save'),async()=>{const v=$('#er-when').value;const when=v?new Date(v).getTime():null;const wait=+(($('#er-wait .on')||{dataset:{m:0}}).dataset.m);const rules=$('#er-rules').value.trim().slice(0,300);
+    const big=[],small=[];if((when||null)!==(m.when||null))big.push(when?(m.when?`Time changed: ${fmtWhen(m.when)} → ${fmtWhen(when)}`:`Ride set for ${fmtWhen(when)}`):'Ride time removed');
+    if(wait!==(m.wait||0))small.push(`Wait time is now ${wait?wait+' min':'no wait'}`);if(rules!==(m.rules||''))small.push('Ride rules updated');
+    if(!big.length&&!small.length){closeSheet();return}
+    await DB.update(P('meta'),{when,wait,rules,...(big.length?{chg:{ts:DB.now(),text:big.join(' · '),by:T.me}}:{})});
+    if(big.length)sysMsg('⚠ '+big.join(' · '));if(small.length)sysMsg('✏️ '+small.join(' · '),'note');closeSheet();toast('Group notified')});
+  const movePt=(i,title,label)=>()=>{closeSheet();pickOnMap(title,m.stops[i],async p=>{const stops=[...m.stops];stops[i]={name:p.name,lat:p.lat,lng:p.lng,type:stops[i].type};await saveRoute(stops);
+    const t=label+' changed to '+p.name;await DB.update(P('meta'),{chg:{ts:DB.now(),text:t,by:T.me},...(i===0&&T.meta.meet?{meet:{name:p.name,lat:p.lat,lng:p.lng,ts:DB.now()}}:{})});sysMsg('⚠ '+t);toast('Group notified')})};
+  $('#er-meet').onclick=movePt(0,'New meeting point','Meeting point');$('#er-dest').onclick=movePt(m.stops.length-1,'New destination','Destination')}
+function cancelRide(){openSheet(`<h1 style="color:var(--red)">Cancel this ride?</h1><p class="muted" style="margin:8px 0 4px">Everyone in the group will see that it's cancelled.</p><div class="label">Reason (optional)</div><input class="field" id="cr-why" maxlength="80" placeholder="e.g. Heavy rain forecast"><div style="height:14px"></div><button class="btn red" id="cr-go">Cancel ride</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Keep ride</button>`);
+  $('#cr-go').onclick=()=>busy($('#cr-go'),async()=>{const r=$('#cr-why').value.trim().slice(0,80);await sysMsg('🚫 Ride cancelled'+(r?': '+r:'')).catch(()=>{});await DB.update(P('meta'),{status:'cancelled',cancel:{reason:r,ts:DB.now(),by:meM().nick}});closeSheet()})}
+$('#l-edit').onclick=()=>editRide();$('#l-cancel').onclick=()=>cancelRide();
 function renderRequests(){
   if(!T)return;const pend=Object.entries(T.requests).filter(([,q])=>q.status==='pending');
-  const h=pend.length?pend.map(([u,q])=>`<div class="req"><div class="av" style="background:#334155;color:#fff">${esc(initials(q.nick,[]))}</div><div style="flex:1;min-width:0"><b>${esc(q.nick)}</b><div class="muted small">${vIcon(q.veh)} · wants to join</div></div><button class="btn sm" data-ap="${u}">Approve</button><button class="btn sm ghost" data-dc="${u}">✕</button></div>`).join(''):'<p class="muted small">No pending requests.</p>';
+  const h=pend.length?pend.map(([u,q])=>`<div class="req"><div class="av" style="background:#334155;color:#fff">${esc(initials(q.nick,[]))}</div><div style="flex:1;min-width:0"><b>${esc(q.nick)}</b><div class="muted small">${vIcon(q.veh)}${q.bike?' · '+esc(q.bike):''} · wants to join</div></div><button class="btn sm" data-ap="${u}">Approve</button><button class="btn sm ghost" data-dc="${u}">✕</button></div>`).join(''):'<p class="muted small">No pending requests.</p>';
   $('#l-reqs').innerHTML=h;const lr=$('#lr-reqs');if(lr)lr.innerHTML=h;
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-ap]'),d=e.target.closest('[data-dc]');if(a)approveReq(a.dataset.ap);if(d)declineReq(d.dataset.dc)});
@@ -861,7 +1003,7 @@ async function approveReq(u){
   const q=T.requests[u];if(!q)return;
   const used=Object.values(T.members).map(m=>m.color);const color=(q.color&&!used.includes(q.color)?q.color:null)||COLORS.find(c=>!used.includes(c))||COLORS[Object.keys(T.members).length%COLORS.length];
   const ini=initials(q.nick,Object.values(T.members).map(m=>m.ini));
-  await DB.set(P('members/'+u),{nick:q.nick,ini,color,veh:q.veh,role:'member',joined:DB.now()});
+  await DB.set(P('members/'+u),{nick:q.nick,ini,color,veh:q.veh,bike:q.bike||'',role:'member',joined:DB.now()});
   await DB.set(P(`requests/${u}/status`),'approved');
   sysMsg(`${ini} (${q.nick}) joined the trip`);
 }
@@ -870,9 +1012,9 @@ $('#l-ready').onclick=()=>DB.update(P('state/'+T.me),{ready:!(T.state[T.me]||{})
 $('#l-start').onclick=async()=>{const st=T.meta.stops[0];await DB.update(P('meta'),{status:'live',started:DB.now(),...(T.meta.meetFirst?{meet:{name:st.name,lat:st.lat,lng:st.lng,ts:DB.now()}}:{})});sysMsg('▶ Trip started · destination: '+T.meta.stops[T.meta.stops.length-1].name)};
 $('#l-copy').onclick=()=>copyInvite();
 $('#l-share').onclick=async()=>{const t=inviteText();try{if(navigator.share)await navigator.share({title:'Join my FunRallyRide trip',text:t});else copyInvite()}catch(e){}};
-const inviteText=()=>`Join my group trip "${T.meta.name}" on FunRallyRide.\nCode: ${T.code}\n${location.origin+location.pathname}`;
+const inviteText=()=>{const m=T.meta;return `Join my ride "${m.name}" on FunRallyRide${m.when?'\n📅 '+fmtWhen(m.when):''}\n📍 Meet at ${m.stops[0].name}\nCode: ${T.code}\nTap to join: ${location.origin+location.pathname}?join=${T.code}`};
 async function copyInvite(){try{await navigator.clipboard.writeText(inviteText());toast('Invite copied')}catch(e){toast('Code: '+T.code)}}
-$('#l-leave').onclick=()=>openSheet(`<h1>Leave trip?</h1><p class="muted" style="margin:8px 0 16px">${isLeader()?'As leader, leaving cancels the trip for everyone.':'You can rejoin later with the code (needs approval again).'}</p><button class="btn red" id="cf-leave">Leave</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`)||($('#cf-leave').onclick=async()=>{closeSheet();if(isLeader())await DB.update(P('meta'),{status:'ended',ended:DB.now()});else{await leaveTrip();return}exitTrip()});
+$('#l-leave').onclick=()=>isLeader()?cancelRide():openSheet(`<h1>Leave trip?</h1><p class="muted" style="margin:8px 0 16px">${isLeader()?'As leader, leaving cancels the trip for everyone.':'You can rejoin later with the code (needs approval again).'}</p><button class="btn red" id="cf-leave">Leave</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`)||($('#cf-leave').onclick=async()=>{closeSheet();if(isLeader())await DB.update(P('meta'),{status:'ended',ended:DB.now()});else{await leaveTrip();return}exitTrip()});
 
 /* ================= LIVE ================= */
 let map=null,layers={mk:{},stops:[]},follow='nav',nav3d=true,mapType=store.get('maptype')||'sat',fitDone=false,progMove=false;
@@ -982,7 +1124,17 @@ function memberInfo(){
     x.status=s});
   return {info,ord};
 }
-function refreshLive(){if(!T||!T.meta||T.meta.status!=='live'||!$('#s-live').classList.contains('on'))return;renderBar();renderMarkers();renderConvoy();renderMembers();renderVoiceUI();$('#tab-leader').style.display=isMgr()?'':'none';if($('#p-leader').classList.contains('on'))renderLeader()}
+function renderRoll(){const el=$('#rollc');if(!el||!T||!T.meta)return;const m=T.meta;if(!m.meet||m.status!=='live'){el.style.display='none';return}
+  const all=Object.entries(T.members).filter(([u])=>(T.state[u]||{}).rsvp!=='no');const here=all.filter(([u])=>!meetActiveFor(u)),miss=all.filter(([u])=>meetActiveFor(u));
+  const meetT=m.when&&m.started&&m.when>m.started-12*3600e3?Math.max(m.when,0):m.meet.ts;const timed=!!(m.wait||m.when);const leaveAt=meetT+(m.wait||0)*60000;const left=leaveAt-Date.now();
+  const tm=timed?(left>0?`Leaving ${left>3600e3?'at '+fmtTime(leaveAt):'in '+Math.ceil(left/60000)+' min'}`:'Wait time is over'):'';
+  const myL=(T.state[T.me]||{}).late;
+  el.style.display='';el.innerHTML=`<div class="row between"><b>${here.length}/${all.length} at meeting point</b>${tm?`<span class="${left>0?'small':'over small'}">${tm}</span>`:''}</div>
+    ${miss.length?`<div class="small muted">Missing: ${miss.map(([u,x])=>{const l=(T.state[u]||{}).late;return esc(x.nick.split(' ')[0])+(l?` (+${l.min} min)`:'')}).join(', ')}</div>`:'<div class="small" style="color:var(--green);font-weight:600">Everyone is here</div>'}
+    ${meetActiveFor(T.me)?`<button class="linkbtn" id="rc-late">${myL?`You said ${myL.min} min late · change`:"I'll be late"}</button>`:''}`;
+  if($('#rc-late'))$('#rc-late').onclick=lateSheet;
+  if(isMgr()&&timed&&left<=0&&T.waitToast!==m.meet.ts){T.waitToast=m.meet.ts;toast(miss.length?'Wait time is over. Start riding from the Leader tab.':'Everyone is here. Start riding from the Leader tab.','ann')}}
+function refreshLive(){if(!T||!T.meta||T.meta.status!=='live'||!$('#s-live').classList.contains('on'))return;renderRoll();renderBar();renderMarkers();renderConvoy();renderMembers();renderVoiceUI();$('#tab-leader').style.display=isMgr()?'':'none';if($('#p-leader').classList.contains('on'))renderLeader()}
 function renderBar(){
   const n=Object.keys(T.members).length,on=Object.keys(T.members).filter(u=>T.presence[u]).length;
   $('#v-online').textContent=`${on} / ${n} online · ${T.code}`;
@@ -1012,7 +1164,7 @@ function renderMarkers(){
   Object.values(info).forEach(x=>{if(!x.l)return;const stale=!x.fresh||!x.online||x.st.paused;headingOf(x.u,x.l);
         const kmh=x.l.spd!=null&&x.l.spd>1?Math.round(x.l.spd*3.6):0;const sel=T.sel===x.u;
         let bub='';if(stale)bub=`${esc(x.u===T.me?'You':x.m.nick.split(' ')[0])}<small>last seen ${ago(x.l.t)}</small>`;
-        else if(sel)bub=`${esc(x.m.nick)}${kmh?` · ${kmh} km/h`:''}<small>${esc(x.status?x.status[1]:'')} · ${ago(x.l.t)}</small>`;
+        else if(sel)bub=`${esc(x.m.nick)}${kmh?` · ${kmh} km/h`:''}<small>${x.m.bike?esc(x.m.bike)+' · ':''}${esc(x.status?x.status[1]:'')} · ${ago(x.l.t)}</small>`;
         else if(x.u===T.me)bub=`You${kmh?` · ${kmh} km/h`:''}`;
         const key=[x.m.color,x.m.ini,x.m.role,stale,bub,Voice.speaking.has(x.u),x.u===T.me].join('|');
     let mk=layers.mk[x.u];
@@ -1079,9 +1231,10 @@ function renderMembers(){
   if(!T||!T.meta)return;const {ord,info}=memberInfo();const me=T.state[T.me]||{};const ld=info[T.meta.leaderId];
   $('#mlist').innerHTML=`<div class="card" style="margin:12px"><div class="row between"><div><b>Sharing my location</b><div class="muted small">${me.paused?'Paused · group sees your last position':'Live · only this trip can see it'}</div></div><button class="tog ${me.paused?'':'on'}" id="pause-loc"></button></div>
     <div class="row" style="margin-top:10px"><button class="btn sm ghost" id="mark-stop">${me.stopped?'Moving again':'I stopped'}</button><button class="btn sm ghost" id="mark-arr">${me.arrived?'Undo arrived':'I arrived'}</button></div></div>`+
+  (T.meta.rules?`<div class="card" style="margin:0 12px 12px"><b>Ride rules</b><div class="small" style="white-space:pre-wrap;margin-top:4px">${esc(T.meta.rules)}</div></div>`:'')+
   ord.map(x=>{const role={leader:'Leader',coleader:'Co-leader',member:''}[x.m.role];const d=ld&&ld.l&&x.l?hav([ld.l.lat,ld.l.lng],[x.l.lat,x.l.lng]):null;
     return `<div class="mrow">${avHTML(x.m,{off:!x.online})}<div class="info"><div class="nm">${esc(x.m.nick)}${x.u===T.me?' (you)':''} ${role?`<span class="role">${role}</span>`:''}</div>
-    <div class="muted small">${vIcon(x.m.veh)} · ${x.u===T.meta.leaderId?'Leading':d!=null?d.toFixed(1)+' km from leader':'distance unknown'} · ${x.st.voice?(x.st.mic===false?'mic muted':'on mic'):'not on voice'}</div>
+    <div class="muted small">${vIcon(x.m.veh)}${x.m.bike?' · '+esc(x.m.bike):''} · ${x.u===T.meta.leaderId?'Leading':d!=null?d.toFixed(1)+' km from leader':'distance unknown'} · ${x.st.voice?(x.st.mic===false?'mic muted':'on mic'):'not on voice'}</div>
     <div class="muted small">Location updated ${x.l?ago(x.l.t):'never'}${x.st.stopped?' · marked stopped':''}</div></div><span class="st ${x.status[0]}">${x.status[1]}</span></div>`}).join('');
   $('#pause-loc').onclick=()=>{const p=!me.paused;DB.update(P('state/'+T.me),{paused:p});sysMsg(`${meM().ini} ${p?'paused':'resumed'} location sharing`);if(!p)GPS.force=true};
   $('#mark-stop').onclick=()=>{DB.update(P('state/'+T.me),{stopped:!me.stopped});if(!me.stopped)sysMsg(`⏸ ${meM().ini} stopped`)};
@@ -1317,7 +1470,7 @@ $('#mb-checkin').onclick=async()=>{const l=T&&T.loc[T.me];if(!l)return toast('Wa
   await send(`📍 ${meM().nick} checked in${place?' at '+place:''}`,'checkin',{lat:l.lat,lng:l.lng});b.disabled=false;toast('Checked in'+(place?' at '+place:''))};
 
 /* ================= TRIP MENU ================= */
-async function leaveTrip(){if(!T)return;T.leaving=true;const me=meM();try{await sysMsg(`${me?me.nick:'A member'} left the trip`)}catch(e){}
+async function leaveTrip(){if(!T)return;T.leaving=true;myRide(T.code,null);const me=meM();try{await sysMsg(`${me?me.nick:'A member'} left the trip`)}catch(e){}
   await DB.remove(P('loc/'+T.me)).catch(()=>{});await DB.remove(P('state/'+T.me)).catch(()=>{});await DB.remove(P('requests/'+T.me)).catch(()=>{});await DB.remove(P('members/'+T.me)).catch(()=>{});
   exitTrip();toast('You left the trip')}
 $('#trip-menu').onclick=()=>{const lead=isLeader();
@@ -1357,9 +1510,11 @@ async function routeAuth(u){
   if(!PROFILE||!PROFILE.nick){openSettings(true);return}
   showHome();
   const sess=store.get('session');if(sess){const mem=await DB.get(`trips/${sess.code}/members/${u.uid}`).catch(()=>null);const meta=await DB.get(`trips/${sess.code}/meta`).catch(()=>null);
-    if(mem&&meta&&meta.status!=='ended')enterTrip(sess.code);else{store.del('session');renderResume()}}
+    if(mem&&meta&&meta.status!=='ended'&&meta.status!=='cancelled')enterTrip(sess.code);else{store.del('session');renderResume()}}
+  let pj=null;try{pj=sessionStorage.getItem('pjoin');sessionStorage.removeItem('pjoin');const uu=new URL(location.href);if(uu.searchParams.has('join')){uu.searchParams.delete('join');history.replaceState(null,'',uu)}}catch(e){}
+  if(pj){$('#go-join').click();$('#j-code').value=pj;$('#j-find').click()}
 }
-function showHome(){if(!store.get('cc'))detectCountry();paintAv('#h-av',PROFILE.nick,PROFILE.color);$('#h-name').textContent=PROFILE.nick;renderResume();go('s-home')}
+function showHome(){if(!store.get('cc'))detectCountry();paintAv('#h-av',PROFILE.nick,PROFILE.color);$('#h-name').textContent=PROFILE.nick;renderResume();go('s-home');renderRides()}
 
 // log in
 $('#a-go').onclick=()=>busy($('#a-go'),async()=>{const e=$('#a-email').value.trim(),p=$('#a-pw').value;$('#a-err').textContent='';
@@ -1390,13 +1545,13 @@ let ST={first:false,color:null};
 function openSettings(first){ST.first=!!first;const pr=PROFILE||{nick:'',color:COLORS[0],veh:'moto'};
   $('#st-title').textContent=first?'Set up your profile':'Settings';$('#st-sub').textContent=first?'Choose how your group will see you.':'';
   $('#st-back').style.display=first?'none':'';$('#st-more').style.display=first?'none':'';
-  $('#st-nick').value=pr.nick||'';swatches('#st-color',pr.color||COLORS[0],c=>paintAv('#st-av',$('#st-nick').value,c));chips('#st-veh',pr.veh||'moto');paintAv('#st-av',pr.nick,pr.color||COLORS[0]);
+  $('#st-nick').value=pr.nick||'';swatches('#st-color',pr.color||COLORS[0],c=>paintAv('#st-av',$('#st-nick').value,c));chips('#st-veh',pr.veh||'moto');$('#st-bike').value=pr.bike||'';paintAv('#st-av',pr.nick,pr.color||COLORS[0]);
   $('#st-email').textContent=DB.user?DB.user.email:'';$('#st-sat').classList.toggle('on',mapType==='sat');$('#st-err').textContent='';go('s-settings')}
 $('#st-nick').oninput=()=>paintAv('#st-av',$('#st-nick').value,selColor('#st-color'));
 $('#h-settings').onclick=()=>openSettings(false);
 $('#st-back').onclick=()=>{if(T&&T.meta&&T.meta.status==='live')go('s-live');else if(T&&T.meta&&T.meta.status==='lobby')go('s-lobby');else showHome()};
 $('#st-save').onclick=()=>busy($('#st-save'),async()=>{const nick=$('#st-nick').value.trim();if(nick.length<2)return $('#st-err').textContent='Enter a nickname (at least 2 letters).';
-  const prof={...(PROFILE||{created:DB.now()}),nick,color:selColor('#st-color'),veh:selVeh('#st-veh')};
+  const prof={...(PROFILE||{created:DB.now()}),nick,color:selColor('#st-color'),veh:selVeh('#st-veh'),bike:$('#st-bike').value.trim().slice(0,40)};
   try{await DB.set('users/'+DB.uid,prof);PROFILE=prof;toast('Profile saved');if(ST.first)showHome();else paintAv('#h-av',nick,prof.color)}catch(e){$('#st-err').textContent=authErr(e)}});
 $('#st-sat').onclick=()=>{$('#mb-layer').click();$('#st-sat').classList.toggle('on',mapType==='sat')};
 $('#st-logout').onclick=()=>{openSheet(`<h1>Log out?</h1><p class="muted" style="margin:8px 0 16px">You'll need your email and password to log back in.</p><button class="btn" id="cf-out">Log out</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
