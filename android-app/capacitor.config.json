@@ -1,0 +1,7 @@
+{
+  "appId": "io.github.jaycee055.rallyride",
+  "appName": "RallyRide",
+  "webDir": "www",
+  "android": { "allowMixedContent": false },
+  "server": { "androidScheme": "https" }
+}
