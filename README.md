@@ -16,8 +16,8 @@ FunRallyRide is a free group-ride app for motorcycle groups, road trips, cycling
 
 ## Get the app
 
-- **Website:** https://jaycee055.github.io/RallyRide/ (works on any phone; use "Add to Home Screen")
-- **Android app:** [Download RallyRide.apk](https://github.com/jaycee055/RallyRide/releases/latest/download/FunRallyRide.apk)
+- **Website:** https://jaycee055.github.io/FunRallyRide/ (works on any phone; use "Add to Home Screen")
+- **Android app:** [Download RallyRide.apk](https://github.com/jaycee055/FunRallyRide/releases/latest/download/FunRallyRide.apk)
 
 ## Costs
 
