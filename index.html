@@ -358,7 +358,15 @@ a{color:var(--blue-d)}
 /* ============ CONFIG ============
    Paste your free Firebase web config here (Firebase console → Project settings → Your apps → Web).
    These values are public by design; security comes from the database rules. */
-const FIREBASE_CONFIG = null;
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyD_LzHXgSgDec5W7-Xl6g4NAaU4mDkDhzs",
+  authDomain: "rallyride-ed714.firebaseapp.com",
+  databaseURL: "https://rallyride-ed714-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rallyride-ed714",
+  storageBucket: "rallyride-ed714.firebasestorage.app",
+  messagingSenderId: "1018230960830",
+  appId: "1:1018230960830:web:b425fa145a9bd9cfba64ef"
+};
 /* Voice connection helpers (free). Add a TURN server later if some networks can't connect. */
 const ICE_SERVERS = [{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:stun.l.google.com:19302'}];
 const APK_URL = 'https://github.com/jaycee055/RallyRide/releases/latest/download/RallyRide.apk';
