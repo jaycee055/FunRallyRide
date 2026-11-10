@@ -96,7 +96,10 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .lpin{width:52px;height:62px;cursor:pointer}
 .lpin .lp-pin{position:absolute;left:2px;top:0;width:48px;height:48px;border-radius:50%;border:3.5px solid #fff;color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.35);z-index:2}
 .lpin::after{content:"";position:absolute;left:50%;top:44px;margin-left:-8px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid #fff;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25));z-index:1}
-.lpin .vcr{top:-4px!important;right:-2px!important;z-index:3}
+.lpin .vcr{position:absolute;left:auto!important;top:-3px!important;right:-1px!important;width:20px;height:20px;border-radius:50%;background:#0F1B2D;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;z-index:3}
+.errow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.ern{width:26px;text-align:center;font-weight:800;color:var(--blue-d)}.ert{flex:1;min-width:0}.ert b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.erb{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-size:13px;font-weight:600}.erb.red{color:var(--red)}.erb:disabled{opacity:.35}
+.ropt{display:flex;justify-content:space-between;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;margin-top:6px;font-size:14px}.ropt.on{border-color:var(--blue);background:var(--blue-soft)}
 .lpin.stale .lp-pin{filter:grayscale(1);opacity:.75}
 .lpin.speak .lp-pin{box-shadow:0 0 0 4px rgba(255,255,255,.95),0 0 0 9px rgba(43,140,235,.5)}
 .lpin.me .lp-pin{box-shadow:0 0 0 5px rgba(43,140,235,.35),0 4px 10px rgba(0,0,0,.35)}
@@ -698,6 +701,12 @@ function simplify(pts,tol){if(pts.length<3)return pts;const keep=new Uint8Array(
     if(mi>0&&md>tol*tol){keep[mi]=1;st.push([a,mi],[mi,b])}}
   return pts.filter((_,i)=>keep[i])}
 const ROUTERS=['https://router.project-osrm.org/route/v1/driving/','https://routing.openstreetmap.de/routed-car/route/v1/driving/'];
+async function getRoutes(points){const q=points.map(p=>(+p.lng).toFixed(6)+','+(+p.lat).toFixed(6)).join(';');
+  for(const base of ROUTERS){try{const ac=new AbortController();const to=setTimeout(()=>ac.abort(),12000);
+    const r=await fetch(`${base}${q}?overview=full&geometries=geojson${points.length===2?'&alternatives=3':''}`,{signal:ac.signal});clearTimeout(to);const j=await r.json();
+    if(j.routes&&j.routes.length)return j.routes.map(rt=>({coords:simplify(rt.geometry.coordinates.map(c=>[+c[1].toFixed(5),+c[0].toFixed(5)]),0.00004),km:+(rt.distance/1000).toFixed(1),dur:Math.round(rt.duration),road:true}))}catch(e){}}
+  return [await getRoute(points)]}
+const durTxt=sec=>{const m=Math.max(1,Math.round(sec/60));return m<60?m+' min':Math.floor(m/60)+' h '+(m%60?m%60+' min':'')};
 async function getRoute(points){const q=points.map(p=>(+p.lng).toFixed(6)+','+(+p.lat).toFixed(6)).join(';');
   for(const base of ROUTERS){
     try{const ac=new AbortController();const to=setTimeout(()=>ac.abort(),12000);
@@ -868,7 +877,7 @@ $('#j-find').onclick=async()=>{
 async function requestJoin(){
   const c=clashCheck(J.meta.when,J.code);if(c&&!J.clashOk)return confirmClash(c,()=>{J.clashOk=true;requestJoin()});
   const nick=PROFILE.nick;const bike=($('#j-bike')?$('#j-bike').value.trim():PROFILE.bike||'').slice(0,40);
-  await DB.set(`trips/${J.code}/requests/${DB.uid}`,{nick,veh:selVeh('#j-veh'),bike,color:PROFILE.color||null,at:DB.now(),status:'pending'});
+  try{await DB.set(`trips/${J.code}/requests/${DB.uid}`,{nick,veh:selVeh('#j-veh'),bike,color:PROFILE.color||null,at:DB.now(),status:'pending'})}catch(e){$('#j-err').textContent="You can't join this ride. Ask the leader if you think this is a mistake.";return}
   myRide(J.code,{st:'pending',at:DB.now()});waitApproval(J.code);
 }
 function waitApproval(code){
@@ -890,7 +899,7 @@ async function enterTrip(code,optIn){
   const my0=await DB.get(`trips/${code}/state/${DB.uid}`).catch(()=>null);if(my0)T.state[T.me]=my0;
   const sub=(p,cb)=>T.unsub.push(DB.on(P(p),cb));
   sub('meta',m=>{if(!m){toast('Trip no longer exists','warn');exitTrip();return}onMeta(m)});
-  T.unsub.push(DB.on(P('members'),m=>{T.members=m||{};if(T.meta&&!T.members[T.me]){if(!T.leaving){toast('You were removed from the trip','warn');myRide(T.code,null)}exitTrip();return}refresh()},()=>{if(T){toast('You are no longer in this trip','warn');exitTrip()}}));
+  T.unsub.push(DB.on(P('members'),m=>{T.members=m||{};if(T.meta&&!T.members[T.me]){if(!T.leaving){const nm=T.meta.name;myRide(T.code,null);exitTrip();openSheet(`<h1>Removed from ride</h1><p class="muted" style="margin:8px 0 16px">The leader removed you from <b>${esc(nm)}</b>.</p><button class="btn" onclick="closeSheet()">OK</button>`);return}exitTrip();return}refresh()},()=>{if(T){if(T.leaving){exitTrip();return}const nm=T.meta?T.meta.name:'the ride';myRide(T.code,null);exitTrip();openSheet(`<h1>Removed from ride</h1><p class="muted" style="margin:8px 0 16px">The leader removed you from <b>${esc(nm)}</b>.</p><button class="btn" onclick="closeSheet()">OK</button>`)}}));
   sub('state',s=>{T.state=s||{};refresh()});
   sub('loc',l=>{T.loc=l||{};refreshLive()});
   sub('presence',p=>{T.presence=p||{};refresh()});
@@ -955,7 +964,7 @@ function renderLobby(){
     if(sched){const r=rv(u);chip=st.late&&r!=='no'?['amber',`${st.late.min} min late`]:r==='going'?['lead','Going']:r==='maybe'?['amber','Maybe']:r==='no'?['lost',"Can't go"]:['lost','No reply']}
     else chip=!on?['lost','Offline']:st.ready||x.role==='leader'?['lead','Ready']:['amber','Not ready'];
     return `<div class="row" style="padding:8px 0">${avHTML(x,{off:!on})}<div style="flex:1;min-width:0"><b>${esc(x.nick)}${u===T.me?' (you)':''}</b> ${x.role!=='member'?`<span class="role">${x.role==='coleader'?'Co-leader':'Leader'}</span>`:''}<div class="muted small">${vIcon(x.veh)}${x.bike?' · '+esc(x.bike):''}${on?' · Online':''}</div>
-    ${isLeader()&&u!==T.me?`<button class="linkbtn small" data-lpro="${u}">${x.role==='coleader'?'Remove co-leader':'Make co-leader'}</button>`:''}</div>
+    ${isLeader()&&u!==T.me?`<button class="linkbtn small" data-lpro="${u}">${x.role==='coleader'?'Remove co-leader':'Make co-leader'}</button>`:''}${mgr&&u!==T.me&&x.role!=='leader'?` · <button class="linkbtn small" style="color:var(--red)" data-lrm="${u}">Remove</button>`:''}</div>
     <span class="st ${chip[0]}">${chip[1]}</span></div>`}).join('');
   $('#l-ready').classList.toggle('on',!!my.ready);
   $('#l-ready').parentElement.style.display=isLeader()||sched?'none':'';
@@ -967,6 +976,7 @@ function renderLobby(){
 $('#s-lobby').addEventListener('click',e=>{if(!T)return;const r=e.target.closest('[data-r]');if(r&&r.closest('#rsvp-seg'))return setRsvp(r.dataset.r);
   if(e.target.closest('#chg-ok'))return setRsvp('going',true);if(e.target.closest('#chg-no'))return setRsvp('no',true);
   if(e.target.closest('#l-late'))return lateSheet();
+  const rmb=e.target.closest('[data-lrm]');if(rmb)return removeMember(rmb.dataset.lrm);
   const pr=e.target.closest('[data-lpro]');if(pr){const u=pr.dataset.lpro;const r2=T.members[u].role==='coleader'?'member':'coleader';DB.update(P('members/'+u),{role:r2});sysMsg(`${T.members[u].nick} is now ${r2==='coleader'?'co-leader':'a member'}`)}});
 async function setRsvp(k,ack){const my=T.state[T.me]||{};
   if(k==='going'&&my.rsvp!=='going'){const c=clashCheck(T.meta.when,T.code);if(c&&!T.clashOk)return confirmClash(c,()=>{T.clashOk=true;setRsvp(k,ack)})}
@@ -978,7 +988,7 @@ function lateSheet(){const my=T.state[T.me]||{};openSheet(`<h1>Running late?</h1
 function editRide(){const m=T.meta;openSheet(`<h1>Edit ride</h1><div class="label">Date & time</div><input class="field" id="er-when" type="datetime-local" value="${m.when?toLocalInput(m.when):''}"><p class="muted small" style="margin-top:4px">Leave empty if there's no set time.</p>
   <div class="label">Wait time at the meeting point</div><div class="seg" id="er-wait">${[0,10,15,30].map(n=>`<button data-m="${n}" class="${(m.wait||0)===n?'on':''}">${n?n+' min':'No wait'}</button>`).join('')}</div>
   <div class="label">Ride rules / notes</div><textarea class="field" id="er-rules" rows="3" maxlength="300">${esc(m.rules||'')}</textarea>
-  <div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px"><button class="btn sm ghost" id="er-meet">Change meeting point</button><button class="btn sm ghost" id="er-dest">Change destination</button></div>
+  <div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px"><button class="btn sm ghost" id="er-route">Edit route (meeting point, stops, destination)</button></div>
   <div style="height:14px"></div><button class="btn" id="er-save">Save & tell the group</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Close</button>`);
   segPick('#er-wait');
   $('#er-save').onclick=()=>busy($('#er-save'),async()=>{const v=$('#er-when').value;const when=v?new Date(v).getTime():null;const wait=+(($('#er-wait .on')||{dataset:{m:0}}).dataset.m);const rules=$('#er-rules').value.trim().slice(0,300);
@@ -987,9 +997,11 @@ function editRide(){const m=T.meta;openSheet(`<h1>Edit ride</h1><div class="labe
     if(!big.length&&!small.length){closeSheet();return}
     await DB.update(P('meta'),{when,wait,rules,...(big.length?{chg:{ts:DB.now(),text:big.join(' · '),by:T.me}}:{})});
     if(big.length)sysMsg('⚠ '+big.join(' · '));if(small.length)sysMsg('✏️ '+small.join(' · '),'note');closeSheet();toast('Group notified')});
-  const movePt=(i,title,label)=>()=>{closeSheet();pickOnMap(title,m.stops[i],async p=>{const stops=[...m.stops];stops[i]={name:p.name,lat:p.lat,lng:p.lng,type:stops[i].type};await saveRoute(stops);
-    const t=label+' changed to '+p.name;await DB.update(P('meta'),{chg:{ts:DB.now(),text:t,by:T.me},...(i===0&&T.meta.meet?{meet:{name:p.name,lat:p.lat,lng:p.lng,ts:DB.now()}}:{})});sysMsg('⚠ '+t);toast('Group notified')})};
-  $('#er-meet').onclick=movePt(0,'New meeting point','Meeting point');$('#er-dest').onclick=movePt(m.stops.length-1,'New destination','Destination')}
+  $('#er-route').onclick=()=>editRoute()}
+function removeMember(u){const x=T.members[u];if(!x)return;const n=x.nick;
+  openSheet(`<h1>Remove ${esc(n)}?</h1><p class="muted" style="margin:8px 0 16px">They leave the map, mic and chat right away.</p><button class="btn red" id="rm-1">Remove</button><div style="height:8px"></div><button class="btn ghost" style="color:var(--red)" id="rm-2">Remove and block from rejoining</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+  const go=async b=>{closeSheet();if(b)await DB.set(P('blocked/'+u),{nick:n,ts:DB.now()}).catch(()=>{});await DB.remove(P('members/'+u));await DB.remove(P('loc/'+u)).catch(()=>{});await DB.remove(P('requests/'+u)).catch(()=>{});sysMsg(`${n} was removed${b?' and blocked':''} by the leader`,'warn');toast(n+' removed')};
+  $('#rm-1').onclick=()=>go(false);$('#rm-2').onclick=()=>go(true)}
 function cancelRide(){openSheet(`<h1 style="color:var(--red)">Cancel this ride?</h1><p class="muted" style="margin:8px 0 4px">Everyone in the group will see that it's cancelled.</p><div class="label">Reason (optional)</div><input class="field" id="cr-why" maxlength="80" placeholder="e.g. Heavy rain forecast"><div style="height:14px"></div><button class="btn red" id="cr-go">Cancel ride</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Keep ride</button>`);
   $('#cr-go').onclick=()=>busy($('#cr-go'),async()=>{const r=$('#cr-why').value.trim().slice(0,80);await sysMsg('🚫 Ride cancelled'+(r?': '+r:'')).catch(()=>{});await DB.update(P('meta'),{status:'cancelled',cancel:{reason:r,ts:DB.now(),by:meM().nick}});closeSheet()})}
 $('#l-edit').onclick=()=>editRide();$('#l-cancel').onclick=()=>cancelRide();
@@ -1094,10 +1106,23 @@ async function ensureMeetPath(me){const m=T.meta.meet;if(!m||!me||!me.l)return;
   if(!stale||Date.now()-meetFetchAt<8000)return;meetFetchAt=Date.now();
   const r=await getRoute([{lat:here[0],lng:here[1]},{lat:m.lat,lng:m.lng}]);
   if(T&&T.meta&&T.meta.meet&&T.meta.meet.ts===m.ts){T.meetPath={...r,cum:cumOf(r.coords),ts:m.ts};renderMarkers()}}
+const routeKey=()=>T.meta.route.km+'|'+T.meta.stops.map(s=>s.lat+','+s.lng).join(';');
+let detFetchAt=0;
+async function ensureDetour(me){if(!T||!me||!me.l||Date.now()-detFetchAt<10000)return;detFetchAt=Date.now();
+  const st=T.meta.stops,prog=me.prog||0,key=routeKey();
+  const ahead=st.filter((x,k)=>k>0&&(k===st.length-1||!T.stopProg||T.stopProg[k]>prog+0.05));
+  const r=await getRoute([{lat:me.l.lat,lng:me.l.lng},...ahead]);if(!T||!r.road||key!==routeKey())return;
+  T.detour={coords:r.coords,cum:cumOf(r.coords),key,dur:r.dur,km:r.km,road:true};
+  if(!T.detourToastAt||Date.now()-T.detourToastAt>120000){T.detourToastAt=Date.now();toast('New route from where you are')}
+  const info=memberInfo().info;if(info[T.me])drawGuide(info[T.me])}
 function drawGuide(me){if(!map||!map.getSource('guide'))return;let coords=[];T.offRoad=false;
   if(me&&me.l){const here=[me.l.lat,me.l.lng];
     if(meetActiveFor(T.me)){const m=T.meta.meet;const mp=T.meetPath;if(mp&&mp.ts===m.ts){const a=aheadOf(mp.coords,mp.cum,here);coords=a.coords;T.offRoad=a.pr.off>0.012}else{coords=[here,[m.lat,m.lng]];T.offRoad='all'}}
-    else if(T.cum){const a=aheadOf(T.meta.route.coords,T.cum,here);coords=a.coords;T.offRoad=a.pr.off>0.012}}
+    else if(T.cum){const a=aheadOf(T.meta.route.coords,T.cum,here);T.onDetour=false;
+      if(a.pr.off<=0.06){T.detour=null;coords=a.coords;T.offRoad=a.pr.off>0.012}
+      else{const dt=T.detour&&T.detour.key===routeKey()?T.detour:null;const b=dt?aheadOf(dt.coords,dt.cum,here):null;
+        if(b&&b.pr.off<0.2){coords=b.coords;T.offRoad=b.pr.off>0.012;T.onDetour=true;T.detRem=Math.max(0,dt.cum[dt.cum.length-1]-b.pr.prog)}else{coords=a.coords;T.offRoad=a.pr.off>0.012}
+        if(a.pr.off>0.12&&(!b||b.pr.off>=0.12))ensureDetour(me)}}}
   else coords=T.meta.route.coords;
   let snap=[];if(T.offRoad==='all'){snap=coords;coords=[]}else if(me&&me.l&&coords.length>2&&T.offRoad){snap=[coords[0],coords[1]];coords=coords.slice(1)}
   if(map.getSource('snap'))map.getSource('snap').setData({type:'Feature',geometry:{type:'LineString',coordinates:snap.map(p=>[p[1],p[0]])}});
@@ -1198,10 +1223,10 @@ function renderMarkers(){
     if(mp&&mp.road&&mp.dur&&mp.km>0){const mins=Math.max(1,Math.round(d/mp.km*mp.dur/60));$('#eta-t').textContent=mins<60?mins+' min':Math.floor(mins/60)+' h '+(mins%60)+' min';$('#eta-d').textContent=`${d.toFixed(1)} km to meeting point · ${meet.name}`}
     else{$('#eta-t').textContent=d.toFixed(1)+' km';$('#eta-d').textContent='to meeting point · '+meet.name}}
   else if(me&&me.l){const ti=T.meta.stops.findIndex(s=>s.name===target.name&&s.lat===target.lat);
-    let d=(ti>=0&&T.stopProg&&me.off<0.5)?T.stopProg[ti]-me.prog:hav([me.l.lat,me.l.lng],[target.lat,target.lng]);if(d<0)d=hav([me.l.lat,me.l.lng],[target.lat,target.lng]);
+    let d=(ti>=0&&T.stopProg&&me.off<0.5)?T.stopProg[ti]-me.prog:hav([me.l.lat,me.l.lng],[target.lat,target.lng]);if(d<0)d=hav([me.l.lat,me.l.lng],[target.lat,target.lng]);if(T.onDetour&&T.detour&&ti===T.meta.stops.length-1)d=T.detRem;
     $('#nb-dist').innerHTML=d<1?`${Math.round(d*1000/10)*10}<small>m</small>`:`${d.toFixed(d<10?1:0)}<small>km</small>`;
-    const rem=me.remaining!=null&&me.off<0.5?me.remaining:hav([me.l.lat,me.l.lng],[dest.lat,dest.lng]);
-    const r=T.meta.route;if(r.road&&r.dur&&r.km>0){const mins=Math.max(1,Math.round(rem/r.km*r.dur/60));const at=new Date(Date.now()+mins*60000);
+    const rem=T.onDetour&&T.detour?T.detRem:me.remaining!=null&&me.off<0.5?me.remaining:hav([me.l.lat,me.l.lng],[dest.lat,dest.lng]);
+    const r=T.onDetour&&T.detour?T.detour:T.meta.route;if(r.road&&r.dur&&r.km>0){const mins=Math.max(1,Math.round(rem/r.km*r.dur/60));const at=new Date(Date.now()+mins*60000);
       $('#eta-t').textContent=mins<60?mins+' min':Math.floor(mins/60)+' h '+(mins%60)+' min';$('#eta-d').textContent=`${rem.toFixed(1)} km · arrive ${timeStr(at)} · ${dest.name}`}
     else{$('#eta-t').textContent=rem.toFixed(1)+' km';$('#eta-d').textContent='to '+dest.name}}
   else{$('#nb-dist').textContent='–';$('#eta-t').textContent=T.meta.route.km+' km';$('#eta-d').textContent='Waiting for your GPS…'}
@@ -1374,7 +1399,7 @@ function renderLeader(){
       <div class="small" style="margin-top:4px"><b>${here.length}/${all.length}</b> arrived${here.length?': '+here.map(([,x])=>esc(x.nick.split(' ')[0])).join(', '):''}</div>
       ${all.length>here.length?`<div class="small muted">Waiting for: ${all.filter(([u])=>meetActiveFor(u)).map(([,x])=>esc(x.nick.split(' ')[0])).join(', ')}</div>`:''}
       <button class="btn sm" id="ld-unmeet" style="margin-top:8px">${here.length===all.length?'Everyone is here: start riding':'Start riding now'}</button></div>`})():''}
-    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm" id="ld-dest">Change destination</button><button class="btn sm ghost" id="ld-addstop">Add stop</button><button class="btn sm ghost" id="ld-meet">Set meeting point</button></div></div>
+    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm" id="ld-route">Edit route</button><button class="btn sm ghost" id="ld-meet">Set meeting point</button></div></div>
   <div class="card"><h3>Separation alert</h3>
     <div class="row between"><span class="small">Alert when a gap is bigger than</span><b id="thrv">${m.thr.toFixed(1)} km</b></div>
     <input type="range" min="0.5" max="5" step="0.5" value="${m.thr}" style="width:100%;margin-top:8px;accent-color:#2B8CEB" id="ld-thr">
@@ -1394,20 +1419,51 @@ function renderLeader(){
   $('#ld-regroup').onclick=()=>{const t='🛑 REGROUP at the next stop';DB.update(P('meta'),{pin:{text:t,ts:DB.now()}});sysMsg(t,'ann')};
   $('#ld-ann').onclick=()=>{const v=$('#ann-in').value.trim();if(!v)return;DB.update(P('meta'),{pin:{text:v,ts:DB.now()}});sysMsg('📢 '+v,'ann');$('#ann-in').value=''};
   L_.querySelectorAll('[data-pro]').forEach(b=>b.onclick=()=>{const u=b.dataset.pro;const r=T.members[u].role==='coleader'?'member':'coleader';DB.update(P('members/'+u),{role:r});sysMsg(`${T.members[u].nick} is now ${r==='coleader'?'co-leader':'a member'}`)});
-  L_.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const u=b.dataset.rm;const n=T.members[u].nick;openSheet(`<h1>Remove ${esc(n)}?</h1><p class="muted" style="margin:8px 0 16px">They leave the map, mic and chat right away.</p><button class="btn red" id="cf-rm">Remove</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
-    $('#cf-rm').onclick=async()=>{closeSheet();await DB.remove(P('members/'+u));await DB.remove(P('loc/'+u));await DB.remove(P('requests/'+u));sysMsg(`${n} was removed by the leader`,'warn')}});
+  L_.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>removeMember(b.dataset.rm));
   if($('#ld-unmeet'))$('#ld-unmeet').onclick=()=>{DB.update(P('meta'),{meet:null});sysMsg('Leader: start riding! Follow the blue line to '+m.stops[m.stops.length-1].name,'ann')};
-  $('#ld-dest').onclick=()=>placeSheet('Change destination','Send new destination to everyone',async p=>{const stops=[...m.stops];stops[stops.length-1]={name:p.name,lat:p.lat,lng:p.lng,type:'dest'};await saveRoute(stops);sysMsg('🏆 Leader changed the destination to '+p.name+' · route updated','ann')});
-  $('#ld-addstop').onclick=()=>placeSheet('Add a stop','Add before destination',async p=>{const stops=[...m.stops];stops.splice(stops.length-1,0,{name:p.name,lat:p.lat,lng:p.lng,type:'stop'});await saveRoute(stops);sysMsg('📍 New stop added: '+p.name,'ann')});
+  $('#ld-route').onclick=()=>editRoute();
   $('#ld-meet').onclick=()=>{openSheet(`<h1>Set meeting point</h1><div class="label">Pick a stop on the route</div>${m.stops.map((s,i)=>`<button class="btn ghost" style="margin-top:6px;text-align:left" data-ms="${i}">${s.type==='start'?'Start: ':s.type==='dest'?'Destination: ':''}${esc(s.name)}</button>`).join('')}<div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
     $('#sheetbox').querySelectorAll('[data-ms]').forEach(b=>b.onclick=()=>{const s=m.stops[+b.dataset.ms];closeSheet();DB.update(P('meta'),{meet:{name:s.name,lat:s.lat,lng:s.lng,ts:DB.now()}});sysMsg('📍 Leader: everyone meet at '+s.name,'ann')})};
   if($('#ld-end'))$('#ld-end').onclick=()=>{openSheet(`<h1>End trip?</h1><p class="muted" style="margin:8px 0 16px">Location sharing and the mic stop for everyone.</p><button class="btn red" id="cf-end">End trip</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
     $('#cf-end').onclick=async()=>{closeSheet();await sysMsg('🏁 Trip ended by the leader');await DB.update(P('meta'),{status:'ended',ended:DB.now()});}};
 }
 async function saveRoute(stops){toast('Updating route…');const route=await getRoute(stops);await DB.update(P('meta'),{stops,route})}
-function placeSheet(title,btn,onPick){openSheet(`<h1>${title}</h1><button class="btn" id="ps-map" style="margin-top:14px">Pick on map</button><div class="label">Or search a place</div><input class="field" id="ps-q" placeholder="Type at least 3 letters"><div id="ps-r"></div><div style="height:10px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
-  $('#ps-map').onclick=()=>{closeSheet();const d=T.meta.stops[T.meta.stops.length-1];pickOnMap(title,d,onPick)};
+function placeSheet(title,btn,onPick,around,onCancel){openSheet(`<h1>${title}</h1><button class="btn" id="ps-map" style="margin-top:14px">Pick on map</button><div class="label">Or search a place</div><input class="field" id="ps-q" placeholder="Type at least 3 letters"><div id="ps-r"></div><div style="height:10px"></div><button class="btn ghost" id="ps-x">Cancel</button>`);
+  $('#ps-x').onclick=()=>{closeSheet();if(onCancel)onCancel()};
+  $('#ps-map').onclick=()=>{closeSheet();const d=around||T.meta.stops[T.meta.stops.length-1];pickOnMap(title,d,onPick)};
   placeSearch('#ps-q','#ps-r',p=>{closeSheet();pickOnMap(title,p,onPick,true)})}
+
+/* ================= EDIT ROUTE ================= */
+let ER=null;
+function editRoute(){ER={stops:T.meta.stops.map(x=>({name:x.name,lat:x.lat,lng:x.lng})),orig:JSON.stringify(T.meta.stops.map(x=>[x.name,x.lat,x.lng])),opts:null,sel:0,seq:0};renderER()}
+const erChanged=()=>JSON.stringify(ER.stops.map(x=>[x.name,x.lat,x.lng]))!==ER.orig||ER.sel>0;
+function erRecalc(){ER.opts=null;const q=++ER.seq;const pts=ER.stops.map(x=>({...x}));getRoutes(pts).then(o=>{if(!ER||q!==ER.seq)return;ER.opts=o;ER.sel=0;if($('#er-opts'))renderER()})}
+function renderER(){const st=ER.stops,n=st.length;
+  const opts=ER.opts?ER.opts.map((o,i)=>`<button class="ropt ${i===ER.sel?'on':''}" data-ro="${i}"><span><b>${i===0?'Fastest':'Other route '+i}</b><br><span class="muted small">${o.road?'Follows the roads':'Straight line (no road data)'}</span></span><span style="text-align:right"><b>${durTxt(o.dur||o.km*90)}</b><br><span class="muted small">${o.km} km</span></span></button>`).join(''):(erChanged()?'<p class="muted small">Finding routes…</p>':'');
+  openSheet(`<h1>Edit route</h1><p class="muted small" style="margin:4px 0 8px">Same code and same group. Everyone's map updates when you save.</p>
+  ${st.map((x,i)=>`<div class="errow"><span class="ern">${i===0?'📍':i===n-1?'🏁':i}</span><div class="ert"><div class="muted small">${i===0?'Start / meeting point':i===n-1?'Destination':'Stop '+i}</div><b>${esc(x.name)}</b></div><button class="erb" data-ec="${i}">Change</button>${i>0&&i<n-1?`<button class="erb" data-eu="${i}" ${i===1?'disabled':''}>↑</button><button class="erb" data-ed="${i}" ${i===n-2?'disabled':''}>↓</button><button class="erb red" data-ex="${i}">✕</button>`:''}</div>`).join('')}
+  <button class="btn sm ghost" id="er-add" style="margin-top:10px">+ Add stop</button>
+  <div id="er-opts" style="margin-top:12px">${opts?`<div class="label" style="margin-top:0">Route options</div>`+opts:''}</div>
+  <div style="height:14px"></div><button class="btn" id="er-go" ${erChanged()&&ER.opts?'':'disabled'}>Save & update group</button><div style="height:8px"></div><button class="btn ghost" id="er-x">Cancel</button>`);
+  const box=$('#sheetbox');
+  box.querySelectorAll('[data-ec]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ec;const t=i===0?'New meeting point':i===n-1?'New destination':'Change stop '+i;
+    placeSheet(t,'',p=>{ER.stops[i]={name:p.name,lat:p.lat,lng:p.lng};erRecalc();renderER()},ER.stops[i],()=>renderER())});
+  box.querySelectorAll('[data-eu]').forEach(b=>b.onclick=()=>{const i=+b.dataset.eu;[st[i-1],st[i]]=[st[i],st[i-1]];erRecalc();renderER()});
+  box.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ed;[st[i+1],st[i]]=[st[i],st[i+1]];erRecalc();renderER()});
+  box.querySelectorAll('[data-ex]').forEach(b=>b.onclick=()=>{st.splice(+b.dataset.ex,1);erRecalc();renderER()});
+  box.querySelectorAll('[data-ro]').forEach(b=>b.onclick=()=>{ER.sel=+b.dataset.ro;renderER()});
+  $('#er-add').onclick=()=>placeSheet('Add a stop','',p=>{st.splice(st.length-1,0,{name:p.name,lat:p.lat,lng:p.lng});erRecalc();renderER()},st[st.length-1],()=>renderER());
+  $('#er-x').onclick=()=>{ER=null;closeSheet()};
+  $('#er-go').onclick=()=>busy($('#er-go'),async()=>{const m=T.meta;const old=m.stops;const stops=st.map((x,i)=>({...x,type:i===0?'start':i===n-1?'dest':'stop'}));
+    let route=ER.opts&&ER.opts[ER.sel];if(!route)route=await getRoute(stops);
+    const startCh=old[0].lat!==stops[0].lat||old[0].lng!==stops[0].lng,destCh=old[old.length-1].lat!==stops[n-1].lat||old[old.length-1].lng!==stops[n-1].lng;
+    const parts=[];if(startCh)parts.push('Meeting point: '+stops[0].name);if(destCh)parts.push('Destination: '+stops[n-1].name);
+    const mid=JSON.stringify(old.slice(1,-1).map(x=>[x.lat,x.lng]))!==JSON.stringify(stops.slice(1,-1).map(x=>[x.lat,x.lng]));if(mid)parts.push(n>2?'Stops: '+stops.slice(1,-1).map(x=>x.name).join(', '):'Stops removed');
+    if(!parts.length)parts.push('New road chosen');
+    const text='Route updated · '+parts.join(' · ');
+    const upd={stops,route};if(startCh&&m.status==='lobby')upd.chg={ts:DB.now(),text,by:T.me};
+    if(startCh&&m.meet&&m.meet.lat===old[0].lat&&m.meet.lng===old[0].lng)upd.meet={name:stops[0].name,lat:stops[0].lat,lng:stops[0].lng,ts:DB.now()};
+    await DB.update(P('meta'),upd);await sysMsg('🗺 '+text,upd.chg||destCh?'':'note');ER=null;T.detour=null;closeSheet();toast('Route updated for everyone')})}
 
 /* ================= SOS ================= */
 const SOS_TYPES=['Breakdown','Accident','Medical help','Separated','Other'];

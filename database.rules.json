@@ -34,7 +34,7 @@
           ".write": "auth != null && (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader')",
           "$uid": {
             ".read": "auth != null && auth.uid === $uid",
-            ".write": "auth != null && ((root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader') || (auth.uid === $uid && (!newData.exists() || (auth.token.email_verified === true && newData.child('status').val() === 'pending' && root.child('trips/'+$code+'/meta/locked').val() !== true && (root.child('trips/'+$code+'/meta/status').val() === 'lobby' || root.child('trips/'+$code+'/meta/status').val() === 'live')))))",
+            ".write": "auth != null && ((root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader') || (auth.uid === $uid && (!newData.exists() || (auth.token.email_verified === true && newData.child('status').val() === 'pending' && root.child('trips/'+$code+'/meta/locked').val() !== true && !root.child('trips/'+$code+'/blocked/'+auth.uid).exists() && (root.child('trips/'+$code+'/meta/status').val() === 'lobby' || root.child('trips/'+$code+'/meta/status').val() === 'live')))))",
             "nick": {
               ".validate": "newData.isString() && newData.val().length <= 20"
             },
@@ -84,6 +84,10 @@
               ".write": "auth != null && auth.uid === $from && root.child('trips/'+$code+'/members/'+auth.uid).exists()"
             }
           }
+        },
+        "blocked": {
+          ".read": "auth != null && (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader')",
+          ".write": "auth != null && (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader')"
         }
       }
     },
