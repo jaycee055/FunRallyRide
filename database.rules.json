@@ -20,7 +20,7 @@
         "members": {
           ".read": "auth != null && data.child(auth.uid).exists()",
           "$uid": {
-            ".write": "auth != null && ((root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader') || (auth.uid === $uid && !newData.exists()))",
+            ".write": "auth != null && ((root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader') || (auth.uid === $uid && !newData.exists()) || (auth.uid === $uid && auth.token.email_verified === true && newData.child('role').val() === 'member' && !data.exists() && root.child('trips/'+$code+'/meta/club').exists() && root.child('clubs/'+root.child('trips/'+$code+'/meta/club').val()+'/members/'+auth.uid).exists() && !root.child('trips/'+$code+'/blocked/'+auth.uid).exists() && root.child('trips/'+$code+'/meta/status').val() !== 'ended' && root.child('trips/'+$code+'/meta/status').val() !== 'cancelled'))",
             "nick": {
               ".validate": "newData.isString() && newData.val().length <= 20"
             },
@@ -88,6 +88,31 @@
         "blocked": {
           ".read": "auth != null && (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader')",
           ".write": "auth != null && (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader')"
+        },
+        "stats": {
+          ".read": "auth != null && root.child('trips/'+$code+'/members/'+auth.uid).exists()",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('trips/'+$code+'/members/'+auth.uid).exists()"
+          }
+        },
+        "track": {
+          ".read": "auth != null && root.child('trips/'+$code+'/members/'+auth.uid).exists()",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('trips/'+$code+'/members/'+auth.uid).exists()"
+          }
+        },
+        "marks": {
+          ".read": "auth != null && root.child('trips/'+$code+'/members/'+auth.uid).exists()",
+          "$m": {
+            ".write": "auth != null && root.child('trips/'+$code+'/members/'+auth.uid).exists() && (data.exists() ? data.child('uid').val() === auth.uid || (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader') : newData.child('uid').val() === auth.uid)"
+          }
+        },
+        "ec": {
+          ".read": "auth != null && (root.child('trips/'+$code+'/meta/leaderId').val() === auth.uid || root.child('trips/'+$code+'/members/'+auth.uid+'/role').val() === 'coleader')",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('trips/'+$code+'/members/'+auth.uid).exists()",
+            ".validate": "newData.child('p').isString() && newData.child('p').val().length <= 20"
+          }
         }
       }
     },
@@ -104,6 +129,47 @@
       }
     },
     "myrides": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "clubs": {
+      "$id": {
+        ".write": "auth != null && root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid && !newData.exists()",
+        "meta": {
+          ".read": "auth != null",
+          ".write": "auth != null && ((!data.exists() && newData.child('ownerId').val() === auth.uid && auth.token.email_verified === true) || (data.exists() && root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid))",
+          "name": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          }
+        },
+        "members": {
+          ".read": "auth != null && data.child(auth.uid).exists()",
+          "$uid": {
+            ".write": "auth != null && ((root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid || root.child('clubs/'+$id+'/members/'+auth.uid+'/role').val() === 'admin') || (auth.uid === $uid && !newData.exists()) || (auth.uid === $uid && !data.exists() && newData.child('role').val() === 'owner' && root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid))",
+            "nick": {
+              ".validate": "newData.isString() && newData.val().length <= 20"
+            }
+          }
+        },
+        "requests": {
+          ".read": "auth != null && (root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid || root.child('clubs/'+$id+'/members/'+auth.uid+'/role').val() === 'admin')",
+          ".write": "auth != null && (root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid || root.child('clubs/'+$id+'/members/'+auth.uid+'/role').val() === 'admin')",
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            ".write": "auth != null && ((root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid || root.child('clubs/'+$id+'/members/'+auth.uid+'/role').val() === 'admin') || (auth.uid === $uid && (!newData.exists() || (auth.token.email_verified === true && newData.child('status').val() === 'pending'))))"
+          }
+        },
+        "rides": {
+          ".read": "auth != null && root.child('clubs/'+$id+'/members/'+auth.uid).exists()",
+          "$code": {
+            ".write": "auth != null && (root.child('clubs/'+$id+'/meta/ownerId').val() === auth.uid || root.child('clubs/'+$id+'/members/'+auth.uid+'/role').val() === 'admin')"
+          }
+        }
+      }
+    },
+    "myclubs": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid"

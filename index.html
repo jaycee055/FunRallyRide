@@ -110,6 +110,17 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.4px}
 .lpbtns button{background:#fff;border-radius:999px;padding:10px 15px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;box-shadow:0 2px 10px rgba(15,27,45,.22)}
 .lpbtns button svg{width:18px;height:18px}
 .lpbtns .sosf{color:var(--red)}
+.lpbtns button.alf{padding:10px 13px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.qgrid button{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 10px;font-weight:700;font-size:14.5px;display:flex;flex-direction:column;align-items:center;gap:4px}.qgrid button span{font-size:26px}
+.qmark{width:34px;height:34px;border-radius:50%;background:#fff;border:2.5px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.qmark.fuel{border-color:#16A34A}
+.lpin .vsw{position:absolute;left:-1px;top:-3px;width:20px;height:20px;border-radius:50%;background:#7C3AED;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;z-index:3}
+.okscr{position:fixed;inset:0;z-index:90;background:rgba(15,27,45,.92);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center}.okscr.on{display:flex}
+.okscr h2{font-size:30px}.okscr .cd{font-size:64px;font-weight:800;margin:14px 0}
+.okscr .btn{max-width:340px}
+.stgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.stgrid div{background:var(--blue-soft);border-radius:12px;padding:10px}.stgrid b{display:block;font-size:20px;color:var(--blue-d)}.stgrid span{font-size:12px;color:var(--muted)}
+#rmap{height:260px;border-radius:14px;overflow:hidden;margin-top:10px}
+.wx{display:flex;gap:10px;align-items:center;padding:6px 0}.wx b{font-size:15px}
 #s-live.mapmode .topbar .sos{display:none}
 .veh{width:56px;height:56px}
 .maplibregl-marker{position:absolute}
@@ -341,6 +352,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
         <div class="label">Nickname</div><input class="field" id="st-nick" maxlength="16">
         <div class="label">Your color</div><div class="swatches" id="st-color"></div>
         <div class="label">Default vehicle</div><div class="chips" id="st-veh"></div>
+        <div class="label">Emergency contact (only your ride leader sees this)</div><input class="field" id="st-ecn" maxlength="30" placeholder="Name, e.g. Maria (wife)"><div style="height:8px"></div><input class="field" id="st-ecp" maxlength="20" inputmode="tel" placeholder="Phone, e.g. 0917 123 4567">
         <div class="label">Voice directions</div><div class="seg" id="st-navlang"><button data-l="en">English</button><button data-l="tl">Tagalog</button></div>
         <div class="label">Your ride details (optional)</div><input class="field" id="st-bike" maxlength="40" placeholder="e.g. Red Raider 150 · ABC 1234"><div class="muted small" style="margin-top:4px">Helps your group spot you at the meeting point.</div>
         <p class="small" id="st-err" style="color:var(--red);margin-top:8px;min-height:16px"></p>
@@ -373,6 +385,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
       <div id="resume"></div>
       <button class="choice" id="go-create"><span class="ci"><svg class="i" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span><b>Create a group trip</b><span class="muted small">Ride now or plan ahead. Invite your group and approve who joins.</span></span></button>
       <button class="choice" id="go-join"><span class="ci"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span><span><b>Join a trip</b><span class="muted small">Enter your leader's code and wait for approval.</span></span></button>
+      <button class="choice" id="go-clubs"><span class="ci"><svg class="i" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><b>Clubs</b><span class="muted small">Your regular riding group. Members join club rides without approval.</span></span></button>
       <div id="rides"></div>
       <div id="setup-warn"></div>
       <p class="muted small" style="margin-top:22px;text-align:center"><a href="privacy.html">Privacy</a> · <span id="install-area"></span></p>
@@ -385,6 +398,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
       <button class="back" data-go="s-home">← Back</button>
       <h1>New group trip</h1>
       <div class="label">Trip name</div>
+      <div id="c-club"></div>
       <input class="field" id="c-name" maxlength="40" placeholder="e.g. Sunday Mountain Ride">
       <div class="label">When</div>
       <div class="seg" id="c-whenseg"><button class="on" data-w="now">Ride now</button><button data-w="sched">Plan ahead</button></div>
@@ -483,8 +497,8 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
         <div class="mapwrap">
           <div id="map"></div>
           <div class="navbanner" id="navb"><div class="nb-ic"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><b id="nb-dist">–</b></div><div class="nb-txt"><div class="k" id="nb-kind">Next stop</div><div class="n" id="nb-name">–</div></div><button class="nb-go nb-snd" id="nb-go" aria-label="Voice directions"></button></div>
-          <div class="mapbtns"><button id="mb-layer" title="Map / Satellite"><svg class="i" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button><button id="mb-3d" title="3D / 2D">3D</button><button id="mb-lead" title="Follow leader"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button id="mb-all" title="Show everyone"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
-          <div class="lpbtns"><button id="mb-checkin"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Check in</button><button id="mb-sos" class="sosf"><svg class="i" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>SOS</button></div>
+          <div class="mapbtns"><button id="mb-layer" title="Map / Satellite"><svg class="i" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button><button id="mb-3d" title="3D / 2D">3D</button><button id="mb-lead" title="Follow leader"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button id="mb-fuel" title="Gas stations on route" style="font-size:19px">⛽</button><button id="mb-all" title="Show everyone"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
+          <div class="lpbtns"><button id="mb-checkin"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Check in</button><button id="mb-alert" class="alf"><svg class="i" viewBox="0 0 24 24"><path d="M4 22V4h12l-2 4 2 4H4"/></svg>Alert</button><button id="mb-sos" class="sosf"><svg class="i" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>SOS</button></div>
           <button class="recenter" id="mb-me"><svg viewBox="0 0 24 24"><polygon points="12 2 20 21 12 17 4 21 12 2"/></svg>Re-center</button>
           <div class="rollc" id="rollc" style="display:none"></div><div class="etabar"><b id="eta-t">–</b><span id="eta-d">–</span></div>
         </div>
@@ -513,6 +527,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
   </section>
 
   <!-- SUMMARY -->
+  <section class="screen" id="s-club"><div class="topbar"><button class="iconbtn" id="cl-back" aria-label="Back"><svg class="i" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><h2 id="cl-title" style="font-size:20px">Clubs</h2></div><div class="scroll pad" id="clubv"></div></section>
   <section class="screen" id="s-summary"><div class="scroll pad" id="sum"></div></section>
 
   <div class="picker" id="picker">
@@ -531,6 +546,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
     </div>
   </div>
   <div class="sheet" id="sheet"><div class="box" id="sheetbox"></div></div>
+  <div class="okscr" id="okscr"><h2>Are you OK?</h2><p id="ok-why" style="margin-top:8px;opacity:.85">You stopped suddenly.</p><div class="cd" id="ok-cd">60</div><p style="opacity:.8;margin-bottom:18px">If you don't answer, your group will be alerted with your location.</p><button class="btn" id="ok-yes" style="background:#16A34A;font-size:20px;padding:18px">I'm OK</button><div style="height:10px"></div><button class="btn red" id="ok-help">I need help</button></div>
   <div class="sosbanner" id="sosb"></div>
   <div id="audios" style="display:none"></div>
 </div>
@@ -560,7 +576,7 @@ const VEH=[['moto','Motorcycle'],['car','Car'],['bike','Bicycle'],['other','Othe
 const vIcon=k=>({moto:'Motorcycle',car:'Car',bike:'Bicycle',other:'Other'})[k]||'Motorcycle';
 const QUICK=['Wait for me!',"I'm behind","Let's stop here","I'm following you",'Need gas',"I'm here!"];
 const PARAMS=new URLSearchParams(location.search);
-try{const jq=(PARAMS.get('join')||'').toUpperCase();if(/^RIDE-[A-Z0-9]{4}$/.test(jq))sessionStorage.setItem('pjoin',jq)}catch(e){}
+try{const jq=(PARAMS.get('join')||'').toUpperCase();if(/^RIDE-[A-Z0-9]{4}$/.test(jq))sessionStorage.setItem('pjoin',jq);const cq=(PARAMS.get('club')||'').toUpperCase();if(/^CLUB-[A-Z0-9]{4}$/.test(cq))sessionStorage.setItem('pclub',cq)}catch(e){}
 const SIM=PARAMS.get('sim')==='1';
 const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
 const store={get(k){try{return JSON.parse(localStorage.getItem('rallyride:'+k))}catch(e){return null}},set(k,v){try{localStorage.setItem('rallyride:'+k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem('rallyride:'+k)}catch(e){}}};
@@ -776,7 +792,7 @@ setInterval(()=>{if($('#s-home').classList.contains('on'))renderRides(true);if(T
 
 /* ================= HOME ================= */
 chips('#c-veh','moto');
-$('#go-create').onclick=()=>{chips('#c-veh',PROFILE.veh||'moto');go('s-create')};
+$('#go-create').onclick=()=>{C.club=null;$('#c-club').innerHTML='';chips('#c-veh',PROFILE.veh||'moto');go('s-create')};
 $('#go-join').onclick=()=>{$('#j-preview').innerHTML='';$('#j-err').textContent='';go('s-join')};
 if(DB.mode==='local')$('#setup-warn').innerHTML='<div class="notice" style="margin-top:16px"><b>Test mode.</b> Not connected to the online service yet, so trips only work between tabs on this device. Add the Firebase config to go live.</div>';
 function renderResume(){const s=store.get('session');$('#resume').innerHTML=s?`<button class="choice" id="go-resume" style="border-color:var(--blue)"><span class="ci"><svg class="i" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span><span><b>Return to your trip</b><span class="muted small">${esc(s.name||s.code)} · ${esc(s.code)}</span></span></button>`:'';if(s)$('#go-resume').onclick=()=>openTrip(s.code)}
@@ -841,10 +857,11 @@ $('#c-go').onclick=async()=>{
     let code,ok=false;
     for(let i=0;i<6&&!ok;i++){code='RIDE-'+Array.from({length:4},()=>CODE_CH[Math.floor(Math.random()*CODE_CH.length)]).join('');
       ok=await DB.createIfAbsent(`trips/${code}/meta`,{name,veh:selVeh('#c-veh'),leaderId:DB.uid,leaderNick:nick,status:'lobby',approve:$('#c-approve').classList.contains('on'),meetFirst:$('#c-meetfirst').classList.contains('on'),locked:false,voice:'open',thr:1.5,
-        stops:pts.map((p,i)=>({name:p.name,lat:p.lat,lng:p.lng,type:i===0?'start':i===pts.length-1?'dest':'stop'})),route,meet:null,pin:null,created:DB.now(),when,wait,rules})}
+        stops:pts.map((p,i)=>({name:p.name,lat:p.lat,lng:p.lng,type:i===0?'start':i===pts.length-1?'dest':'stop'})),route,meet:null,pin:null,created:DB.now(),when,wait,rules,club:C.club||null})}
     if(!ok)throw new Error('Could not create a code, try again');
     await DB.set(`trips/${code}/members/${DB.uid}`,{nick,ini:initials(nick,[]),color:PROFILE.color||COLORS[0],veh:selVeh('#c-veh'),bike:PROFILE.bike||'',role:'leader',joined:DB.now()});
     await DB.set(`trips/${code}/state/${DB.uid}`,{rsvp:'going',ack:DB.now()}).catch(()=>{});myRide(code,{st:'member',at:DB.now()});
+    if(C.club)await DB.set(`clubs/${C.club}/rides/${code}`,{name,when,created:DB.now(),by:nick}).catch(()=>{});
     $('#c-rules').value='';
     C={start:null,dest:null,stops:[]};['#c-start-v','#c-dest-v','#c-stops'].forEach(s=>$(s).innerHTML='');$('#c-name').value='';
     enterTrip(code);
@@ -863,6 +880,7 @@ $('#j-find').onclick=async()=>{
   if(meta.status==='cancelled')return $('#j-err').textContent='This ride was cancelled'+(meta.cancel&&meta.cancel.reason?': '+meta.cancel.reason:'.');
   const already=await DB.get(`trips/${code}/members/${DB.uid}`).catch(()=>null);
   if(already){myRide(code,{st:'member'});enterTrip(code,true);return}
+  if(meta.club){const inClub=await DB.get(`clubs/${meta.club}/members/${DB.uid}`).catch(()=>null);if(inClub){if(await clubJoinRide(code,meta))return}}
   if(meta.locked)return $('#j-err').textContent='This trip is locked by the leader.';
   J={code,meta};
   $('#j-preview').innerHTML=`<div class="card" style="margin-top:16px"><h3>Trip found</h3><div style="font-size:20px;font-weight:700">${esc(meta.name)}</div>
@@ -894,6 +912,57 @@ function waitApproval(code){
   $('#w-home').onclick=()=>showHome();
 }
 
+/* ================= CLUBS ================= */
+let CLUB=null;
+$('#go-clubs').onclick=()=>clubsHome();
+$('#cl-back').onclick=()=>{if(CLUB){CLUB=null;clubsHome()}else showHome()};
+async function clubJoinRide(code,meta){try{await DB.set(`trips/${code}/members/${DB.uid}`,{nick:PROFILE.nick,ini:initials(PROFILE.nick,[]),color:PROFILE.color||COLORS[0],veh:PROFILE.veh||'moto',bike:PROFILE.bike||'',role:'member',joined:DB.now()});
+  myRide(code,{st:'member',at:DB.now()});toast('Joined '+meta.name);enterTrip(code,true);return true}catch(e){return false}}
+async function clubsHome(){CLUB=null;$('#cl-title').textContent='Clubs';go('s-club');$('#clubv').innerHTML='<p class="muted">Loading…</p>';
+  let idx={};try{idx=(await DB.get('myclubs/'+DB.uid))||{}}catch(e){}
+  const list=await Promise.all(Object.entries(idx).map(async([id,v])=>{const meta=await DB.get(`clubs/${id}/meta`).catch(()=>null);if(!meta){DB.remove(`myclubs/${DB.uid}/${id}`).catch(()=>{});return null}
+    let st=v.st;if(st==='pending'){const mem=await DB.get(`clubs/${id}/members/${DB.uid}`).catch(()=>null);if(mem){st='member';DB.update(`myclubs/${DB.uid}/${id}`,{st}).catch(()=>{})}else{const q=await DB.get(`clubs/${id}/requests/${DB.uid}`).catch(()=>null);if(!q||q.status==='declined'){DB.remove(`myclubs/${DB.uid}/${id}`).catch(()=>{});return null}}}
+    return {id,meta,st}}));
+  const L=list.filter(Boolean);
+  $('#clubv').innerHTML=`${L.map(x=>`<button class="ridecard" data-club="${x.id}"><div class="rc-date" style="background:#EEE8FD;color:#6D28D9"><b style="font-size:16px">${esc(x.meta.name.split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase())}</b></div><div class="rc-main"><b>${esc(x.meta.name)}</b><span class="muted small">${x.st==='pending'?'Waiting for approval':x.meta.ownerId===DB.uid?'You own this club':'Member'} · ${x.id}</span></div></button>`).join('')||'<p class="muted" style="margin-bottom:12px">You are not in any club yet.</p>'}
+    <div class="label">Create a club</div><div class="row" style="gap:8px"><input class="field" id="cl-name" maxlength="40" placeholder="e.g. Pampanga Riders"><button class="btn sm" id="cl-create" style="width:auto">Create</button></div>
+    <div class="label">Join a club</div><div class="row" style="gap:8px"><input class="field" id="cl-code" maxlength="10" placeholder="CLUB-XXXX" style="text-transform:uppercase"><button class="btn sm ghost" id="cl-join" style="width:auto">Find</button></div>
+    <p class="small" id="cl-err" style="color:var(--red);margin-top:10px"></p>`;
+  $('#clubv').querySelectorAll('[data-club]').forEach(b=>b.onclick=()=>{const x=L.find(y=>y.id===b.dataset.club);if(x.st==='pending')return toast('Waiting for the club owner to approve you');clubPage(x.id)});
+  $('#cl-create').onclick=()=>busy($('#cl-create'),async()=>{const name=$('#cl-name').value.trim();if(name.length<3)return $('#cl-err').textContent='Give the club a name (at least 3 letters).';
+    let id,ok=false;for(let i=0;i<6&&!ok;i++){id='CLUB-'+Array.from({length:4},()=>CODE_CH[Math.floor(Math.random()*CODE_CH.length)]).join('');ok=await DB.createIfAbsent(`clubs/${id}/meta`,{name,ownerId:DB.uid,ownerNick:PROFILE.nick,created:DB.now()})}
+    if(!ok)return $('#cl-err').textContent='Could not create the club, try again.';
+    await DB.set(`clubs/${id}/members/${DB.uid}`,{nick:PROFILE.nick,ini:initials(PROFILE.nick,[]),color:PROFILE.color||COLORS[0],role:'owner',joined:DB.now()});await DB.set(`myclubs/${DB.uid}/${id}`,{st:'member',at:DB.now()});clubPage(id)});
+  $('#cl-join').onclick=()=>busy($('#cl-join'),async()=>{let c=$('#cl-code').value.trim().toUpperCase();if(!c.startsWith('CLUB-'))c='CLUB-'+c.replace(/^CLUB/,'');const meta=await DB.get(`clubs/${c}/meta`).catch(()=>null);if(!meta)return $('#cl-err').textContent='No club with that code.';
+    const mem=await DB.get(`clubs/${c}/members/${DB.uid}`).catch(()=>null);if(mem){await DB.set(`myclubs/${DB.uid}/${c}`,{st:'member',at:DB.now()});return clubPage(c)}
+    openSheet(`<h1>${esc(meta.name)}</h1><p class="muted" style="margin:8px 0 16px">Owner: ${esc(meta.ownerNick||'')}. The owner approves new members.</p><button class="btn" id="cl-req">Request to join</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+    $('#cl-req').onclick=()=>busy($('#cl-req'),async()=>{try{await DB.set(`clubs/${c}/requests/${DB.uid}`,{nick:PROFILE.nick,color:PROFILE.color||null,status:'pending',at:DB.now()})}catch(e){closeSheet();return $('#cl-err').textContent="You can't join this club."}
+      await DB.set(`myclubs/${DB.uid}/${c}`,{st:'pending',at:DB.now()});closeSheet();toast('Request sent to the club owner');clubsHome()})});
+  const pc=sessionStorage.getItem('pclub');if(pc){sessionStorage.removeItem('pclub');$('#cl-code').value=pc;$('#cl-join').click()}}
+async function clubPage(id){CLUB=id;go('s-club');$('#clubv').innerHTML='<p class="muted">Loading…</p>';
+  const [meta,mem,rides]=await Promise.all([DB.get(`clubs/${id}/meta`),DB.get(`clubs/${id}/members`).catch(()=>null),DB.get(`clubs/${id}/rides`).catch(()=>null)]);
+  if(!meta||!mem){toast('Club not found','warn');return clubsHome()}$('#cl-title').textContent=meta.name;
+  const me=mem[DB.uid]||{};const admin=me.role==='owner'||me.role==='admin';let reqs={};if(admin)reqs=(await DB.get(`clubs/${id}/requests`).catch(()=>null))||{};
+  const pend=Object.entries(reqs).filter(([,q])=>q.status==='pending');const now=Date.now();
+  const rl=Object.entries(rides||{}).map(([code,r])=>({code,...r})).filter(r=>!r.when||r.when>now-12*3600e3).sort((a,b)=>(a.when||a.created)-(b.when||b.created));
+  const link=location.origin+location.pathname+'?club='+id;
+  $('#clubv').innerHTML=`<div class="card"><div class="muted small">Club code</div><div style="font-size:24px;font-weight:800;letter-spacing:1px">${id}</div><div class="row" style="margin-top:8px;gap:8px"><button class="btn sm ghost" id="cl-inv">Copy invite</button>${admin?'<button class="btn sm" id="cl-ride">Plan a club ride</button>':''}</div></div>
+    ${admin&&pend.length?`<div class="card"><h3>Join requests (${pend.length})</h3>${pend.map(([u,q])=>`<div class="row" style="padding:6px 0">${avHTML({nick:q.nick,ini:initials(q.nick,[]),color:q.color||'#2B8CEB'})}<div style="flex:1"><b>${esc(q.nick)}</b></div><button class="btn sm" data-ca="${u}" style="width:auto">Approve</button><button class="btn sm ghost" data-cd="${u}" style="width:auto">Decline</button></div>`).join('')}</div>`:''}
+    <div class="card"><h3>Club rides</h3>${rl.map(r=>`<div class="row" style="padding:8px 0"><div style="flex:1;min-width:0"><b>${esc(r.name)}</b><div class="muted small">${r.when?fmtWhen(r.when)+' · '+untilTxt(r.when):'Ride now'} · by ${esc(r.by||'')}</div></div><button class="btn sm" data-cr="${r.code}" style="width:auto">Open</button></div>`).join('')||'<p class="muted small">No upcoming club rides.</p>'}</div>
+    <div class="card"><h3>Members (${Object.keys(mem).length})</h3>${Object.entries(mem).map(([u,x])=>`<div class="row" style="padding:6px 0">${avHTML(x)}<div style="flex:1"><b>${esc(x.nick)}${u===DB.uid?' (you)':''}</b> ${x.role!=='member'?`<span class="role">${x.role==='owner'?'Owner':'Admin'}</span>`:''}</div>${me.role==='owner'&&u!==DB.uid?`<button class="linkbtn small" data-cad="${u}">${x.role==='admin'?'Remove admin':'Make admin'}</button> · <button class="linkbtn small" style="color:var(--red)" data-crm="${u}">Remove</button>`:''}</div>`).join('')}</div>
+    <button class="btn ghost" id="cl-leave" style="color:var(--red)">${me.role==='owner'?'Delete club':'Leave club'}</button>`;
+  $('#cl-inv').onclick=()=>{const t=`Join our riding club "${meta.name}" on FunRallyRide\nClub code: ${id}\nTap to join: ${link}`;navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>toast('Invite copied'),()=>openSheet(`<h1>Invite</h1><textarea class="field" rows="4">${esc(t)}</textarea><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Close</button>`))};
+  if($('#cl-ride'))$('#cl-ride').onclick=()=>{C={start:null,dest:null,stops:[],club:id};['#c-start-v','#c-dest-v','#c-stops'].forEach(s=>$(s).innerHTML='');$('#c-club').innerHTML=`<div class="chgban" style="background:#EEE8FD;border-color:#D8CCF8;color:#5B21B6;margin:0 0 10px">Club ride for <b>${esc(meta.name)}</b>. Club members can join without approval.</div>`;chips('#c-veh',PROFILE.veh||'moto');go('s-create')};
+  const box=$('#clubv');
+  box.querySelectorAll('[data-ca]').forEach(b=>b.onclick=()=>busy(b,async()=>{const u=b.dataset.ca,q=reqs[u];const taken=Object.values(mem).map(x=>x.ini);await DB.set(`clubs/${id}/members/${u}`,{nick:q.nick,ini:initials(q.nick,taken),color:q.color||COLORS[Object.keys(mem).length%COLORS.length],role:'member',joined:DB.now()});await DB.update(`clubs/${id}/requests/${u}`,{status:'approved'});clubPage(id)}));
+  box.querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>busy(b,async()=>{await DB.update(`clubs/${id}/requests/${b.dataset.cd}`,{status:'declined'});clubPage(id)}));
+  box.querySelectorAll('[data-cad]').forEach(b=>b.onclick=async()=>{const u=b.dataset.cad;await DB.update(`clubs/${id}/members/${u}`,{role:mem[u].role==='admin'?'member':'admin'});clubPage(id)});
+  box.querySelectorAll('[data-crm]').forEach(b=>b.onclick=async()=>{const u=b.dataset.crm;await DB.remove(`clubs/${id}/members/${u}`);await DB.remove(`clubs/${id}/requests/${u}`).catch(()=>{});toast('Removed');clubPage(id)});
+  box.querySelectorAll('[data-cr]').forEach(b=>b.onclick=()=>busy(b,async()=>{const code=b.dataset.cr;const m=await DB.get(`trips/${code}/meta`).catch(()=>null);if(!m||m.status==='ended'||m.status==='cancelled'){toast(m&&m.status==='cancelled'?'This ride was cancelled':'This ride has ended','warn');if(admin)DB.remove(`clubs/${id}/rides/${code}`).catch(()=>{});return clubPage(id)}
+    const already=await DB.get(`trips/${code}/members/${DB.uid}`).catch(()=>null);if(already){myRide(code,{st:'member'});return enterTrip(code,true)}if(!(await clubJoinRide(code,m)))toast("Couldn't join this ride",'warn')}));
+  $('#cl-leave').onclick=()=>openSheet(`<h1>${me.role==='owner'?'Delete':'Leave'} ${esc(meta.name)}?</h1><p class="muted" style="margin:8px 0 16px">${me.role==='owner'?'The club and its member list will be removed for everyone.':'You can ask to join again later.'}</p><button class="btn red" id="cl-lv">${me.role==='owner'?'Delete club':'Leave club'}</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`)||($('#cl-lv').onclick=()=>busy($('#cl-lv'),async()=>{if(me.role==='owner'){await DB.remove(`clubs/${id}`)}else await DB.remove(`clubs/${id}/members/${DB.uid}`);await DB.remove(`myclubs/${DB.uid}/${id}`);closeSheet();clubsHome()}));
+}
+
 /* ================= ENTER TRIP / SUBSCRIPTIONS ================= */
 async function enterTrip(code,optIn){
   await DB.ready;
@@ -908,6 +977,8 @@ async function enterTrip(code,optIn){
   sub('presence',p=>{T.presence=p||{};refresh()});
   T.seenChat=new Set();sub('chat',c=>{Object.entries(c||{}).forEach(([k,v])=>{if(!T.seenChat.has(k)){T.seenChat.add(k);if(T.chatReady&&v.uid!==T.me&&(v.type==='checkin'||(v.type==='sys'&&(v.k==='late'||v.k==='note'||(v.k==='rsvp'&&isMgr())))))toast(v.t,v.k==='late'?'ann':'')}});T.chatReady=true;const n=Object.keys(c||{}).length,o=Object.keys(T.chat).length;T.chat=c||{};if(n>o&&!$('#p-chat').classList.contains('on')&&o>0)T.unread+=n-o;renderChat();updBadges()});
   sub('alerts',a=>{T.alerts=a||{};onAlerts()});
+  sub('marks',m=>{T.marks=m||{};onMarks()});
+  if(PROFILE&&PROFILE.ec&&PROFILE.ec.p)DB.set(P('ec/'+T.me),PROFILE.ec).catch(()=>{});
   // presence
   DB.onConnected(c=>{if(!c||!T)return;DB.set(P('presence/'+T.me),true);DB.onDisconnect(P('presence/'+T.me),null)});
   DB.set(P('presence/'+T.me),true);DB.onDisconnect(P('presence/'+T.me),null);
@@ -939,7 +1010,7 @@ function onMeta(m){
   if(m.status==='lobby'){if(!$('#s-lobby').classList.contains('on'))go('s-lobby');renderLobby()}
   else if(m.status==='live'){if(!$('#s-live').classList.contains('on'))startLive();refresh()}
 }
-function refresh(){if(!T||!T.meta)return;if(T.meta.status==='lobby')renderLobby();else if(T.meta.status==='live')refreshLive();Voice.sync()}
+function refresh(){if(!T||!T.meta)return;if(T.meta.status==='ended'&&$('#s-summary').classList.contains('on'))renderSafe();if(T.meta.status==='lobby')renderLobby();else if(T.meta.status==='live')refreshLive();Voice.sync()}
 
 /* ================= LOBBY ================= */
 function renderLobby(){
@@ -952,9 +1023,11 @@ function renderLobby(){
     wc=`<div class="card" style="margin-top:12px"><div class="muted small">Ride date</div><div style="font-size:18px;font-weight:800">${fmtWhen(m.when)}</div>
       <div class="small" style="color:${left>0?'var(--blue-d)':'var(--amber)'};font-weight:700">${left>0?'Starts '+untilTxt(m.when):'Meet time now · waiting for the leader to start'}</div>
       <div class="muted small" style="margin-top:6px">Meet at <b>${esc(m.stops[0].name)}</b>${m.wait?` · leaving ${m.wait} min after meet time (${fmtTime(m.when+m.wait*60000)})`:''}</div>
+      <div id="wx-lobby" style="margin-top:8px"></div>
+      <button class="btn sm ghost" id="l-offline" style="margin-top:8px">${store.get('off-'+T.code)?'✓ Map saved offline · update':'Save map for offline (no-signal areas)'}</button>
       <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:8px"><a class="btn sm ghost" target="_blank" rel="noopener" href="${cal.g}">Add to Google Calendar</a><a class="btn sm ghost" download="${T.code}.ics" href="${cal.ics}">Phone calendar</a></div></div>`}
   else if(m.wait)wc=`<p class="muted small" style="margin-top:6px">Wait time at the meeting point: ${m.wait} min</p>`;
-  $('#l-whencard').innerHTML=wc;
+  $('#l-whencard').innerHTML=wc;if(sched&&m.when-Date.now()<15*864e5&&m.when>Date.now()-3*3600e3)wxInto('#wx-lobby',m.when);
   const mem=Object.entries(T.members);const rv=u=>(T.state[u]||{}).rsvp||((T.members[u]||{}).role==='leader'?'going':'');
   const cnt={going:0,maybe:0,no:0,none:0};mem.forEach(([u])=>cnt[rv(u)||'none']++);
   const cur=rv(T.me);
@@ -979,6 +1052,7 @@ function renderLobby(){
 $('#s-lobby').addEventListener('click',e=>{if(!T)return;const r=e.target.closest('[data-r]');if(r&&r.closest('#rsvp-seg'))return setRsvp(r.dataset.r);
   if(e.target.closest('#chg-ok'))return setRsvp('going',true);if(e.target.closest('#chg-no'))return setRsvp('no',true);
   if(e.target.closest('#l-late'))return lateSheet();
+  if(e.target.closest('#l-offline'))return saveOffline();
   const rmb=e.target.closest('[data-lrm]');if(rmb)return removeMember(rmb.dataset.lrm);
   const pr=e.target.closest('[data-lpro]');if(pr){const u=pr.dataset.lpro;const r2=T.members[u].role==='coleader'?'member':'coleader';DB.update(P('members/'+u),{role:r2});sysMsg(`${T.members[u].nick} is now ${r2==='coleader'?'co-leader':'a member'}`)}});
 async function setRsvp(k,ack){const my=T.state[T.me]||{};
@@ -1034,7 +1108,27 @@ $('#l-leave').onclick=()=>isLeader()?cancelRide():openSheet(`<h1>Leave trip?</h1
 /* ================= LIVE ================= */
 let map=null,layers={mk:{},stops:[]},follow='nav',nav3d=true,mapType=store.get('maptype')||'sat',fitDone=false,progMove=false;
 const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/';
-function mapStyle(){return {version:8,sources:{
+/* ===== street map: OpenFreeMap vector tiles, cached for offline ===== */
+const MAPCACHE='frr-map-v1',OFM={style:null,ids:[]};
+async function cachedBuf(url){let c=null;try{c=await caches.open(MAPCACHE)}catch(e){}
+  if(c){try{const hit=await c.match(url);if(hit)return await hit.arrayBuffer()}catch(e){}}
+  const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);const b=await r.arrayBuffer();if(c)c.put(url,new Response(b.slice(0),{headers:{'Content-Type':r.headers.get('Content-Type')||'application/octet-stream'}})).catch(()=>{});return b}
+async function netFirstJSON(url){let c=null;try{c=await caches.open(MAPCACHE)}catch(e){}
+  try{const r=await fetch(url);if(!r.ok)throw 0;const t=await r.text();if(c)c.put(url,new Response(t,{headers:{'Content-Type':'application/json'}})).catch(()=>{});return JSON.parse(t)}
+  catch(e){if(c){const h=await c.match(url);if(h)return JSON.parse(await h.text())}throw e}}
+try{maplibregl.addProtocol('ofm',async(params)=>{const b=await cachedBuf('https://'+params.url.slice(6));if(params.type==='json')return {data:JSON.parse(new TextDecoder().decode(b))};return {data:b}})}catch(e){}
+const OFM_READY=(async()=>{try{const [st,tj]=await Promise.all([netFirstJSON('https://tiles.openfreemap.org/styles/liberty'),netFirstJSON('https://tiles.openfreemap.org/planet')]);
+  const P_=u=>u.replace(/^https:\/\//,'ofm://');const style=JSON.parse(JSON.stringify(st));
+  style.sources={openmaptiles:{type:'vector',tiles:tj.tiles.map(P_),minzoom:tj.minzoom||0,maxzoom:tj.maxzoom||14,attribution:'<a href="https://openfreemap.org">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/">OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}};
+  style.layers=style.layers.filter(l=>!l.source||l.source==='openmaptiles');style.glyphs=P_(style.glyphs);if(typeof style.sprite==='string')style.sprite=P_(style.sprite);
+  OFM.ids=style.layers.map(l=>l.id);OFM.fonts=[...new Set(style.layers.flatMap(l=>(l.layout&&l.layout['text-font'])||[]))];OFM.tiles=style.sources.openmaptiles.tiles[0];OFM.style=style;
+  caches.open(MAPCACHE).then(async c=>{const k=await c.keys();if(k.length>9000)for(const r of k.slice(0,k.length-7000))c.delete(r)}).catch(()=>{})}catch(e){}})();
+function rasterExtra(){return {sources:{sat:{type:'raster',tiles:[ESRI+'World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Imagery © Esri, Maxar, Earthstar'},
+  roads:{type:'raster',tiles:[ESRI+'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19},
+  places:{type:'raster',tiles:[ESRI+'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19}},
+  layers:[{id:'sat',type:'raster',source:'sat',layout:{visibility:'none'},paint:{'raster-saturation':-0.08,'raster-contrast':0.08,'raster-brightness-max':0.93}},{id:'roads',type:'raster',source:'roads',layout:{visibility:'none'}},{id:'places',type:'raster',source:'places',layout:{visibility:'none'}}]}}
+function mapStyle(){if(OFM.style){const st=JSON.parse(JSON.stringify(OFM.style));const ex=rasterExtra();Object.assign(st.sources,ex.sources);st.layers=st.layers.concat(ex.layers);return st}return mapStyleRaster()}
+function mapStyleRaster(){return {version:8,sources:{
   osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap'},
   sat:{type:'raster',tiles:[ESRI+'World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Imagery © Esri, Maxar, Earthstar'},
   roads:{type:'raster',tiles:[ESRI+'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19},
@@ -1043,12 +1137,12 @@ function mapStyle(){return {version:8,sources:{
     {id:'sat',type:'raster',source:'sat',layout:{visibility:'none'},paint:{'raster-saturation':-0.08,'raster-contrast':0.08,'raster-brightness-max':0.93}},
     {id:'roads',type:'raster',source:'roads',layout:{visibility:'none'}},
     {id:'places',type:'raster',source:'places',layout:{visibility:'none'}}]}}
-function setMapType(m,t){const sat=t==='sat';['sat','roads','places'].forEach(l=>m.setLayoutProperty(l,'visibility',sat?'visible':'none'));m.setLayoutProperty('osm','visibility',sat?'none':'visible')}
+function setMapType(m,t){const sat=t==='sat';if(!m.getLayer('osm')){if(t==='sat'&&!navigator.onLine)t='map';const sv=t==='sat';['sat','roads','places'].forEach(l=>m.getLayer(l)&&m.setLayoutProperty(l,'visibility',sv?'visible':'none'));OFM.ids.forEach(l=>m.getLayer(l)&&m.setLayoutProperty(l,'visibility',sv?'none':'visible'));return}['sat','roads','places'].forEach(l=>m.setLayoutProperty(l,'visibility',sat?'visible':'none'));m.setLayoutProperty('osm','visibility',sat?'none':'visible')}
 function makeMap(el,opts){const m=new maplibregl.Map({container:el,style:mapStyle(),center:[121.0,14.6],zoom:11,attributionControl:{compact:true},maxPitch:70,...opts});return m}
 async function upgradeRoute(){const m=T&&T.meta;if(!m||!m.route||!m.stops||T.meta.leaderId!==T.me||T.routeUp)return;T.routeUp=1;
   const r=m.route;if(r.road&&r.coords.length>=r.km*4)return;const n=await getRoute(m.stops);
   if(n.road&&T&&T.meta===m)await DB.update(P('meta'),{route:n})}
-function startLive(){upgradeRoute();
+async function startLive(){if(T.starting)return;T.starting=1;await Promise.race([OFM_READY,new Promise(r=>setTimeout(r,4000))]);if(!T||T.meta.status!=='live'){if(T)T.starting=0;return}T.starting=0;upgradeRoute();startRideStats();if(isMgr())DB.get(P('ec')).then(e=>{if(T)T.ec=e||{}}).catch(()=>{});
   go('s-live');$('#v-name').textContent=T.meta.name;
   if(!map){map=makeMap('map',{});
     map.on('load',()=>{setMapType(map,mapType);
@@ -1148,11 +1242,13 @@ function memberInfo(){
     let s;if(x.arrived)s=['lead','Arrived'];else if(x.st.sos)s=['behind','SOS'];else if(x.st.paused)s=['lost','Location paused'];else if(!x.l)s=['lost','No location yet'];else if(!x.fresh||!x.online)s=['lost','Signal lost'];
     else if(T.meta.meet&&!meetActiveFor(x.u))s=['lead','At meeting point'];
     else if(T.meta.meet)s=['amber',`${hav([x.l.lat,x.l.lng],[T.meta.meet.lat,T.meta.meet.lng]).toFixed(1)} km to meeting point`];
+    else if(T.meta.maxSpd&&x.l.spd!=null&&x.l.spd*3.6>T.meta.maxSpd+3)s=['behind',`Speeding · ${Math.round(x.l.spd*3.6)} km/h`];
     else if(x.off>0.5)s=['amber','Off route'];else if(x.gap>T.meta.thr)s=['behind','Falling behind'];else if(x.l.spd!=null&&x.l.spd<1)s=['amber','Stopped'];else if(i===0)s=['lead','Front'];else s=['ok','On route'];
     x.status=s});
   return {info,ord};
 }
-function renderRoll(){const el=$('#rollc');if(!el||!T||!T.meta)return;const m=T.meta;if(!m.meet||m.status!=='live'){el.style.display='none';return}
+function renderRoll(){const el=$('#rollc');if(!el||!T||!T.meta)return;const m=T.meta;if(!m.meet&&m.status==='live'&&T.spreadInfo){el.style.display='';el.innerHTML=`<div class="row between"><b style="color:var(--red)">Group spread ${T.spreadInfo.spread.toFixed(1)} km</b><button class="linkbtn" id="rc-wait">Ask to wait</button></div><div class="small muted">Last rider: ${esc(T.spreadInfo.last)}</div>`;$('#rc-wait').onclick=async()=>{const l=T.loc[T.me]||GPS.last;await DB.push(P('marks'),{uid:T.me,k:'wait',lat:l?l.lat:null,lng:l?l.lng:null,ts:DB.now()});sysMsg(`✋ ${meM().nick}: Wait for the group`);toast('Sent')};return}
+  if(!m.meet||m.status!=='live'){el.style.display='none';return}
   const all=Object.entries(T.members).filter(([u])=>(T.state[u]||{}).rsvp!=='no');const here=all.filter(([u])=>!meetActiveFor(u)),miss=all.filter(([u])=>meetActiveFor(u));
   const meetT=m.when&&m.started&&m.when>m.started-12*3600e3?Math.max(m.when,0):m.meet.ts;const timed=!!(m.wait||m.when);const leaveAt=meetT+(m.wait||0)*60000;const left=leaveAt-Date.now();
   const tm=timed?(left>0?`Leaving ${left>3600e3?'at '+fmtTime(leaveAt):'in '+Math.ceil(left/60000)+' min'}`:'Wait time is over'):'';
@@ -1194,12 +1290,12 @@ function renderMarkers(){
         let bub='';if(stale)bub=`${esc(x.u===T.me?'You':x.m.nick.split(' ')[0])}<small>last seen ${ago(x.l.t)}</small>`;
         else if(sel)bub=`${esc(x.m.nick)}${kmh?` · ${kmh} km/h`:''}<small>${x.m.bike?esc(x.m.bike)+' · ':''}${esc(x.status?x.status[1]:'')} · ${ago(x.l.t)}</small>`;
         else if(x.u===T.me)bub=`You${kmh?` · ${kmh} km/h`:''}`;
-        const key=[x.m.color,x.m.ini,x.m.role,stale,bub,Voice.speaking.has(x.u),x.u===T.me].join('|');
+        const key=[x.m.color,x.m.ini,x.m.role,x.m.sweep,stale,bub,Voice.speaking.has(x.u),x.u===T.me].join('|');
     let mk=layers.mk[x.u];
     if(!mk){const el=document.createElement('div');mk=layers.mk[x.u]=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat([x.l.lng,x.l.lat]).addTo(map);el.dataset.base=el.className;if(x.u===T.me)el.style.zIndex=10;const uid=x.u;el.addEventListener('click',ev=>{ev.stopPropagation();T.sel=T.sel===uid?null:uid;renderMarkers()})}
     const el=mk.getElement();
     if(el.dataset.key!==key){el.dataset.key=key;el.className=(el.dataset.base||'')+' lpin'+(x.u===T.me?' me':'')+(stale?' stale':'')+(Voice.speaking.has(x.u)?' speak':'');
-      el.style.zIndex=sel?20:(x.u===T.me?10:'');el.innerHTML=`${bub?`<div class="lp-bub">${bub}</div>`:''}<div class="lp-pin" style="background:${x.m.color}">${esc(x.m.ini)}</div>${x.m.role==='leader'?'<span class="vcr">L</span>':''}`}
+      el.style.zIndex=sel?20:(x.u===T.me?10:'');el.innerHTML=`${bub?`<div class="lp-bub">${bub}</div>`:''}<div class="lp-pin" style="background:${x.m.color}">${esc(x.m.ini)}</div>${x.m.role==='leader'?'<span class="vcr">L</span>':''}${x.m.sweep?'<span class="vsw">S</span>':''}`}
     glide(mk,x.l.lng,x.l.lat)});
   rotateVehicles();
   // camera
@@ -1213,7 +1309,7 @@ function renderMarkers(){
   if(meet&&goingToMeet&&me&&me.l){ensureMeetPath(me);
     if(hav([me.l.lat,me.l.lng],[meet.lat,meet.lng])<0.1&&T.meetMarked!==meet.ts){T.meetMarked=meet.ts;DB.update(P('state/'+T.me),{meetAt:meet.ts});sysMsg(`${meM().nick} arrived at the meeting point (${meet.name})`);toast('You arrived at the meeting point. Your route to the destination is now shown.')}}
   if(meet&&isMgr()){const all=Object.keys(T.members);const here=all.filter(u=>!meetActiveFor(u)).length;if(here===all.length&&T.allMetToast!==meet.ts&&all.length>1){T.allMetToast=meet.ts;toast(`Everyone is at ${meet.name}. Tap Start riding in the Leader tab.`,'ann')}}
-  drawGuide(me);
+  drawGuide(me);try{roadChecks(me,info)}catch(e){}
   // banner + eta
   const dest=T.meta.stops[T.meta.stops.length-1];let target=null,kind='';
   if(meet&&goingToMeet){target=meet;kind='Go to meeting point'}
@@ -1257,9 +1353,10 @@ function renderConvoy(){
   $('#seq').innerHTML=h;
 }
 function renderMembers(){
-  if(!T||!T.meta)return;const {ord,info}=memberInfo();const me=T.state[T.me]||{};const ld=info[T.meta.leaderId];
+  if(!T||!T.meta)return;setTimeout(()=>wxInto('#wx-live',null),0);const {ord,info}=memberInfo();const me=T.state[T.me]||{};const ld=info[T.meta.leaderId];
   $('#mlist').innerHTML=`<div class="card" style="margin:12px"><div class="row between"><div><b>Sharing my location</b><div class="muted small">${me.paused?'Paused · group sees your last position':'Live · only this trip can see it'}</div></div><button class="tog ${me.paused?'':'on'}" id="pause-loc"></button></div>
     <div class="row" style="margin-top:10px"><button class="btn sm ghost" id="mark-stop">${me.stopped?'Moving again':'I stopped'}</button><button class="btn sm ghost" id="mark-arr">${me.arrived?'Undo arrived':'I arrived'}</button></div></div>`+
+  `<div class="card" style="margin:0 12px 12px" id="wx-live"><b>Weather on the route</b><div class="muted small" style="margin-top:4px">Loading…</div></div>`+
   (T.meta.rules?`<div class="card" style="margin:0 12px 12px"><b>Ride rules</b><div class="small" style="white-space:pre-wrap;margin-top:4px">${esc(T.meta.rules)}</div></div>`:'')+
   ord.map(x=>{const role={leader:'Leader',coleader:'Co-leader',member:''}[x.m.role];const d=ld&&ld.l&&x.l?hav([ld.l.lat,ld.l.lng],[x.l.lat,x.l.lng]):null;
     return `<div class="mrow">${avHTML(x.m,{off:!x.online})}<div class="info"><div class="nm">${esc(x.m.nick)}${x.u===T.me?' (you)':''} ${role?`<span class="role">${role}</span>`:''}</div>
@@ -1277,14 +1374,19 @@ function updBadges(){if(!T)return;const bc=$('#b-chat');bc.style.display=T.unrea
 const GPS={watch:null,last:null,lastSent:0,err:'',force:false,simT:null};
 function startGPS(){
   stopGPS();GPS.err='';
+  const BG=!SIM&&nativePlugin('BackgroundGeolocation');
+  if(BG){BG.addWatcher({backgroundMessage:'Sharing your location with your ride group.',backgroundTitle:'FunRallyRide · ride is live',requestPermissions:true,stale:false,distanceFilter:5},(l,e)=>{
+      if(e){GPS.err=e.code==='NOT_AUTHORIZED'?'Location permission is off. Allow location "all the time" for FunRallyRide to keep sharing when the screen is off.':'Waiting for GPS signal…';renderBar();return}
+      if(!l)return;GPS.err='';onPos({lat:l.latitude,lng:l.longitude,hd:l.bearing,spd:l.speed,acc:l.accuracy})}).then(id=>{GPS.bgId=id}).catch(()=>{});return}
   if(SIM){let d=Math.random()*0.3;const sp=0.08+Math.random()*0.08;GPS.simT=setInterval(()=>{if(!T||!T.cum)return;const c=T.meta.route.coords;d=Math.min(T.cum[T.cum.length-1],d+sp);let i=1;while(i<c.length-1&&T.cum[i]<d)i++;const f=(d-T.cum[i-1])/((T.cum[i]-T.cum[i-1])||1);onPos({lat:c[i-1][0]+(c[i][0]-c[i-1][0])*f,lng:c[i-1][1]+(c[i][1]-c[i-1][1])*f,hd:bearingDeg(c[i-1],c[i]),spd:12,acc:10})},2000);return}
   if(!navigator.geolocation){GPS.err='This device has no GPS access.';return}
   GPS.watch=navigator.geolocation.watchPosition(p=>{GPS.err='';onPos({lat:p.coords.latitude,lng:p.coords.longitude,hd:p.coords.heading,spd:p.coords.speed,acc:p.coords.accuracy})},
     e=>{GPS.err=e.code===1?'Location permission is off. Allow location for this app to share your position.':'Waiting for GPS signal…';renderBar()},{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
 }
-function stopGPS(){if(GPS.watch!=null)navigator.geolocation.clearWatch(GPS.watch);GPS.watch=null;clearInterval(GPS.simT)}
+function stopGPS(){if(GPS.watch!=null)navigator.geolocation.clearWatch(GPS.watch);GPS.watch=null;clearInterval(GPS.simT);if(GPS.bgId){const BG=nativePlugin('BackgroundGeolocation');if(BG)BG.removeWatcher({id:GPS.bgId}).catch(()=>{});GPS.bgId=null}}
 function onPos(p){
   if(!T||!T.meta||T.meta.status!=='live')return;if((T.state[T.me]||{}).paused)return;
+  try{rideTick(p)}catch(e){}
   const now=DB.now();const moved=GPS.last?hav([GPS.last.lat,GPS.last.lng],[p.lat,p.lng])*1000:999;
   if(!GPS.force&&now-GPS.lastSent<4000&&moved<20)return;if(!GPS.force&&now-GPS.lastSent<1500)return;
   if((p.hd==null||isNaN(p.hd))&&GPS.last&&moved>3)p.hd=bearingDeg([GPS.last.lat,GPS.last.lng],[p.lat,p.lng]);else if(p.hd==null||isNaN(p.hd))p.hd=GPS.last?GPS.last.hd:null;
@@ -1404,13 +1506,18 @@ function renderLeader(){
       ${all.length>here.length?`<div class="small muted">Waiting for: ${all.filter(([u])=>meetActiveFor(u)).map(([,x])=>esc(x.nick.split(' ')[0])).join(', ')}</div>`:''}
       <button class="btn sm" id="ld-unmeet" style="margin-top:8px">${here.length===all.length?'Everyone is here: start riding':'Start riding now'}</button></div>`})():''}
     <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm" id="ld-route">Edit route</button><button class="btn sm ghost" id="ld-meet">Set meeting point</button></div></div>
+  <div class="card"><h3>Ride limits</h3>
+    <div class="small" style="font-weight:600">Speed limit for the group</div><div class="seg" id="ld-spd" style="margin-top:6px">${[0,60,80,100].map(v=>`<button data-lim="${v}" class="${(m.maxSpd||0)===v?'on':''}">${v?v+' km/h':'Off'}</button>`).join('')}</div>
+    <div class="small" style="font-weight:600;margin-top:12px">Alert when the group spreads more than</div><div class="seg" id="ld-spr" style="margin-top:6px">${[0,1,2,3,5].map(v=>`<button data-lim="${v}" class="${(m.spread==null?2:m.spread)===v?'on':''}">${v?v+' km':'Off'}</button>`).join('')}</div>
+    <p class="muted small" style="margin-top:8px">Riders over the speed limit hear "Slow down". You and the sweeper get an alert when the first and last rider are too far apart.</p></div>
   <div class="card"><h3>Separation alert</h3>
     <div class="row between"><span class="small">Alert when a gap is bigger than</span><b id="thrv">${m.thr.toFixed(1)} km</b></div>
     <input type="range" min="0.5" max="5" step="0.5" value="${m.thr}" style="width:100%;margin-top:8px;accent-color:#2B8CEB" id="ld-thr">
     <button class="btn sm ghost" style="margin-top:8px" id="ld-regroup">Send regroup order</button></div>
   <div class="card"><h3>Members (${Object.keys(T.members).length})</h3>
     ${Object.entries(T.members).filter(([u])=>u!==T.me&&u!==m.leaderId).map(([u,x])=>`<div class="row" style="padding:7px 0">${avHTML(x,{off:!T.presence[u]})}<div style="flex:1;min-width:0"><b>${esc(x.nick)}</b> ${x.role==='coleader'?'<span class="role">Co-leader</span>':''}</div>
-      ${lead?`<button class="btn sm ghost" data-pro="${u}">${x.role==='coleader'?'Demote':'Co-lead'}</button>`:''}<button class="btn sm ghost" style="color:var(--red)" data-rm="${u}">Remove</button></div>`).join('')||'<p class="muted small">No other members yet.</p>'}</div>
+      ${lead?`<button class="btn sm ghost" data-pro="${u}">${x.role==='coleader'?'Demote':'Co-lead'}</button>`:''}<button class="btn sm ghost" data-sw="${u}">${x.sweep?'Unset sweeper':'Sweeper'}</button><button class="btn sm ghost" style="color:var(--red)" data-rm="${u}">Remove</button></div>
+      ${T.ec&&T.ec[u]&&T.ec[u].p?`<div class="small muted" style="margin:-2px 0 6px 52px">Emergency: ${esc(T.ec[u].n||'Contact')} · <a href="tel:${esc(T.ec[u].p.replace(/[^0-9+]/g,''))}">${esc(T.ec[u].p)}</a></div>`:''}`).join('')||'<p class="muted small">No other members yet.</p>'}</div>
   <div class="card"><h3>Group announcement (pinned)</h3><div class="compose" style="padding:0"><input class="field" id="ann-in" placeholder="e.g. Fuel stop in 5 km" maxlength="120"><button class="btn sm" id="ld-ann">Send</button></div></div>
   ${lead?'<button class="btn red" id="ld-end">End trip for everyone</button>':''}<div style="height:12px"></div>`;
   renderRequests();
@@ -1420,6 +1527,9 @@ function renderLeader(){
   $('#ld-appr').onclick=()=>DB.update(P('meta'),{approve:!m.approve});
   L_.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{DB.update(P('meta'),{voice:b.dataset.v});sysMsg({open:'🎙 Open mic: everyone can talk',leader:'⭐ Leader-only mode on',muted:'🔇 Leader muted the group'}[b.dataset.v],'ann')});
   $('#ld-thr').oninput=e=>{$('#thrv').textContent=(+e.target.value).toFixed(1)+' km'};$('#ld-thr').onchange=e=>DB.update(P('meta'),{thr:+e.target.value});
+  segPick('#ld-spd',b=>DB.update(P('meta'),{maxSpd:+b.dataset.lim}).then(()=>sysMsg(+b.dataset.lim?`🚦 Speed limit set to ${b.dataset.lim} km/h`:'🚦 Speed limit turned off','note')));
+  segPick('#ld-spr',b=>DB.update(P('meta'),{spread:+b.dataset.lim}));
+  L_.querySelectorAll('[data-sw]').forEach(b=>b.onclick=async()=>{const u=b.dataset.sw;const on=!T.members[u].sweep;const upd={};Object.keys(T.members).forEach(k=>{if(T.members[k].sweep)upd[k+'/sweep']=null});if(on)upd[u+'/sweep']=true;await DB.update(P('members'),upd);if(on)sysMsg(`🧹 ${T.members[u].nick} is the sweeper (last rider)`,'note')});
   $('#ld-regroup').onclick=()=>{const t='🛑 REGROUP at the next stop';DB.update(P('meta'),{pin:{text:t,ts:DB.now()}});sysMsg(t,'ann')};
   $('#ld-ann').onclick=()=>{const v=$('#ann-in').value.trim();if(!v)return;DB.update(P('meta'),{pin:{text:v,ts:DB.now()}});sysMsg('📢 '+v,'ann');$('#ann-in').value=''};
   L_.querySelectorAll('[data-pro]').forEach(b=>b.onclick=()=>{const u=b.dataset.pro;const r=T.members[u].role==='coleader'?'member':'coleader';DB.update(P('members/'+u),{role:r});sysMsg(`${T.members[u].nick} is now ${r==='coleader'?'co-leader':'a member'}`)});
@@ -1436,6 +1546,75 @@ function placeSheet(title,btn,onPick,around,onCancel){openSheet(`<h1>${title}</h
   $('#ps-x').onclick=()=>{closeSheet();if(onCancel)onCancel()};
   $('#ps-map').onclick=()=>{closeSheet();const d=around||T.meta.stops[T.meta.stops.length-1];pickOnMap(title,d,onPick)};
   placeSearch('#ps-q','#ps-r',p=>{closeSheet();pickOnMap(title,p,onPick,true)})}
+
+/* ================= RIDE STATS / SAFETY ================= */
+let RS=null;
+function startRideStats(){RS={dist:0,moving:0,top:0,stops:0,last:null,lastT:0,stillSince:0,stopped:false,fastAt:0,trkLast:null,trkT:0,statT:0,overSince:0,overSaid:0,okFor:0,impactAt:0,safeDone:false};
+  DB.get(P('stats/'+T.me)).then(st=>{if(st&&RS){RS.dist=st.km||0;RS.moving=st.mv||0;RS.top=st.top||0;RS.stops=st.st||0}}).catch(()=>{});
+  if(!window._dm&&'DeviceMotionEvent' in window){window._dm=1;window.addEventListener('devicemotion',e=>{const a=e.accelerationIncludingGravity;if(!a||!RS)return;const g=Math.sqrt((a.x||0)**2+(a.y||0)**2+(a.z||0)**2);if(g>45&&Date.now()-RS.fastAt<5000)RS.impactAt=Date.now()})}}
+function rideTick(p){if(!RS)return;const now=Date.now();if(p.acc!=null&&p.acc>50)return;const spd=p.spd!=null&&!isNaN(p.spd)?p.spd:null;
+  if(RS.last){const d=hav([RS.last.lat,RS.last.lng],[p.lat,p.lng]);const dt=(now-RS.lastT)/1000;if(d>0.004&&d<3&&dt>0){RS.dist+=d;const v=spd!=null?spd:d*1000/dt;if(v>1.5)RS.moving+=Math.min(dt,60)}}
+  RS.last={lat:p.lat,lng:p.lng};RS.lastT=now;
+  const kmh=spd!=null?spd*3.6:0;if(kmh>RS.top&&kmh<250)RS.top=kmh;if(kmh>25)RS.fastAt=now;
+  if(kmh<3){if(!RS.stillSince)RS.stillSince=now;if(!RS.stopped&&now-RS.stillSince>60000){RS.stopped=true;RS.stops++}}else{RS.stillSince=0;RS.stopped=false;RS.okFor=0}
+  // possible crash: hard impact while fast, then stopped
+  if(RS.impactAt&&now-RS.impactAt<30000&&kmh<3&&now-RS.impactAt>4000){RS.impactAt=0;askOk('impact')}
+  // long stop right after riding fast, away from planned stops
+  const st=T.meta.stops.concat(T.meta.meet?[T.meta.meet]:[]);const nearStop=st.some(x=>hav([x.lat,x.lng],[p.lat,p.lng])<0.25);
+  if(RS.stillSince&&now-RS.stillSince>240000&&RS.fastAt>RS.stillSince-60000&&!nearStop&&RS.okFor!==RS.stillSince&&!$('#okscr').classList.contains('on')){RS.okFor=RS.stillSince;askOk('still')}
+  // speed limit
+  const lim=T.meta.maxSpd||0;if(lim&&kmh>lim+3){if(!RS.overSince)RS.overSince=now;if(now-RS.overSince>8000&&now-RS.overSaid>60000){RS.overSaid=now;say(NAV.lang==='tl'?`Bagalan. Ang speed limit ay ${lim}`:`Slow down. The group speed limit is ${lim}`);toast(`Slow down · limit ${lim} km/h`,'warn')}}else RS.overSince=0;
+  // track for replay
+  if(!RS.trkLast||(now-RS.trkT>15000&&hav(RS.trkLast,[p.lat,p.lng])>0.03)||hav(RS.trkLast,[p.lat,p.lng])>0.15){RS.trkLast=[p.lat,p.lng];RS.trkT=now;DB.push(P('track/'+T.me),{a:+p.lat.toFixed(5),o:+p.lng.toFixed(5),t:Math.round(DB.now()/1000),v:Math.round(kmh)}).catch(()=>{})}
+  if(now-RS.statT>45000){RS.statT=now;saveStats()}
+  // arrived safely at destination
+  const dest=T.meta.stops[T.meta.stops.length-1];if(!RS.safeDone&&hav([dest.lat,dest.lng],[p.lat,p.lng])<0.15&&!(T.state[T.me]||{}).safe){RS.safeDone=true;markSafe('at '+dest.name)}}
+function saveStats(){if(!T||!RS)return Promise.resolve();return DB.set(P('stats/'+T.me),{km:+RS.dist.toFixed(2),mv:Math.round(RS.moving),top:Math.round(RS.top),st:RS.stops,t:DB.now()}).catch(()=>{})}
+function markSafe(where){if(!T)return;DB.update(P('state/'+T.me),{safe:DB.now()});sysMsg(`✅ ${meM().nick} arrived safely ${where||''}`.trim(),'note')}
+let okTimer=null;
+function askOk(why){const sc=$('#okscr');if(sc.classList.contains('on'))return;$('#ok-why').textContent=why==='impact'?'We detected a hard stop or fall.':'You stopped for a long time after riding.';
+  let n=60;$('#ok-cd').textContent=n;sc.classList.add('on');try{navigator.vibrate&&navigator.vibrate([500,200,500,200,500])}catch(e){}beep();say(NAV.lang==='tl'?'Okay ka lang ba? Pindutin ang I am OK.':'Are you okay? Tap I am OK.');
+  const done=()=>{clearInterval(okTimer);sc.classList.remove('on')};
+  const send=async(type)=>{done();const l=T.loc[T.me]||GPS.last;const id=await DB.push(P('alerts'),{uid:T.me,type,lat:l?l.lat:null,lng:l?l.lng:null,status:'open',ts:DB.now()});DB.update(P('state/'+T.me),{sos:id});sysMsg(`🚨 ${meM().nick}: ${type}`,'warn')};
+  $('#ok-yes').onclick=()=>{done();toast("Glad you're OK")};
+  $('#ok-help').onclick=()=>send('Needs help');
+  clearInterval(okTimer);okTimer=setInterval(()=>{n--;$('#ok-cd').textContent=n;if(n%10===0)try{navigator.vibrate&&navigator.vibrate(400)}catch(e){}if(n<=0)send(why==='impact'?'Possible crash · no answer':'Not moving · no answer')},1000)}
+
+window.addEventListener('offline',()=>{if(map&&mapType==='sat'&&!map.getLayer('osm')){setMapType(map,'map');toast('No internet. Showing the saved street map.','warn')}});
+window.addEventListener('online',()=>{if(map&&mapType==='sat')setMapType(map,'sat')});
+/* ===== save map along the route for offline use ===== */
+async function saveOffline(){if(!T||!T.meta)return;await OFM_READY;if(!OFM.style)return toast("Offline map isn't available right now",'warn');
+  const tl=(la,lo,z)=>{const n=2**z;const x=Math.floor((lo+180)/360*n);const r=la*Math.PI/180;const y=Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n);return [x,y]};
+  const pts=[];const c=T.meta.route.coords;for(let i=0;i<c.length;i++){pts.push(c[i]);if(i){const d=hav(c[i-1],c[i]);const k=Math.floor(d/0.6);for(let j=1;j<k;j++)pts.push([c[i-1][0]+(c[i][0]-c[i-1][0])*j/k,c[i-1][1]+(c[i][1]-c[i-1][1])*j/k])}}
+  const set=new Set();for(let z=6;z<=14;z++){const pad=z>=12?1:0;pts.forEach(([la,lo])=>{const [x,y]=tl(la,lo,z);for(let dx=-pad;dx<=pad;dx++)for(let dy=-pad;dy<=pad;dy++)set.add(z+'/'+(x+dx)+'/'+(y+dy))})}
+  const urls=[...set].map(k=>{const [z,x,y]=k.split('/');return OFM.tiles.replace('ofm://','https://').replace('{z}',z).replace('{x}',x).replace('{y}',y)});
+  OFM.fonts.forEach(f=>['0-255','256-511','8192-8447'].forEach(r=>urls.push(OFM.style.glyphs.replace('ofm://','https://').replace('{fontstack}',encodeURIComponent(f)).replace('{range}',r))));
+  if(typeof OFM.style.sprite==='string'){const sp=OFM.style.sprite.replace('ofm://','https://');[sp+'.json',sp+'.png',sp+'@2x.json',sp+'@2x.png'].forEach(u=>urls.push(u))}
+  openSheet(`<h1>Saving map for offline</h1><p class="muted" style="margin:8px 0">Saving the street map along your route so it still works with no signal.</p><div class="small"><b id="off-n">0</b> / ${urls.length}</div><div style="height:8px;background:var(--line);border-radius:6px;margin-top:8px;overflow:hidden"><div id="off-bar" style="height:100%;width:0;background:var(--blue)"></div></div><div style="height:14px"></div><button class="btn ghost" id="off-x">Run in background</button>`);
+  $('#off-x').onclick=()=>closeSheet();let done=0,fail=0;const q=[...urls];
+  await Promise.all(Array.from({length:6},async()=>{while(q.length){const u=q.shift();try{await cachedBuf(u)}catch(e){fail++}done++;if($('#off-n')){$('#off-n').textContent=done;$('#off-bar').style.width=(done/urls.length*100)+'%'}}}));
+  store.set('off-'+T.code,1);if($('#off-n'))closeSheet();toast(fail>urls.length/3?'Saved part of the map. Try again with a better connection.':'Map saved for offline use')}
+
+/* ================= QUICK ROAD ALERTS ================= */
+const QA={gas:['⛽','Gas stop'],pit:['☕','Pit stop'],police:['👮','Police / checkpoint'],hazard:['⚠️','Road hazard'],slow:['🐢','Slow down'],wait:['✋','Wait for the group']};
+$('#mb-alert').onclick=()=>{openSheet(`<h1>Alert the group</h1><p class="muted small" style="margin-top:4px">Everyone sees it on the map and hears it.</p><div class="qgrid">${Object.entries(QA).map(([k,[e,t]])=>`<button data-q="${k}"><span>${e}</span>${t}</button>`).join('')}</div><div style="height:12px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+  $('#sheetbox').querySelectorAll('[data-q]').forEach(b=>b.onclick=async()=>{const k=b.dataset.q;const l=T.loc[T.me]||GPS.last;closeSheet();if(!l&&k!=='slow'&&k!=='wait')return toast('Waiting for your GPS…','warn');
+    await DB.push(P('marks'),{uid:T.me,k,lat:l?l.lat:null,lng:l?l.lng:null,ts:DB.now()});sysMsg(`${QA[k][0]} ${meM().nick}: ${QA[k][1]}`);toast('Sent to the group')})};
+function qaSpeech(k,who,tl){const n=who;return tl?{gas:`${n}: gas stop`,pit:`${n}: pit stop`,police:'May checkpoint sa unahan',hazard:'May panganib sa daan sa unahan',slow:`${n}: bagalan`,wait:`${n}: hintayin ang grupo`}[k]:{gas:`${n} wants a gas stop`,pit:`${n} wants a pit stop`,police:'Police checkpoint reported ahead',hazard:'Road hazard reported ahead',slow:`${n} says slow down`,wait:`${n} says wait for the group`}[k]}
+function onMarks(){if(!T)return;const now=DB.now();T.seenMarks=T.seenMarks||new Set();T.qmk=T.qmk||{};
+  Object.entries(T.marks||{}).forEach(([id,q])=>{const fresh=now-q.ts<(q.k==='police'||q.k==='hazard'?45:20)*60000;
+    if(!T.seenMarks.has(id)){T.seenMarks.add(id);if(fresh&&q.uid!==T.me&&now-q.ts<120000){const who=((T.members[q.uid]||{}).nick||'Someone').split(' ')[0];toast(`${QA[q.k][0]} ${who}: ${QA[q.k][1]}`,'ann');say(qaSpeech(q.k,who,NAV.lang==='tl'))}}
+    if(map&&q.lat!=null&&fresh&&!T.qmk[id]){const el=document.createElement('div');el.className='qmark';el.textContent=QA[q.k][0];el.title=QA[q.k][1];T.qmk[id]=new maplibregl.Marker({element:el}).setLngLat([q.lng,q.lat]).addTo(map)}
+    if(T.qmk[id]&&!fresh){T.qmk[id].remove();delete T.qmk[id]}})}
+setInterval(()=>{if(T&&T.marks)onMarks()},60000);
+// hazard ahead voice + group spread check
+function roadChecks(me,info){if(!me||!me.l)return;const now=DB.now();T.hzSaid=T.hzSaid||{};
+  Object.entries(T.marks||{}).forEach(([id,q])=>{if((q.k!=='police'&&q.k!=='hazard')||q.uid===T.me||q.lat==null||now-q.ts>45*60000||T.hzSaid[id])return;const d=hav([me.l.lat,me.l.lng],[q.lat,q.lng]);
+    if(d<0.35){const pr=T.cum?project([q.lat,q.lng]):null;if(!pr||me.prog<0||pr.prog>me.prog-0.05){T.hzSaid[id]=1;say(NAV.lang==='tl'?`${q.k==='police'?'Checkpoint':'Panganib sa daan'} pagkalipas ng ${distTxt(d,1)}`:`${q.k==='police'?'Police checkpoint':'Road hazard'} in ${distTxt(d)}`)}}});
+  const lim=T.meta.spread==null?2:T.meta.spread;if(!lim||T.meta.meet)return;if(!(isMgr()||meM().sweep))return;
+  const riders=Object.values(info).filter(x=>x.l&&x.fresh&&x.online&&x.prog>=0&&!x.arrived&&!x.st.paused&&(x.st.rsvp!=='no'));if(riders.length<2)return;
+  riders.sort((a,b)=>b.prog-a.prog);const spread=riders[0].prog-riders[riders.length-1].prog;
+  if(spread>lim){const last=riders[riders.length-1];T.spreadInfo={spread,last:last.m.nick};if(!T.spreadAt||now-T.spreadAt>300000){T.spreadAt=now;toast(`Group is spread ${spread.toFixed(1)} km · last: ${last.m.nick}`,'warn');say(NAV.lang==='tl'?`Magkakalayo na ang grupo, ${distTxt(spread,1)}`:`The group is spread out, ${distTxt(spread)}`)}}else T.spreadInfo=null}
 
 /* ================= TURN-BY-TURN VOICE ================= */
 const NAV={path:null,fetchAt:0,offN:0,spoken:{},lang:store.get('navlang')||'en',mute:!!store.get('navmute'),zoom:0,reroutedAt:0};
@@ -1547,6 +1726,7 @@ function onAlerts(){
     if(a.status==='open'&&!T.seenAlerts.has(id)){T.seenAlerts.add(id);const m=T.members[a.uid]||{nick:'A member'};
       $('#sosb').innerHTML=`<svg class="i" viewBox="0 0 24 24" style="width:56px;height:56px"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><h2>SOS · ${esc(a.type)}</h2><p style="margin:10px 0 24px">${esc(m.nick)} needs help.</p>
         ${a.lat!=null?`<a class="btn" style="background:#fff;color:var(--red);display:block;text-decoration:none;margin-bottom:10px" href="https://www.google.com/maps/dir/?api=1&destination=${a.lat},${a.lng}" target="_blank" rel="noopener">Navigate to ${esc(m.nick)}</a>`:''}
+        ${T.ec&&T.ec[a.uid]&&T.ec[a.uid].p?`<a class="btn" style="background:rgba(255,255,255,.18);color:#fff;display:block;text-decoration:none;margin-bottom:10px" href="tel:${esc(T.ec[a.uid].p.replace(/[^0-9+]/g,''))}">Call ${esc(T.ec[a.uid].n||'emergency contact')} · ${esc(T.ec[a.uid].p)}</a>`:''}
         <button class="btn ghost" id="sos-ok">I've seen it</button>`;
       $('#sosb').classList.add('on');$('#sos-ok').onclick=()=>$('#sosb').classList.remove('on');
       try{navigator.vibrate&&navigator.vibrate([400,200,400,200,400])}catch(e){}beep()}
@@ -1557,19 +1737,91 @@ function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)
 
 /* ================= END / SUMMARY ================= */
 async function showSummary(){
-  const m=T.meta;stopGPS();Voice.stop();clearInterval(T.tick);
-  const {info}=T.cum?memberInfo():{info:{}};
+  const m=T.meta;stopGPS();Voice.stop();clearInterval(T.tick);if(RS)await saveStats();
   const dur=m.started&&m.ended?Math.round((m.ended-m.started)/60000):null;
   const hist=store.get('history')||[];if(!hist.find(h=>h.code===T.code)){hist.unshift({code:T.code,name:m.name,date:m.ended||DB.now(),stops:m.stops.map(s=>s.name),km:m.route.km,members:Object.values(T.members).map(x=>x.nick)});store.set('history',hist.slice(0,30))}
-  $('#sum').innerHTML=`<h1>Trip complete</h1><p class="muted">${esc(m.name)} · ${new Date(m.ended||DB.now()).toLocaleDateString()}</p>
-  <div class="card" style="margin-top:16px"><h3>Route</h3><div class="small">${m.stops.map(s=>esc(s.name)).join(' → ')}</div><div class="muted small" style="margin-top:6px">${m.route.km} km planned${dur!=null?` · ${dur} min`:''}</div></div>
-  <div class="card"><h3>Arrival checklist</h3>${Object.entries(T.members).map(([u,x])=>{const a=info[u]&&info[u].arrived;return `<div class="row" style="padding:6px 0">${avHTML(x)}<div style="flex:1"><b>${esc(x.nick)}</b></div><span class="st ${a?'lead':'behind'}">${a?'✓ Arrived':'Not confirmed'}</span></div>`}).join('')}</div>
-  <p class="muted small">Live location sharing and the mic have stopped. Saved to trip history on this phone.</p><div style="height:14px"></div><button class="btn" id="sum-home">Back to home</button>`;
-  go('s-summary');
+  const stats=(await DB.get(P('stats')).catch(()=>null))||{};T.sumStats=stats;
+  const my=stats[T.me]||{};const tops=Object.values(stats).map(x=>x.top||0);const fmtMin=sec=>{const mm=Math.round(sec/60);return mm<60?mm+' min':Math.floor(mm/60)+' h '+(mm%60)+' min'};
+  $('#sum').innerHTML=`<h1>Ride complete</h1><p class="muted">${esc(m.name)} · ${new Date(m.ended||DB.now()).toLocaleDateString()}</p>
+  <div class="card" style="margin-top:16px"><h3>Your ride</h3><div class="stgrid"><div><b>${(my.km||0).toFixed(1)} km</b><span>Distance</span></div><div><b>${fmtMin(my.mv||0)}</b><span>Moving time</span></div><div><b>${my.top||0} km/h</b><span>Top speed</span></div><div><b>${my.mv?Math.min(my.top||0,Math.round((my.km||0)/(my.mv/3600))):0} km/h</b><span>Average speed</span></div></div>
+    <div class="muted small" style="margin-top:8px">${m.route.km} km planned${dur!=null?` · ${fmtMin(dur*60)} total`:''} · ${my.st||0} stops</div>
+    <div class="row" style="margin-top:12px;gap:8px"><button class="btn sm" id="sum-share">Share ride card</button></div></div>
+  <div class="card"><h3>Arrived safely</h3><div id="sum-safe"></div><button class="btn sm ghost" id="sum-safe-btn" style="margin-top:8px">I'm home safe</button></div>
+  <div class="card"><h3>Ride replay</h3><div id="rmap"></div><input type="range" id="rslider" min="0" max="1000" value="1000" style="width:100%;margin-top:10px;accent-color:#2B8CEB"><div class="muted small" id="rtime"></div></div>
+  <div class="card"><h3>Group stats</h3>${Object.entries(T.members).map(([u,x])=>{const st=stats[u]||{};return `<div class="row" style="padding:6px 0">${avHTML(x)}<div style="flex:1"><b>${esc(x.nick)}</b><div class="muted small">${(st.km||0).toFixed(1)} km · ${fmtMin(st.mv||0)} · top ${st.top||0} km/h</div></div>${st.top&&st.top===Math.max(...tops)?'<span class="st amber">Fastest</span>':''}</div>`}).join('')}</div>
+  <p class="muted small">Live location sharing and the mic have stopped.</p><div style="height:14px"></div><button class="btn" id="sum-home">Back to home</button>`;
+  go('s-summary');renderSafe();replay();
   if(isLeader()){setTimeout(()=>{DB.remove(P('loc'));DB.remove(P('signal'));DB.remove(P('requests'))},4000)}
-  const code=T.code;$('#sum-home').onclick=()=>{exitTrip()};
+  $('#sum-home').onclick=()=>{if(window._rmap){_rmap.remove();window._rmap=null}exitTrip()};
+  $('#sum-safe-btn').onclick=()=>{markSafe('home');toast('Your group knows you are safe')};
+  $('#sum-share').onclick=()=>shareCard();
 }
+function renderSafe(){if(!T||!$('#sum-safe'))return;const dest=T.meta.stops[T.meta.stops.length-1];const all=Object.entries(T.members);
+  const ok=u=>{const st=T.state[u]||{};return st.safe||st.arrived};const n=all.filter(([u])=>ok(u)).length;
+  $('#sum-safe').innerHTML=`<div class="small" style="margin-bottom:6px"><b>${n}/${all.length}</b> safe</div>`+all.map(([u,x])=>`<div class="row" style="padding:5px 0">${avHTML(x)}<div style="flex:1"><b>${esc(x.nick)}</b></div><span class="st ${ok(u)?'lead':'behind'}">${ok(u)?'✓ Safe':'Not yet'}</span></div>`).join('');
+  $('#sum-safe-btn').style.display=(T.state[T.me]||{}).safe?'none':''}
+async function replay(){const tr=(await DB.get(P('track')).catch(()=>null))||{};const lines={};let t0=Infinity,t1=0;
+  Object.entries(tr).forEach(([u,pts])=>{const a=Object.values(pts||{}).filter(p=>p&&p.t).sort((x,y)=>x.t-y.t);if(a.length){lines[u]=a;t0=Math.min(t0,a[0].t);t1=Math.max(t1,a[a.length-1].t)}});
+  if(!Object.keys(lines).length){$('#rmap').outerHTML='<p class="muted small">No track recorded for this ride.</p>';$('#rslider').style.display='none';return}
+  const rm=window._rmap=makeMap('rmap',{interactive:true});const mk={};
+  rm.on('load',()=>{setMapType(rm,'map');const b=new maplibregl.LngLatBounds();
+    Object.entries(lines).forEach(([u,a])=>{const c=a.map(p=>[p.o,p.a]);c.forEach(x=>b.extend(x));const col=(T.members[u]||{}).color||'#2B8CEB';
+      rm.addSource('t'+u,{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:c}}});rm.addLayer({id:'t'+u,type:'line',source:'t'+u,paint:{'line-color':col,'line-width':4,'line-opacity':.85},layout:{'line-cap':'round','line-join':'round'}});
+      const el=document.createElement('div');el.className='lpin';el.style.transform='scale(.6)';el.innerHTML=`<div class="lp-pin" style="background:${col}">${esc((T.members[u]||{}).ini||'?')}</div>`;mk[u]=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(c[c.length-1]).addTo(rm)});
+    rm.fitBounds(b,{padding:30,duration:0})});
+  const at=v=>{const t=t0+(t1-t0)*v/1000;$('#rtime').textContent=new Date(t*1000).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    Object.entries(lines).forEach(([u,a])=>{let i=a.findIndex(p=>p.t>t);if(i<0)i=a.length;const p=a[Math.max(0,i-1)];mk[u]&&mk[u].setLngLat([p.o,p.a])})};
+  $('#rslider').oninput=e=>at(+e.target.value);at(1000)}
+async function shareCard(){const m=T.meta;const st=(T.sumStats||{})[T.me]||{};const W=1080,H=1350;const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+  g.fillStyle='#F4F8FD';g.fillRect(0,0,W,H);g.fillStyle='#2B8CEB';g.fillRect(0,0,W,16);
+  const logo=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src='icons/logo-160.png'});if(logo)g.drawImage(logo,60,60,120,120);
+  g.fillStyle='#0F1B2D';g.font='800 64px Inter, Arial';g.fillText(m.name.slice(0,26),200,120);g.font='500 34px Inter, Arial';g.fillStyle='#5B6B82';g.fillText(new Date(m.ended||Date.now()).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'}),200,170);
+  // route
+  const pts=m.route.coords;let a=90,b=-90,cc=180,d=-180;pts.forEach(([la,lo])=>{a=Math.min(a,la);b=Math.max(b,la);cc=Math.min(cc,lo);d=Math.max(d,lo)});
+  const bx=60,by=230,bw=W-120,bh=640;g.fillStyle='#fff';g.beginPath();g.roundRect?g.roundRect(bx,by,bw,bh,36):g.rect(bx,by,bw,bh);g.fill();
+  const sc=Math.min((bw-120)/((d-cc)||1e-4),(bh-120)/((b-a)||1e-4));const ox=bx+(bw-(d-cc)*sc)/2,oy=by+(bh-(b-a)*sc)/2;const XY=([la,lo])=>[ox+(lo-cc)*sc,oy+(b-la)*sc];
+  g.lineJoin=g.lineCap='round';g.strokeStyle='#0E5E9E';g.lineWidth=18;g.beginPath();pts.forEach((p,i)=>{const [x,y]=XY(p);i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();g.strokeStyle='#2F6BFF';g.lineWidth=10;g.stroke();
+  [[pts[0],'#16A34A'],[pts[pts.length-1],'#E5484D']].forEach(([p,col])=>{const [x,y]=XY(p);g.fillStyle='#fff';g.beginPath();g.arc(x,y,20,0,7);g.fill();g.fillStyle=col;g.beginPath();g.arc(x,y,13,0,7);g.fill()});
+  g.fillStyle='#0F1B2D';g.font='600 32px Inter, Arial';const route=m.stops[0].name+'  →  '+m.stops[m.stops.length-1].name;g.fillText(route.length>52?route.slice(0,50)+'…':route,60,930);
+  const mv=st.mv||0;const boxes=[[(st.km||m.route.km||0).toFixed(1)+' km','Distance'],[mv?(mv>=3600?Math.floor(mv/3600)+'h '+Math.round(mv%3600/60)+'m':Math.round(mv/60)+' min'):'–','Moving time'],[(st.top||0)+' km/h','Top speed'],[Object.keys(T.members).length+'','Riders']];
+  boxes.forEach(([v,l],i)=>{const x=60+i*245;g.fillStyle='#E7F1FD';g.beginPath();g.roundRect?g.roundRect(x,970,225,150,24):g.rect(x,970,225,150);g.fill();g.fillStyle='#0E5E9E';g.font='800 44px Inter, Arial';g.fillText(v,x+20,1040);g.fillStyle='#5B6B82';g.font='500 26px Inter, Arial';g.fillText(l,x+20,1085)});
+  Object.values(T.members).slice(0,12).forEach((x,i)=>{const cx=95+i*80,cy=1200;g.fillStyle='#fff';g.beginPath();g.arc(cx,cy,36,0,7);g.fill();g.fillStyle=x.color||'#2B8CEB';g.beginPath();g.arc(cx,cy,31,0,7);g.fill();g.fillStyle='#fff';g.font='800 24px Inter, Arial';g.textAlign='center';g.fillText(x.ini||'?',cx,cy+9);g.textAlign='left'});
+  g.fillStyle='#5B6B82';g.font='600 28px Inter, Arial';g.fillText('Rode together on FunRallyRide',60,1300);
+  const name='funrallyride-'+T.code+'.png';
+  try{const Sh=nativePlugin('Share'),FS=nativePlugin('Filesystem');
+    if(Sh&&FS){const w=await FS.writeFile({path:name,data:c.toDataURL('image/png').split(',')[1],directory:'CACHE'});await Sh.share({title:m.name,files:[w.uri]});return}
+    const blob=await new Promise(r=>c.toBlob(r,'image/png'));const file=new File([blob],name,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:m.name});return}
+    const u=URL.createObjectURL(blob);openSheet(`<h1>Your ride card</h1><img src="${u}" style="width:100%;border-radius:12px;margin:10px 0"><a class="btn" href="${u}" download="${name}">Download image</a><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Close</button>`)}catch(e){if(e&&e.name!=='AbortError')toast('Could not share the image','warn')}}
 
+/* ================= WEATHER & GAS ON ROUTE ================= */
+const WXI=c=>c===0?'☀️':c<=2?'🌤️':c===3?'☁️':c<=48?'🌫️':c<=57?'🌦️':c<=67?'🌧️':c<=77?'🌨️':c<=82?'🌧️':'⛈️';
+const WXT=c=>c===0?'Clear':c<=2?'Partly cloudy':c===3?'Cloudy':c<=48?'Fog':c<=57?'Drizzle':c<=67?'Rain':c<=77?'Snow':c<=82?'Rain showers':'Thunderstorm';
+const wxCache={};
+async function wxInto(sel,when){const el=$(sel);if(!el||!T||!T.meta)return;const st=T.meta.stops;const pts=[st[0]];if(st.length>2)pts.push(st[Math.floor(st.length/2)]);pts.push(st[st.length-1]);
+  const key=pts.map(p=>p.lat.toFixed(2)+','+p.lng.toFixed(2)).join('|');let data=wxCache[key];
+  if(!data||Date.now()-data.at>20*60000){try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pts.map(p=>p.lat.toFixed(3)).join(',')}&longitude=${pts.map(p=>p.lng.toFixed(3)).join(',')}&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=16`);let j=await r.json();if(!Array.isArray(j))j=[j];data=wxCache[key]={at:Date.now(),j}}catch(e){const e2=$(sel);if(e2)e2.querySelector('.muted')&&(e2.querySelector('.muted').textContent='Weather unavailable right now');return}}
+  const tgt=when||Date.now();const el2=$(sel);if(!el2)return;
+  const rows=data.j.map((w,i)=>{if(!w.hourly)return '';const times=w.hourly.time.map(t=>new Date(t+':00'+(w.utc_offset_seconds!=null?fmtOff(w.utc_offset_seconds):'')).getTime());let k=0,best=Infinity;times.forEach((t,ii)=>{const d=Math.abs(t-tgt);if(d<best){best=d;k=ii}});if(best>2*3600e3)return '';
+    const c=w.hourly.weather_code[k],tp=Math.round(w.hourly.temperature_2m[k]),pp=w.hourly.precipitation_probability[k];return `<div class="wx"><span style="font-size:24px">${WXI(c)}</span><div style="flex:1;min-width:0"><b>${esc(pts[i].name)}</b><div class="muted small">${WXT(c)} · ${tp}°C · ${pp!=null?pp+'% rain':''}</div></div></div>`}).join('');
+  const rain=data.j.some((w,i)=>{if(!w.hourly)return false;return w.hourly.precipitation_probability.some((pp,ii)=>Math.abs(new Date(w.hourly.time[ii]+':00'+fmtOff(w.utc_offset_seconds||0)).getTime()-tgt)<2*3600e3&&pp>=60)});
+  el2.innerHTML=(sel==='#wx-live'?'<b>Weather on the route</b>':'<div class="small" style="font-weight:700">Weather at ride time</div>')+(rows||'<div class="muted small">Forecast not available yet for this date.</div>')+(rain?'<div class="small" style="color:var(--amber);font-weight:700;margin-top:4px">🌧 Rain likely. Bring rain gear.</div>':'')+'<div class="muted small" style="margin-top:4px;font-size:11px">Weather data by Open-Meteo.com</div>'}
+const fmtOff=s=>{const sg=s<0?'-':'+';s=Math.abs(s);return sg+String(Math.floor(s/3600)).padStart(2,'0')+':'+String(Math.floor(s%3600/60)).padStart(2,'0')};
+async function fuelOnRoute(){if(T.fuel&&T.fuel.key===routeKey())return T.fuel.list;const c=T.meta.route.coords;const smp=[];let acc=0;
+  for(let i=0;i<c.length;i++){if(i===0||i===c.length-1){smp.push(c[i]);continue}acc+=hav(c[i-1],c[i]);if(acc>=1.2){smp.push(c[i]);acc=0}}
+  const step=Math.max(1,Math.ceil(smp.length/120));const ln=smp.filter((_,i)=>i%step===0||i===smp.length-1).map(p=>p[0].toFixed(5)+','+p[1].toFixed(5)).join(',');
+  const q=`[out:json][timeout:25];(node["amenity"="fuel"](around:350,${ln});way["amenity"="fuel"](around:350,${ln}););out center 300;`;
+  let j=null;for(const ep of ['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter','https://overpass.kumi.systems/api/interpreter']){try{const r=await fetch(ep,{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'}});if(!r.ok)continue;j=await r.json();break}catch(e){}}if(!j)throw new Error('overpass');
+  const list=(j.elements||[]).map(e=>{const la=e.lat||(e.center&&e.center.lat),lo=e.lon||(e.center&&e.center.lon);const tg=e.tags||{};const pr=project([la,lo]);return {id:e.id,lat:la,lng:lo,name:tg.brand||tg.name||'Gas station',prog:pr.prog,off:pr.off}}).filter(x=>x.lat&&x.off<0.45).sort((a,b)=>a.prog-b.prog);
+  T.fuel={key:routeKey(),list};return list}
+$('#mb-fuel').onclick=async()=>{if(!T||!T.cum)return;openSheet('<h1>Gas stations on route</h1><p class="muted" style="margin-top:8px">Looking along your route…</p>');let list;
+  try{list=await fuelOnRoute()}catch(e){openSheet('<h1>Gas stations on route</h1><p class="muted" style="margin:8px 0 14px">Could not load gas stations right now. Try again in a minute.</p><button class="btn ghost" onclick="closeSheet()">Close</button>');return}
+  T.fmk=T.fmk||[];T.fmk.forEach(x=>x.remove());T.fmk=list.map(f=>{const el=document.createElement('div');el.className='qmark fuel';el.textContent='⛽';return new maplibregl.Marker({element:el}).setLngLat([f.lng,f.lat]).addTo(map)});
+  const me=memberInfo().info[T.me];const myP=me&&me.prog>=0?me.prog:0;const ahead=list.filter(f=>f.prog>myP-0.1).slice(0,15);
+  openSheet(`<h1>Gas stations on route</h1><p class="muted small" style="margin:4px 0 8px">${list.length} along the route · showing the next ${ahead.length}</p>${ahead.map((f,i)=>`<div class="errow"><span style="font-size:22px">⛽</span><div class="ert"><b>${esc(f.name)}</b><div class="muted small">${Math.max(0,f.prog-myP).toFixed(1)} km ahead</div></div><button class="erb" data-fs="${i}">Show</button>${isMgr()?`<button class="erb" data-fa="${i}">Add stop</button>`:''}</div>`).join('')||'<p class="muted">No gas stations found ahead on this route.</p>'}<div style="height:12px"></div><button class="btn ghost" onclick="closeSheet()">Close</button><div class="muted small" style="margin-top:8px;font-size:11px">Data © OpenStreetMap contributors</div>`);
+  $('#sheetbox').querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>{const f=ahead[+b.dataset.fs];closeSheet();follow='free';updMapBtns();map.flyTo({center:[f.lng,f.lat],zoom:16,pitch:0})});
+  $('#sheetbox').querySelectorAll('[data-fa]').forEach(b=>b.onclick=()=>busy(b,async()=>{const f=ahead[+b.dataset.fa];const st=T.meta.stops;let at=st.length-1;for(let k=1;k<st.length-1;k++){if(T.stopProg[k]>f.prog){at=k;break}}
+    const stops=[...st];stops.splice(at,0,{name:f.name,lat:f.lat,lng:f.lng,type:'stop'});await saveRoute(stops);T.detour=null;sysMsg(`⛽ Gas stop added: ${f.name}`,'note');closeSheet();toast('Gas stop added for everyone')}))};
 /* ================= INSTALL / START ================= */
 let deferredPrompt=null;const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
@@ -1598,12 +1850,14 @@ async function leaveTrip(){if(!T)return;T.leaving=true;myRide(T.code,null);const
 $('#trip-menu').onclick=()=>{const lead=isLeader();
   openSheet(`<h1>${esc(T.meta.name)}</h1><p class="muted small" style="margin:4px 0 14px">Code ${T.code}</p>
   <button class="btn ghost" id="tm-home" style="margin-bottom:8px">Back to home <span class="muted small" style="font-weight:500">(trip keeps running)</span></button>
+  <button class="btn ghost" id="tm-offline" style="margin-bottom:8px">Save map for offline</button>
   <button class="btn ghost" id="tm-settings" style="margin-bottom:8px">Settings</button>
   ${lead?'<button class="btn red" id="tm-end" style="margin-bottom:8px">End trip for everyone</button>':'<button class="btn red" id="tm-leave" style="margin-bottom:8px">Leave trip</button>'}
   <button class="btn ghost" id="tm-logout" style="margin-bottom:8px">Log out</button>
   <button class="btn ghost" onclick="closeSheet()">Close</button>`);
   $('#tm-home').onclick=()=>{closeSheet();T.bg=true;showHome()};
   $('#tm-settings').onclick=()=>{closeSheet();openSettings(false)};
+  $('#tm-offline').onclick=()=>{closeSheet();saveOffline()};
   if($('#tm-leave'))$('#tm-leave').onclick=()=>{openSheet(`<h1>Leave this trip?</h1><p class="muted" style="margin:8px 0 16px">You stop sharing your location and leave the mic and chat. To come back you'll need the code and the leader's approval again.</p><button class="btn red" id="cf-lv">Leave trip</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Stay</button>`);$('#cf-lv').onclick=()=>{closeSheet();leaveTrip()}};
   if($('#tm-end'))$('#tm-end').onclick=()=>{openSheet(`<h1>End trip?</h1><p class="muted" style="margin:8px 0 16px">Location sharing and the mic stop for everyone.</p><button class="btn red" id="cf-end2">End trip for everyone</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
     $('#cf-end2').onclick=async()=>{closeSheet();await sysMsg('🏁 Trip ended by the leader');await DB.update(P('meta'),{status:'ended',ended:DB.now()})}};
@@ -1635,6 +1889,7 @@ async function routeAuth(u){
     if(mem&&meta&&meta.status!=='ended'&&meta.status!=='cancelled')enterTrip(sess.code);else{store.del('session');renderResume()}}
   let pj=null;try{pj=sessionStorage.getItem('pjoin');sessionStorage.removeItem('pjoin');const uu=new URL(location.href);if(uu.searchParams.has('join')){uu.searchParams.delete('join');history.replaceState(null,'',uu)}}catch(e){}
   if(pj){$('#go-join').click();$('#j-code').value=pj;$('#j-find').click()}
+  else{let pc=null;try{pc=sessionStorage.getItem('pclub');const uu=new URL(location.href);if(uu.searchParams.has('club')){uu.searchParams.delete('club');history.replaceState(null,'',uu)}}catch(e){}if(pc)clubsHome()}
 }
 function showHome(){if(!store.get('cc'))detectCountry();paintAv('#h-av',PROFILE.nick,PROFILE.color);$('#h-name').textContent=PROFILE.nick;renderResume();go('s-home');renderRides()}
 
@@ -1667,14 +1922,14 @@ let ST={first:false,color:null};
 function openSettings(first){ST.first=!!first;const pr=PROFILE||{nick:'',color:COLORS[0],veh:'moto'};
   $('#st-title').textContent=first?'Set up your profile':'Settings';$('#st-sub').textContent=first?'Choose how your group will see you.':'';
   $('#st-back').style.display=first?'none':'';$('#st-more').style.display=first?'none':'';
-  $('#st-nick').value=pr.nick||'';swatches('#st-color',pr.color||COLORS[0],c=>paintAv('#st-av',$('#st-nick').value,c));chips('#st-veh',pr.veh||'moto');document.querySelectorAll('#st-navlang button').forEach(b=>b.classList.toggle('on',b.dataset.l===NAV.lang));$('#st-bike').value=pr.bike||'';paintAv('#st-av',pr.nick,pr.color||COLORS[0]);
+  $('#st-nick').value=pr.nick||'';swatches('#st-color',pr.color||COLORS[0],c=>paintAv('#st-av',$('#st-nick').value,c));chips('#st-veh',pr.veh||'moto');document.querySelectorAll('#st-navlang button').forEach(b=>b.classList.toggle('on',b.dataset.l===NAV.lang));$('#st-bike').value=pr.bike||'';$('#st-ecn').value=(pr.ec&&pr.ec.n)||'';$('#st-ecp').value=(pr.ec&&pr.ec.p)||'';paintAv('#st-av',pr.nick,pr.color||COLORS[0]);
   $('#st-email').textContent=DB.user?DB.user.email:'';$('#st-sat').classList.toggle('on',mapType==='sat');$('#st-err').textContent='';go('s-settings')}
 $('#st-nick').oninput=()=>paintAv('#st-av',$('#st-nick').value,selColor('#st-color'));
 $('#h-settings').onclick=()=>openSettings(false);
 $('#st-back').onclick=()=>{if(T&&T.meta&&T.meta.status==='live')go('s-live');else if(T&&T.meta&&T.meta.status==='lobby')go('s-lobby');else showHome()};
 segPick('#st-navlang',b=>{NAV.lang=b.dataset.l;store.set('navlang',NAV.lang);NAV.path=null;say(NAV.lang==='tl'?'Kumaliwa pagkalipas ng tatlong daang metro':'In 300 meters, turn left')});
 $('#st-save').onclick=()=>busy($('#st-save'),async()=>{const nick=$('#st-nick').value.trim();if(nick.length<2)return $('#st-err').textContent='Enter a nickname (at least 2 letters).';
-  const prof={...(PROFILE||{created:DB.now()}),nick,color:selColor('#st-color'),veh:selVeh('#st-veh'),bike:$('#st-bike').value.trim().slice(0,40)};
+  const prof={...(PROFILE||{created:DB.now()}),nick,color:selColor('#st-color'),veh:selVeh('#st-veh'),bike:$('#st-bike').value.trim().slice(0,40),ec:{n:$('#st-ecn').value.trim().slice(0,30),p:$('#st-ecp').value.trim().slice(0,20)}};
   try{await DB.set('users/'+DB.uid,prof);PROFILE=prof;toast('Profile saved');if(ST.first)showHome();else paintAv('#h-av',nick,prof.color)}catch(e){$('#st-err').textContent=authErr(e)}});
 $('#st-sat').onclick=()=>{$('#mb-layer').click();$('#st-sat').classList.toggle('on',mapType==='sat')};
 $('#st-logout').onclick=()=>{openSheet(`<h1>Log out?</h1><p class="muted" style="margin:8px 0 16px">You'll need your email and password to log back in.</p><button class="btn" id="cf-out">Log out</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
