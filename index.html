@@ -213,6 +213,8 @@ a{color:var(--blue-d)}
 .navbanner .nb-ic{min-width:44px!important}.navbanner .nb-ic svg{width:18px!important;height:18px!important}
 .navbanner .nb-ic b{font-size:16px!important}.navbanner .nb-txt .n{font-size:15.5px!important}.navbanner .nb-txt .k{font-size:11px!important}
 .nb-go{padding:7px 9px!important}
+.nb-snd{display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0!important;border-radius:12px}.nb-snd svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.navbanner .nb-ic svg.turn{width:30px!important;height:30px!important;stroke:#fff;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .etabar{padding:6px 12px!important;bottom:8px!important;align-items:center!important}
 .etabar b{font-size:17px!important;white-space:nowrap;flex-shrink:0}
 .etabar span{font-size:12px!important}
@@ -339,6 +341,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
         <div class="label">Nickname</div><input class="field" id="st-nick" maxlength="16">
         <div class="label">Your color</div><div class="swatches" id="st-color"></div>
         <div class="label">Default vehicle</div><div class="chips" id="st-veh"></div>
+        <div class="label">Voice directions</div><div class="seg" id="st-navlang"><button data-l="en">English</button><button data-l="tl">Tagalog</button></div>
         <div class="label">Your ride details (optional)</div><input class="field" id="st-bike" maxlength="40" placeholder="e.g. Red Raider 150 · ABC 1234"><div class="muted small" style="margin-top:4px">Helps your group spot you at the meeting point.</div>
         <p class="small" id="st-err" style="color:var(--red);margin-top:8px;min-height:16px"></p>
         <button class="btn" id="st-save">Save profile</button>
@@ -479,7 +482,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
       <div class="panel on" id="p-map">
         <div class="mapwrap">
           <div id="map"></div>
-          <div class="navbanner" id="navb"><div class="nb-ic"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><b id="nb-dist">–</b></div><div class="nb-txt"><div class="k" id="nb-kind">Next stop</div><div class="n" id="nb-name">–</div></div><button class="nb-go" id="nb-go">Directions</button></div>
+          <div class="navbanner" id="navb"><div class="nb-ic"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><b id="nb-dist">–</b></div><div class="nb-txt"><div class="k" id="nb-kind">Next stop</div><div class="n" id="nb-name">–</div></div><button class="nb-go nb-snd" id="nb-go" aria-label="Voice directions"></button></div>
           <div class="mapbtns"><button id="mb-layer" title="Map / Satellite"><svg class="i" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button><button id="mb-3d" title="3D / 2D">3D</button><button id="mb-lead" title="Follow leader"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button id="mb-all" title="Show everyone"><svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
           <div class="lpbtns"><button id="mb-checkin"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Check in</button><button id="mb-sos" class="sosf"><svg class="i" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>SOS</button></div>
           <button class="recenter" id="mb-me"><svg viewBox="0 0 24 24"><polygon points="12 2 20 21 12 17 4 21 12 2"/></svg>Re-center</button>
@@ -1202,7 +1205,7 @@ function renderMarkers(){
   // camera
   const me=info[T.me],ld=info[T.meta.leaderId];
   const cam=o=>{progMove=true;map.easeTo({...o,duration:900});setTimeout(()=>progMove=false,950)};
-  if(follow==='nav'){if(me&&me.l)cam({center:[me.l.lng,me.l.lat],zoom:Math.max(map.getZoom(),16.5),pitch:nav3d?60:0,bearing:nav3d?(headings[T.me]||0):0});else if(!fitDone)fitAll(info)}
+  if(follow==='nav'){if(me&&me.l)cam({center:[me.l.lng,me.l.lat],zoom:NAV.zoom||Math.max(map.getZoom(),16.5),pitch:nav3d?60:0,bearing:nav3d?(headings[T.me]||0):0});else if(!fitDone)fitAll(info)}
   else if(follow==='lead'&&ld&&ld.l)cam({center:[ld.l.lng,ld.l.lat],pitch:0,bearing:0});
   else if(follow==='all'&&!fitDone)fitAll(info);
   // meeting point: guide there first, mark arrival within 100 m
@@ -1231,6 +1234,7 @@ function renderMarkers(){
     else{$('#eta-t').textContent=rem.toFixed(1)+' km';$('#eta-d').textContent='to '+dest.name}}
   else{$('#nb-dist').textContent='–';$('#eta-t').textContent=T.meta.route.km+' km';$('#eta-d').textContent='Waiting for your GPS…'}
   T.navTarget=target;
+  turnNav(me,meet&&goingToMeet?meet:null,target,kind);
 }
 function fitAll(info){const pts=Object.values(info).filter(x=>x.l).map(x=>[x.l.lng,x.l.lat]);const c=T.meta.route.coords;
   const all=pts.concat(c.length?[[c[0][1],c[0][0]],[c[c.length-1][1],c[c.length-1][0]]]:[]);if(!all.length)return;
@@ -1242,7 +1246,7 @@ $('#mb-lead').onclick=()=>{follow='lead';updMapBtns();renderMarkers()};
 $('#mb-all').onclick=()=>{follow='all';fitDone=false;updMapBtns();renderMarkers()};
 $('#mb-3d').onclick=()=>{nav3d=!nav3d;follow='nav';updMapBtns();renderMarkers()};
 $('#mb-layer').onclick=()=>{mapType=mapType==='sat'?'map':'sat';store.set('maptype',mapType);if(map&&map.getLayer('sat'))setMapType(map,mapType);if(pmap&&pmap.getLayer('sat'))setMapType(pmap,mapType);updMapBtns();toast(mapType==='sat'?'Satellite view':'Map view')};
-$('#nb-go').onclick=()=>{const t=T&&T.navTarget;if(!t)return;window.open(`https://www.google.com/maps/dir/?api=1&destination=${t.lat},${t.lng}&travelmode=driving`,'_blank')};
+$('#nb-go').onclick=()=>{NAV.mute=!NAV.mute;store.set('navmute',NAV.mute?1:0);sndBtn();if(NAV.mute){try{speechSynthesis.cancel()}catch(e){}toast('Voice directions off')}else{say(NAV.lang==='tl'?'Naka-on ang boses ng direksyon':'Voice directions on');toast('Voice directions on')}};
 function renderConvoy(){
   const {ord}=memberInfo();let h='';
   ord.forEach((x,i)=>{if(i>0){const far=x.gap>T.meta.thr;h+=`<div class="gap ${far?'far':''}"><i></i>${x.prog<0||ord[i-1].prog<0?'?':x.gap.toFixed(1)+' km'}</div>`;
@@ -1433,6 +1437,68 @@ function placeSheet(title,btn,onPick,around,onCancel){openSheet(`<h1>${title}</h
   $('#ps-map').onclick=()=>{closeSheet();const d=around||T.meta.stops[T.meta.stops.length-1];pickOnMap(title,d,onPick)};
   placeSearch('#ps-q','#ps-r',p=>{closeSheet();pickOnMap(title,p,onPick,true)})}
 
+/* ================= TURN-BY-TURN VOICE ================= */
+const NAV={path:null,fetchAt:0,offN:0,spoken:{},lang:store.get('navlang')||'en',mute:!!store.get('navmute'),zoom:0,reroutedAt:0};
+const PINSVG='<svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+const TURN_IC={straight:'M12 21V4M6 10l6-6 6 6',left:'M17 21v-8a4 4 0 0 0-4-4H5M9 5 5 9l4 4',right:'M7 21v-8a4 4 0 0 1 4-4h8M15 5l4 4-4 4','slight left':'M15 21v-7L8 7M8 13V7h6','slight right':'M9 21v-7l7-7M10 7h6v6',uturn:'M7 21V9a5 5 0 0 1 10 0v6M13 12l4 4 4-4',round:'M12 21v-6M12 15a4 4 0 1 1 4-4M16 7v4h-4',arrive:'M5 21V4h12l-3 4 3 4H5'};
+function turnIcon(st){let k='straight';const m=st.mod||'';if(st.type==='arrive')k='arrive';else if(/roundabout|rotary/.test(st.type))k='round';else if(m==='uturn')k='uturn';else if(m.includes('slight'))k=m.includes('left')?'slight left':'slight right';else if(m.includes('left'))k='left';else if(m.includes('right'))k='right';
+  return `<svg class="turn" viewBox="0 0 24 24"><path d="${TURN_IC[k]}"/></svg>`}
+function sndBtn(){$('#nb-go').innerHTML=NAV.mute?'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/></svg>':'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>'}
+sndBtn();
+document.addEventListener('click',function un(){document.removeEventListener('click',un);try{if('speechSynthesis' in window&&!nativePlugin('TextToSpeech')){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}}catch(e){}});
+const ORD=n=>n+(['th','st','nd','rd'][(n%100-20)%10]||['th','st','nd','rd'][n%100]||'th');
+function turnTxt(m,tl){if(m==='uturn')return tl?'Mag-U-turn':'Make a U-turn';if(!m||m==='straight')return tl?'Dumiretso':'Continue straight';
+  const L=m.includes('left');if(tl)return (m.startsWith('slight')?'Bahagyang ':m.startsWith('sharp')?'Matarik na ':'')+(m.startsWith('slight')||m.startsWith('sharp')?(L?'kumaliwa':'kumanan'):(L?'Kumaliwa':'Kumanan'));return 'Turn '+m}
+function instr(st,L){const tl=L==='tl',m=st.mod||'',side=m.includes('left')?(tl?'kaliwa':'left'):m.includes('right')?(tl?'kanan':'right'):'';let t;
+  if(st.type==='arrive')return tl?`Nakarating ka na sa ${st.dest}`:`You have arrived at ${st.dest}`;
+  if(/roundabout|rotary/.test(st.type))t=st.exit?(tl?`Sa rotonda, lumabas sa ika-${st.exit} exit`:`At the roundabout, take the ${ORD(st.exit)} exit`):(tl?'Pumasok sa rotonda':'Enter the roundabout');
+  else if(st.type==='fork')t=side?(tl?`Manatili sa ${side}`:`Keep ${side}`):(tl?'Dumiretso':'Continue straight');
+  else if(st.type==='merge')t=tl?'Sumanib sa kalsada':'Merge'+(side?' '+side:'');
+  else if(st.type==='on ramp')t=tl?'Pumasok sa ramp':'Take the ramp'+(side?' on the '+side:'');
+  else if(st.type==='off ramp')t=tl?'Lumabas sa exit':'Take the exit'+(side?' on the '+side:'');
+  else if(st.type==='end of road')t=(tl?'Sa dulo ng kalsada, ':'At the end of the road, ')+turnTxt(m,tl).toLowerCase().replace(/^turn /,tl?'':'turn ');
+  else if(st.type==='continue'||st.type==='new name')t=side?(tl?`Manatili sa ${side}`:`Keep ${side}`):(tl?'Dumiretso':'Continue straight');
+  else t=turnTxt(m,tl);
+  if(st.name)t+=tl?` papunta sa ${st.name}`:` onto ${st.name}`;return t}
+function distTxt(km,tl){if(km>=1){const v=km>=10?Math.round(km):Math.round(km*10)/10;return tl?`${v} kilometro`:`${v} kilometer${v===1?'':'s'}`}const m=km<0.2?Math.max(10,Math.round(km*1000/10)*10):Math.round(km*1000/50)*50;return tl?`${m} metro`:`${m} meters`}
+function duck(on){document.querySelectorAll('#audios audio').forEach(a=>{try{a.volume=on?0.25:1}catch(e){}})}
+function say(t){if(NAV.mute||!t)return;duck(true);const L=NAV.lang==='tl'?'fil-PH':'en-US';const TTS=nativePlugin('TextToSpeech');
+  if(TTS){TTS.speak({text:t,lang:L,rate:1.0,volume:1.0,category:'playback'}).catch(()=>TTS.speak({text:t,rate:1.0}).catch(()=>{})).finally(()=>duck(false));return}
+  if(!('speechSynthesis' in window)){duck(false);return}
+  try{const u=new SpeechSynthesisUtterance(t);u.lang=L;const vs=speechSynthesis.getVoices();const v=vs.find(v=>v.lang.replace('_','-').toLowerCase().startsWith(NAV.lang==='tl'?'fil':'en-'));if(v)u.voice=v;u.rate=1;u.onend=u.onerror=()=>duck(false);speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){duck(false)}}
+async function fetchSteps(points,dests){const q=points.map(p=>(+p.lng).toFixed(6)+','+(+p.lat).toFixed(6)).join(';');
+  for(const base of ROUTERS){try{const ac=new AbortController();const to=setTimeout(()=>ac.abort(),12000);
+    const r=await fetch(`${base}${q}?overview=full&geometries=geojson&steps=true`,{signal:ac.signal});clearTimeout(to);const j=await r.json();if(!j.routes||!j.routes[0])continue;
+    const rt=j.routes[0];const coords=simplify(rt.geometry.coordinates.map(c=>[+c[1].toFixed(5),+c[0].toFixed(5)]),0.00003);const cum=cumOf(coords);const steps=[];
+    rt.legs.forEach((lg,li)=>lg.steps.forEach(x=>{const mv=x.maneuver||{};const type=mv.type||'';const mod=mv.modifier||'';
+      if(type==='depart'||/^exit (roundabout|rotary)$/.test(type))return;if(/^(continue|new name|notification)$/.test(type)&&(!mod||mod==='straight'))return;if(type==='arrive'&&li<rt.legs.length-1&&!dests[li])return;
+      const ll=[mv.location[1],mv.location[0]];steps.push({type,mod,name:x.name||x.ref||'',exit:mv.exit||0,ll,dest:type==='arrive'?(dests[li]||''):'',prog:projectOn(coords,cum,ll).prog})}));
+    return {coords,cum,steps}}catch(e){}}return null}
+async function ensureNavPath(me,pts,dests,key,why){if(Date.now()-NAV.fetchAt<8000)return;NAV.fetchAt=Date.now();
+  const r=await fetchSteps([{lat:me.l.lat,lng:me.l.lng},...pts],dests);if(!r||!T)return;
+  if(why==='off'&&NAV.path&&Date.now()-NAV.reroutedAt>25000){NAV.reroutedAt=Date.now();say(NAV.lang==='tl'?'Nagre-reroute':'Rerouting')}
+  NAV.path={...r,key,ts:Date.now()};NAV.offN=0}
+function turnNav(me,meet,target,kind){const ic=$('#navb .nb-ic');
+  const plain=()=>{if(ic.dataset.mode!=='pin'){ic.dataset.mode='pin';ic.querySelector('svg')&&ic.querySelector('svg').remove();ic.insertAdjacentHTML('afterbegin',PINSVG)}NAV.zoom=0};
+  if(!me||!me.l||!T.meta||T.meta.status!=='live'){plain();return}
+  let pts,dests;if(meet){pts=[meet];dests=[meet.name]}else{const st=T.meta.stops,prog=me.prog||0;const ahead=st.filter((x,k)=>k>0&&(k===st.length-1||!T.stopProg||T.stopProg[k]>prog+0.05));pts=ahead;dests=ahead.map(x=>x.name)}
+  const key=NAV.lang+'|'+pts.map(p=>(+p.lat).toFixed(5)+','+(+p.lng).toFixed(5)).join(';');const here=[me.l.lat,me.l.lng];
+  const P_=NAV.path;if(!P_||P_.key!==key){ensureNavPath(me,pts,dests,key,P_?'new':'start');if(!P_||P_.key.split('|').slice(1).join()!==key.split('|').slice(1).join()){plain();return}}
+  const pr=projectOn(P_.coords,P_.cum,here);
+  if(pr.off>0.06){NAV.offN++;if(NAV.offN>=2)ensureNavPath(me,pts,dests,key,'off')}else NAV.offN=0;
+  const i=P_.steps.findIndex(x=>x.prog>pr.prog+0.008);if(i<0){plain();return}
+  const st=P_.steps[i];const d=Math.max(0,st.prog-pr.prog);const tl=NAV.lang==='tl';const text=instr(st,NAV.lang);
+  ic.dataset.mode='turn';const old=ic.querySelector('svg');const nic=turnIcon(st);if(!old||old.outerHTML!==nic){old&&old.remove();ic.insertAdjacentHTML('afterbegin',nic)}
+  $('#nb-dist').innerHTML=d<1?`${Math.max(10,Math.round(d*1000/10)*10)}<small>m</small>`:`${d.toFixed(d<10?1:0)}<small>km</small>`;
+  $('#nb-kind').textContent=meet?'To meeting point · '+meet.name:(kind==='Destination'?'To ':'Next stop: ')+target.name;$('#nb-name').textContent=text;
+  NAV.zoom=d<0.2?17.6:d<0.6?17:d<2?16.4:15.8;
+  const sk=P_.ts+'|'+i,sp=NAV.spoken;const lc=text.charAt(0).toLowerCase()+text.slice(1);
+  if(st.type==='arrive'){if(d<=0.05&&!sp[sk+'n']){sp[sk+'n']=1;say(text)}return}
+  if(d<=0.035){if(!sp[sk+'n']){sp[sk+'n']=sp[sk+'m']=sp[sk+'f']=1;say(text)}}
+  else if(d<=0.2){if(!sp[sk+'m']){sp[sk+'m']=sp[sk+'f']=1;say(tl?`Pagkalipas ng ${distTxt(d,1)}, ${lc}`:`In ${distTxt(d)}, ${lc}`)}}
+  else if(d<=0.55&&d>=0.3){if(!sp[sk+'f']){sp[sk+'f']=1;say(tl?`Pagkalipas ng ${distTxt(d,1)}, ${lc}`:`In ${distTxt(d)}, ${lc}`)}}
+  else if(d>2&&!sp[sk+'c']){sp[sk+'c']=1;if(sp[(P_.ts)+'|'+(i-1)+'n']||i===0)say(tl?`Dumiretso nang ${distTxt(d,1)}`:`Continue for ${distTxt(d)}`)}}
+
 /* ================= EDIT ROUTE ================= */
 let ER=null;
 function editRoute(){ER={stops:T.meta.stops.map(x=>({name:x.name,lat:x.lat,lng:x.lng})),orig:JSON.stringify(T.meta.stops.map(x=>[x.name,x.lat,x.lng])),opts:null,sel:0,seq:0};renderER()}
@@ -1601,11 +1667,12 @@ let ST={first:false,color:null};
 function openSettings(first){ST.first=!!first;const pr=PROFILE||{nick:'',color:COLORS[0],veh:'moto'};
   $('#st-title').textContent=first?'Set up your profile':'Settings';$('#st-sub').textContent=first?'Choose how your group will see you.':'';
   $('#st-back').style.display=first?'none':'';$('#st-more').style.display=first?'none':'';
-  $('#st-nick').value=pr.nick||'';swatches('#st-color',pr.color||COLORS[0],c=>paintAv('#st-av',$('#st-nick').value,c));chips('#st-veh',pr.veh||'moto');$('#st-bike').value=pr.bike||'';paintAv('#st-av',pr.nick,pr.color||COLORS[0]);
+  $('#st-nick').value=pr.nick||'';swatches('#st-color',pr.color||COLORS[0],c=>paintAv('#st-av',$('#st-nick').value,c));chips('#st-veh',pr.veh||'moto');document.querySelectorAll('#st-navlang button').forEach(b=>b.classList.toggle('on',b.dataset.l===NAV.lang));$('#st-bike').value=pr.bike||'';paintAv('#st-av',pr.nick,pr.color||COLORS[0]);
   $('#st-email').textContent=DB.user?DB.user.email:'';$('#st-sat').classList.toggle('on',mapType==='sat');$('#st-err').textContent='';go('s-settings')}
 $('#st-nick').oninput=()=>paintAv('#st-av',$('#st-nick').value,selColor('#st-color'));
 $('#h-settings').onclick=()=>openSettings(false);
 $('#st-back').onclick=()=>{if(T&&T.meta&&T.meta.status==='live')go('s-live');else if(T&&T.meta&&T.meta.status==='lobby')go('s-lobby');else showHome()};
+segPick('#st-navlang',b=>{NAV.lang=b.dataset.l;store.set('navlang',NAV.lang);NAV.path=null;say(NAV.lang==='tl'?'Kumaliwa pagkalipas ng tatlong daang metro':'In 300 meters, turn left')});
 $('#st-save').onclick=()=>busy($('#st-save'),async()=>{const nick=$('#st-nick').value.trim();if(nick.length<2)return $('#st-err').textContent='Enter a nickname (at least 2 letters).';
   const prof={...(PROFILE||{created:DB.now()}),nick,color:selColor('#st-color'),veh:selVeh('#st-veh'),bike:$('#st-bike').value.trim().slice(0,40)};
   try{await DB.set('users/'+DB.uid,prof);PROFILE=prof;toast('Profile saved');if(ST.first)showHome();else paintAv('#h-av',nick,prof.color)}catch(e){$('#st-err').textContent=authErr(e)}});

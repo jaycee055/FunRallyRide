@@ -9,7 +9,8 @@
     "@capacitor/app": "^8.1.2",
     "@capacitor-community/keep-awake": "^8.0.1",
     "firebase": "10.14.1",
-    "maplibre-gl": "4.7.1"
+    "maplibre-gl": "4.7.1",
+    "@capacitor-community/text-to-speech": "^8.0.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",
